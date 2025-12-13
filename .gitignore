@@ -1,0 +1,3 @@
+/backend/budget-api/vendor
+/frontend/node_modules
+.env
