@@ -1,12 +1,21 @@
+type Currency = 'EUR' | 'THB' | 'USD' | 'GBP';
+
+const currencyLocales: Record<Currency, string> = {
+    EUR: 'nl-NL',
+    THB: 'th-TH',
+    USD: 'en-US',
+    GBP: 'en-GB',
+};
+
 export function formatCurrency(
     amount: number,
-    currency: 'EUR' | 'USD' | 'GBP' | 'THB' = 'EUR',
-    locale = 'nl-NL'
+    currency: Currency = 'EUR'
 ) {
+    const locale = currencyLocales[currency];
+    
+// Use JavaScript API for format
     return new Intl.NumberFormat(locale, {
-        style: "currency",
+        style: 'currency',
         currency,
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
     }).format(amount);
 }
