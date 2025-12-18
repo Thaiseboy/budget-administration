@@ -10,7 +10,18 @@ class TransactionController extends Controller
 {
     public function index()
     {
-        return Transaction::orderBy('date', 'desc')->get();
+        $transactions = Transaction::orderBy('date', 'desc')->get();
+
+        return $transactions->map(function ($transaction) {
+            return [
+                'id' => (string) $transaction->id,
+                'type' => $transaction->type,
+                'amount' => (float) $transaction->amount,
+                'description' => $transaction->description,
+                'category' => $transaction->category,
+                'date' => $transaction->date->format('Y-m-d'),
+            ];
+        });
     }
 
     public function store(Request $request)
@@ -25,6 +36,13 @@ class TransactionController extends Controller
 
         $transaction = Transaction::create($data);
 
-        return response()->json($transaction, 201);
+        return response()->json([
+            'id' => (string) $transaction->id,
+            'type' => $transaction->type,
+            'amount' => (float) $transaction->amount,
+            'description' => $transaction->description,
+            'category' => $transaction->category,
+            'date' => $transaction->date->format('Y-m-d'),
+        ], 201);
     }
 }
