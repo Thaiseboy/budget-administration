@@ -1,36 +1,25 @@
+import { useEffect, useState } from "react";
+import { getTransactions } from "../api/transactions";
 import AppLayout from "../layouts/AppLayout";
 import type { Transaction } from "../types/transaction";
 import TransactionList from "../components/TransactionList";
 import TransactionSummary from "../components/TransactionSummary";
 
-const DUMMY_TRANSACTIONS: Transaction[] = [
-  {
-    id: "t1",
-    type: "income",
-    amount: 2500,
-    description: "Salary",
-    date: "2025-12-01",
-    category: "Work",
-  },
-  {
-    id: "t2",
-    type: "expense",
-    amount: 65.4,
-    description: "Groceries",
-    date: "2025-12-03",
-    category: "Food",
-  },
-  {
-    id: "t3",
-    type: "expense",
-    amount: 14.99,
-    description: "Spotify",
-    date: "2025-12-05",
-    category: "Subscriptions",
-  },
-];
-
 export default function TransactionsPage() {
+  const [items, setItems] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    getTransactions()
+      .then((data) => setItems(data))
+      .catch((e: unknown) => {
+        const message = e instanceof Error ? e.message : "Failed to load transactions";
+        setError(message);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <AppLayout>
       <div className="flex items-center justify-between">
@@ -44,13 +33,29 @@ export default function TransactionsPage() {
         </button>
       </div>
 
-      <div className="mt-4">
-        <TransactionSummary items={DUMMY_TRANSACTIONS} />
-      </div>
+      {loading && (
+        <div className="mt-4 rounded-xl border bg-white p-4 text-sm text-slate-600">
+          Loading...
+        </div>
+      )}
 
-      <div className="mt-4">
-        <TransactionList items={DUMMY_TRANSACTIONS} />
-      </div>
+      {error && (
+        <div className="mt-4 rounded-xl border bg-white p-4 text-sm text-red-600">
+          {error}
+        </div>
+      )}
+
+      {!loading && !error && (
+        <>
+          <div className="mt-4">
+            <TransactionSummary items={items} />
+          </div>
+
+          <div className="mt-4">
+            <TransactionList items={items} />
+          </div>
+        </>
+      )}
 
     </AppLayout>
   );
