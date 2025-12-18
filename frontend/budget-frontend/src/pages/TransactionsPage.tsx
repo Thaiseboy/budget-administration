@@ -4,6 +4,7 @@ import AppLayout from "../layouts/AppLayout";
 import type { Transaction } from "../types/transaction";
 import TransactionList from "../components/TransactionList";
 import TransactionSummary from "../components/TransactionSummary";
+import { Link } from "react-router-dom";
 
 export default function TransactionsPage() {
   const [items, setItems] = useState<Transaction[]>([]);
@@ -25,12 +26,12 @@ export default function TransactionsPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Transactions</h1>
 
-        <button
-          type="button"
+        <Link
+          to="/transactions/new"
           className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
         >
           Add transaction
-        </button>
+        </Link>
       </div>
 
       {loading && (
