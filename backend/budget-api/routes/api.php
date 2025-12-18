@@ -1,16 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\TransactionController;
 
-Route::get('/transactions', function () {
-    return response()->json([
-        'data' => [
-            [
-                'id' => 1,
-                'description' => 'Test transaction',
-                'amount' => 100.00,
-                'date' => '2024-12-18'
-            ]
-        ]
-    ]);
-});
+Route::get('/transactions', [TransactionController::class, 'index']);
