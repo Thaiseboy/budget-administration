@@ -1,6 +1,7 @@
 import AppLayout from "../layouts/AppLayout";
 import type { Transaction } from "../types/transaction";
 import TransactionList from "../components/TransactionList";
+import TransactionSummary from "../components/TransactionSummary";
 
 const DUMMY_TRANSACTIONS: Transaction[] = [
   {
@@ -44,8 +45,13 @@ export default function TransactionsPage() {
       </div>
 
       <div className="mt-4">
+        <TransactionSummary items={DUMMY_TRANSACTIONS} />
+      </div>
+
+      <div className="mt-4">
         <TransactionList items={DUMMY_TRANSACTIONS} />
       </div>
+
     </AppLayout>
   );
 }
