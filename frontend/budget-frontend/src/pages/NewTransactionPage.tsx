@@ -18,7 +18,7 @@ export default function NewTransactionPage() {
     const [error, setError] = useState<string | null>(null);
 
     const handleFieldChange = (name: string, value: string | boolean) => {
-        setFormData({ ...formData, [name]: value });
+        setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
     async function handleSubmit(e: React.FormEvent) {
