@@ -4,10 +4,12 @@ import AppLayout from "../layouts/AppLayout";
 import type { Transaction } from "../types/transaction";
 import { getTransaction, updateTransaction } from "../api/transactions";
 import TransactionForm from "../components/TransactionForm";
+import { useToast } from "../components/toast/ToastContext";
 
 export default function EditTransactionPage() {
   const navigate = useNavigate();
   const { id } = useParams();
+  const toast = useToast();
 
   const [item, setItem] = useState<Transaction | null>(null);
   const [loading, setLoading] = useState(true);
@@ -44,6 +46,7 @@ export default function EditTransactionPage() {
           }}
           onSubmit={async (data) => {
             await updateTransaction(item.id, data);
+            toast.success("Transaction updated");
             navigate("/transactions");
           }}
           onCancel={() => navigate("/transactions")}
