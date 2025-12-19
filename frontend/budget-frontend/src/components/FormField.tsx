@@ -78,8 +78,8 @@ export default function FormField(props: FormFieldProps) {
     name,
   } = props;
 
-  const baseInputClassName = "mt-1 w-full rounded-lg border px-3 py-2";
-  const checkboxRadioClassName = "rounded border-gray-300";
+  const baseInputClassName = "mt-1 w-full rounded-lg border border-slate-600 bg-slate-700 text-white px-3 py-2 focus:border-slate-500 focus:outline-none";
+  const checkboxRadioClassName = "rounded border-slate-600";
 
   const getInputClassName = () => {
     if (type === "checkbox" || type === "radio") {
@@ -182,14 +182,14 @@ export default function FormField(props: FormFieldProps) {
         {label && (
           <label
             htmlFor={id}
-            className={labelClass || "ml-2 text-sm font-medium"}
+            className={labelClass || "ml-2 text-sm font-medium text-slate-300"}
           >
             {label}
-            {required && <span className="text-red-500 ml-1">*</span>}
+            {required && <span className="text-red-400 ml-1">*</span>}
           </label>
         )}
         {description && (
-          <small className="block mt-1 text-sm text-gray-500 ml-6">
+          <small className="block mt-1 text-sm text-slate-400 ml-6">
             {description}
           </small>
         )}
@@ -203,17 +203,17 @@ export default function FormField(props: FormFieldProps) {
       {label && (
         <label
           htmlFor={id}
-          className={labelClass || "block text-sm font-medium"}
+          className={labelClass || "block text-sm font-medium text-slate-300"}
         >
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
+          {required && <span className="text-red-400 ml-1">*</span>}
         </label>
       )}
 
       {renderInput()}
 
       {description && (
-        <small className="block mt-1 text-sm text-gray-500">
+        <small className="block mt-1 text-sm text-slate-400">
           {description}
         </small>
       )}

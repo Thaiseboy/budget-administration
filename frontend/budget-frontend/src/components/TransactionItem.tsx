@@ -14,19 +14,19 @@ export default function TransactionItem({ item, onEdit, onDelete }: Props) {
   return (
     <li className="flex items-center justify-between gap-4 px-4 py-3">
       <div className="flex-1">
-        <div className="font-medium">{item.description ?? "Untitled"}</div>
-        <div className="text-xs text-slate-500">
+        <div className="font-medium text-white">{item.description ?? "Untitled"}</div>
+        <div className="text-xs text-slate-400">
           {item.date}
           {item.category ? ` • ${item.category}` : ""}
         </div>
       </div>
 
       <div className="text-right">
-        <div className={isExpense ? "font-semibold text-red-600" : "font-semibold text-emerald-600"}>
+        <div className={isExpense ? "font-semibold text-red-400" : "font-semibold text-emerald-400"}>
           {isExpense ? "-" : "+"}{formatCurrency(item.amount)}
         </div>
 
-        <div className="text-xs text-slate-500">{item.type}</div>
+        <div className="text-xs text-slate-400">{item.type}</div>
       </div>
 
       <div className="flex gap-2">
@@ -36,7 +36,7 @@ export default function TransactionItem({ item, onEdit, onDelete }: Props) {
               e.stopPropagation();
               onEdit(item.id);
             }}
-            className="text-sm text-slate-400 hover:text-blue-600 transition-colors"
+            className="text-sm text-slate-400 hover:text-blue-400 transition-colors"
             aria-label="Edit transaction"
             title="Edit"
           >
@@ -52,7 +52,7 @@ export default function TransactionItem({ item, onEdit, onDelete }: Props) {
               e.stopPropagation();
               onDelete(item.id);
             }}
-            className="text-sm text-slate-400 hover:text-red-600 transition-colors"
+            className="text-sm text-slate-400 hover:text-red-400 transition-colors"
             aria-label="Delete transaction"
             title="Delete"
           >

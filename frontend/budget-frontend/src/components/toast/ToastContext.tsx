@@ -71,8 +71,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 : 'translate-y-0 scale-100 opacity-100'
               }
               ${toast.type === "success"
-                ? "border-emerald-200 bg-emerald-50/90 text-emerald-900"
-                : "border-red-200 bg-red-50/90 text-red-900"
+                ? "border-emerald-700 bg-emerald-900/90 text-emerald-100"
+                : "border-red-700 bg-red-900/90 text-red-100"
               }`}>
             <div className={`shrink-0 rounded-lg p-1 
             ${toast.type === "success" ? "bg-emerald-500 text-white" : "bg-red-500 text-white"}`}>
