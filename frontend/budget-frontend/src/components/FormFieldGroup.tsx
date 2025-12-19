@@ -77,12 +77,14 @@ export default function FormFieldGroup({
 
         if (type === "checkbox" || type === "radio") {
           const checked = Boolean(configChecked ?? formData[name] ?? false);
+          const value = configValue ?? String(formData[name] ?? "");
           return (
             <FormField
               key={id}
               type={type}
               id={id}
               name={name}
+              value={value}
               checked={checked}
               onChange={(newChecked) => {
                 onChange?.(newChecked);
@@ -134,7 +136,6 @@ export default function FormFieldGroup({
           );
         }
 
-        // Default: Text inputs (type narrowing for TypeScript)
         const value = String(configValue ?? formData[name] ?? "");
         const inputType = type as "text" | "email" | "password" | "number" | "date" | "time" | "url" | "tel" | "search";
         return (

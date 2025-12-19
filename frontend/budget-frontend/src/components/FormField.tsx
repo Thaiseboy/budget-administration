@@ -123,7 +123,7 @@ export default function FormField(props: FormFieldProps) {
       );
     }
 
-    if (props.children) {
+    if (type === "select") {
       const { value, onChange, children } = props as SelectProps;
       return (
         <select
