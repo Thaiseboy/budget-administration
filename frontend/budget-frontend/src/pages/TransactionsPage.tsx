@@ -6,9 +6,11 @@ import TransactionList from "../components/TransactionList";
 import TransactionSummary from "../components/TransactionSummary";
 import { Link, useNavigate } from "react-router-dom";
 import { deleteTransaction } from "../api/transactions";
+import { useToast } from "../components/toast/ToastContext";
 
 export default function TransactionsPage() {
   const navigate = useNavigate();
+  const toast = useToast();
   const [items, setItems] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,8 +36,9 @@ export default function TransactionsPage() {
     try {
       await deleteTransaction(id);
       setItems((prev) => prev.filter((t) => t.id !== id));
+      toast.success("Transaction deleted");
     } catch (e) {
-      alert("Failed to delete transaction");
+      toast.error("Failed to delete transaction");
     }
   }
 
