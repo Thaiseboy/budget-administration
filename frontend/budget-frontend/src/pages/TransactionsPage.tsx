@@ -4,10 +4,11 @@ import AppLayout from "../layouts/AppLayout";
 import type { Transaction } from "../types/transaction";
 import TransactionList from "../components/TransactionList";
 import TransactionSummary from "../components/TransactionSummary";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { deleteTransaction } from "../api/transactions";
 
 export default function TransactionsPage() {
+  const navigate = useNavigate();
   const [items, setItems] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,17 +23,21 @@ export default function TransactionsPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  async function handleDelete(id: number) {
-  const ok = window.confirm("Delete this transaction?");
-  if (!ok) return;
-
-  try {
-    await deleteTransaction(id);
-    setItems((prev) => prev.filter((t) => t.id !== id));
-  } catch (e) {
-    alert("Failed to delete transaction");
+  function handleEdit(id: number) {
+    navigate(`/transactions/${id}/edit`);
   }
-}
+
+  async function handleDelete(id: number) {
+    const ok = window.confirm("Delete this transaction?");
+    if (!ok) return;
+
+    try {
+      await deleteTransaction(id);
+      setItems((prev) => prev.filter((t) => t.id !== id));
+    } catch (e) {
+      alert("Failed to delete transaction");
+    }
+  }
 
   return (
     <AppLayout>
@@ -66,7 +71,7 @@ export default function TransactionsPage() {
           </div>
 
           <div className="mt-4">
-            <TransactionList items={items} onDelete={handleDelete} />
+            <TransactionList items={items} onEdit={handleEdit} onDelete={handleDelete} />
           </div>
         </>
       )}

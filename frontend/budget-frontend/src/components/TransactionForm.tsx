@@ -19,12 +19,14 @@ type Props = {
         description?: string;
         category?: string;
     }) => Promise<void>;
+    onCancel?: () => void;
 };
 
 export default function TransactionForm({
     initialValues,
     submitLabel = "Save",
     onSubmit,
+    onCancel,
 }: Props) {
     const [formData, setFormData] = useState<FormData>({
         type: initialValues?.type ?? "expense",
@@ -119,13 +121,25 @@ export default function TransactionForm({
 
             {error && <div className="text-sm text-red-600">{error}</div>}
 
-            <button
-                type="submit"
-                disabled={loading}
-                className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
-            >
-                {loading ? "Saving..." : submitLabel}
-            </button>
+            <div className="flex gap-2">
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+                >
+                    {loading ? "Saving..." : submitLabel}
+                </button>
+
+                {onCancel && (
+                    <button
+                        type="button"
+                        onClick={onCancel}
+                        className="rounded-lg border px-4 py-2 text-sm"
+                    >
+                        Cancel
+                    </button>
+                )}
+            </div>
         </form>
     );
 }

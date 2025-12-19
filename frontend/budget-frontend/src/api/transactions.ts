@@ -5,6 +5,10 @@ export function getTransactions() {
   return http<Transaction[]>('/transactions');
 }
 
+export function getTransaction(id: number) {
+  return http<Transaction>(`/transactions/${id}`);
+}
+
 export function createTransaction(data: Omit<Transaction, 'id'>) {
   return http<Transaction>('/transactions', {
     method: 'POST',
