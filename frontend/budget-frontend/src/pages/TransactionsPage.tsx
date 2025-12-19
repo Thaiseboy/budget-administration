@@ -66,10 +66,8 @@ export default function TransactionsPage() {
           </div>
 
           <div className="mt-4">
-            <TransactionList items={items} />
+            <TransactionList items={items} onDelete={handleDelete} />
           </div>
-
-          <TransactionList items={items} onDelete={handleDelete} />
         </>
       )}
 
