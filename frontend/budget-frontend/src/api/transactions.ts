@@ -17,3 +17,12 @@ export function deleteTransaction(id: number) {
     method: "DELETE",
   });
 }
+
+// Omit make new type on basic van Type with Omit<Type, Keys>, it remove properties. 
+// Update new Transaction without new id, because it exist already.
+export function updateTransaction(id: number, data: Omit<Transaction, "id">) {
+  return http<Transaction>(`/transactions/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+}
