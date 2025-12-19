@@ -7,10 +7,12 @@ import TransactionSummary from "../components/TransactionSummary";
 import { Link, useNavigate } from "react-router-dom";
 import { deleteTransaction } from "../api/transactions";
 import { useToast } from "../components/toast/ToastContext";
+import { useConfirm } from "../components/confirm/ConfirmContext";
 
 export default function TransactionsPage() {
   const navigate = useNavigate();
   const toast = useToast();
+  const confirm = useConfirm();
   const [items, setItems] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -30,8 +32,15 @@ export default function TransactionsPage() {
   }
 
   async function handleDelete(id: number) {
-    const ok = window.confirm("Delete this transaction?");
-    if (!ok) return;
+  const ok = await confirm({
+    title: "Delete transaction?",
+    message: "This action cannot be undone.",
+    confirmText: "Delete",
+    cancelText: "Cancel",
+    variant: "danger",
+  });
+
+  if (!ok) return;
 
     try {
       await deleteTransaction(id);
