@@ -100,6 +100,9 @@ export default function FormFieldGroup({
           return (
             <FormField
               key={id}
+              type="select"
+              id={id}
+              name={name}
               value={value}
               onChange={(newValue) => {
                 onChange?.(newValue);
