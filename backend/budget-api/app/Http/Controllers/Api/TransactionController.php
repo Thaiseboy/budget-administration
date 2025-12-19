@@ -52,4 +52,24 @@ class TransactionController extends Controller
         // HTTP 204
         return response()->noContent();
     }
+
+    public function show(Transaction $transaction)
+    {
+        return response()->json($transaction);
+    }
+
+    public function update(Request $request, Transaction $transaction)
+    {
+        $data = $request->validate([
+            'type' => ['required', 'in:income,expense'],
+            'amount' => ['required', 'numeric'],
+            'date' => ['required', 'date'],
+            'description' => ['nullable', 'string', 'max:255'],
+            'category' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $transaction->update($data);
+
+        return response()->json($transaction);
+    }
 }
