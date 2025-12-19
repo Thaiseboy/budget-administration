@@ -45,4 +45,11 @@ class TransactionController extends Controller
             'date' => $transaction->date->format('Y-m-d'),
         ], 201);
     }
+
+    public function destroy(Transaction $transaction)
+    {
+        $transaction->delete();
+        // HTTP 204
+        return response()->noContent();
+    }
 }
