@@ -14,7 +14,7 @@ class TransactionController extends Controller
 
         return $transactions->map(function ($transaction) {
             return [
-                'id' => (string) $transaction->id,
+                'id' => $transaction->id,
                 'type' => $transaction->type,
                 'amount' => (float) $transaction->amount,
                 'description' => $transaction->description,
@@ -37,7 +37,7 @@ class TransactionController extends Controller
         $transaction = Transaction::create($data);
 
         return response()->json([
-            'id' => (string) $transaction->id,
+            'id' => $transaction->id,
             'type' => $transaction->type,
             'amount' => (float) $transaction->amount,
             'description' => $transaction->description,

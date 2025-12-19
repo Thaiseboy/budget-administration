@@ -16,5 +16,10 @@ export async function http<T>(
     throw new Error(message || 'API request failed');
   }
 
+  // 204 No Content has no response body
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
   return response.json();
 }

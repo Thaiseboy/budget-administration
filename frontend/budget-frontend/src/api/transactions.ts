@@ -11,3 +11,9 @@ export function createTransaction(data: Omit<Transaction, 'id'>) {
     body: JSON.stringify(data),
   });
 }
+
+export function deleteTransaction(id: number) {
+  return http<void>(`/transactions/${id}`, {
+    method: "DELETE",
+  });
+}

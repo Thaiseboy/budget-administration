@@ -5,6 +5,7 @@ import type { Transaction } from "../types/transaction";
 import TransactionList from "../components/TransactionList";
 import TransactionSummary from "../components/TransactionSummary";
 import { Link } from "react-router-dom";
+import { deleteTransaction } from "../api/transactions";
 
 export default function TransactionsPage() {
   const [items, setItems] = useState<Transaction[]>([]);
@@ -20,6 +21,18 @@ export default function TransactionsPage() {
       })
       .finally(() => setLoading(false));
   }, []);
+
+  async function handleDelete(id: number) {
+  const ok = window.confirm("Delete this transaction?");
+  if (!ok) return;
+
+  try {
+    await deleteTransaction(id);
+    setItems((prev) => prev.filter((t) => t.id !== id));
+  } catch (e) {
+    alert("Failed to delete transaction");
+  }
+}
 
   return (
     <AppLayout>
@@ -55,6 +68,8 @@ export default function TransactionsPage() {
           <div className="mt-4">
             <TransactionList items={items} />
           </div>
+
+          <TransactionList items={items} onDelete={handleDelete} />
         </>
       )}
 
