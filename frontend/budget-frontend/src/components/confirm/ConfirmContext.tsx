@@ -62,10 +62,10 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
                         aria-label="Close dialog"
                         onClick={() => close(false)}/>
 
-                    <div className="relative z-10 w-full max-w-md rounded-2xl bg-white shadow-xl border">
+                    <div className="relative z-10 w-full max-w-md rounded-2xl bg-slate-800 shadow-xl border border-slate-700">
                         <div className="p-5">
-                            <h2 className="text-base font-semibold">{state.options.title}</h2>
-                            <p className="mt-2 text-sm text-slate-600">
+                            <h2 className="text-base font-semibold text-white">{state.options.title}</h2>
+                            <p className="mt-2 text-sm text-slate-300">
                                 {state.options.message}
                             </p>
 
@@ -73,7 +73,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
                                 <button
                                     type="button"
                                     onClick={() => close(false)}
-                                    className="rounded-lg border px-4 py-2 text-sm hover:bg-slate-50">
+                                    className="rounded-lg border border-slate-600 px-4 py-2 text-sm text-slate-300 hover:bg-slate-700">
                                     {state.options.cancelText}
                                 </button>
 
@@ -82,7 +82,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
                                     onClick={() => close(true)}
                                     className={`rounded-lg px-4 py-2 text-sm font-medium text-white ${state.options.variant === "danger"
                                             ? "bg-red-600 hover:bg-red-700"
-                                            : "bg-slate-900 hover:bg-slate-800"
+                                            : "bg-slate-700 hover:bg-slate-600"
                                         }`}>
                                     {state.options.confirmText}
                                 </button>

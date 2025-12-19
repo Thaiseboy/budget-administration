@@ -18,23 +18,23 @@ export default function TransactionSummary({items}: props) {
 
     return (
 <div className="grid gap-3 sm:grid-cols-3">
-    <div className="rounded-xl border bg-white p-4">
-        <div className="text-xs text-slate-500">Total income</div>
-        <div className="mt-1 text-lg font-semibold text-emerald-600">
+    <div className="rounded-xl border border-slate-700 bg-slate-800 p-4">
+        <div className="text-xs text-slate-300">Total income</div>
+        <div className="mt-1 text-lg font-semibold text-emerald-400">
             {formatCurrency(income)}
         </div>
     </div>
 
-    <div className="rounded-xl border bg-white p-4">
-        <div className="text-xs text-slate-500">Total expense</div>
-        <div className="mt-1 text-lg font-semibold text-red-600">
+    <div className="rounded-xl border border-slate-700 bg-slate-800 p-4">
+        <div className="text-xs text-slate-300">Total expense</div>
+        <div className="mt-1 text-lg font-semibold text-red-400">
             {formatCurrency(expense)}
         </div>
     </div>
 
-    <div className="rounded-xl border bg-white p-4">
-        <div className="text-xs text-slate-500">Blance</div>
-        <div className="mt-1 text-lg font-semibold">
+    <div className="rounded-xl border border-slate-700 bg-slate-800 p-4">
+        <div className="text-xs text-slate-300">Balance</div>
+        <div className="mt-1 text-lg font-semibold text-white">
             {formatCurrency(balance)}
         </div>
     </div>

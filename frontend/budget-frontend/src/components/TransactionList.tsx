@@ -10,15 +10,15 @@ type Props = {
 export default function TransactionList({ items, onEdit, onDelete }: Props) {
   if (items.length === 0) {
     return (
-      <div className="rounded-xl border bg-white p-6 text-sm text-slate-600">
+      <div className="rounded-xl border border-slate-700 bg-slate-800 p-6 text-sm text-slate-300">
         No transactions yet.
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl border bg-white">
-      <ul className="divide-y">
+    <div className="rounded-xl border border-slate-700 bg-slate-800">
+      <ul className="divide-y divide-slate-700">
         {items.map((t) => (
           <TransactionItem key={t.id} item={t} onEdit={onEdit} onDelete={onDelete} />
         ))}
