@@ -33,7 +33,7 @@ export default function TransactionSummary({items}: props) {
     </div>
 
     <div className="rounded-xl border bg-white p-4">
-        <div className="text-xs text-slate-500">Blance</div>
+        <div className="text-xs text-slate-500">Balance</div>
         <div className="mt-1 text-lg font-semibold">
             {formatCurrency(balance)}
         </div>
