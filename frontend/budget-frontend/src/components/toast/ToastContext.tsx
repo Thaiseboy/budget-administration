@@ -73,12 +73,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               ${toast.type === "success"
                 ? "border-emerald-200 bg-emerald-50/90 text-emerald-900"
                 : "border-red-200 bg-red-50/90 text-red-900"
-              }
-            `}
-          >
-            <div className={`shrink-0 rounded-lg p-1 ${
-              toast.type === "success" ? "bg-emerald-500 text-white" : "bg-red-500 text-white"
-            }`}>
+              }`}>
+            <div className={`shrink-0 rounded-lg p-1 
+            ${toast.type === "success" ? "bg-emerald-500 text-white" : "bg-red-500 text-white"}`}>
               {toast.type === "success" ? <CheckIcon /> : <ErrorIcon />}
             </div>
             <p className="text-sm font-medium">{toast.message}</p>
