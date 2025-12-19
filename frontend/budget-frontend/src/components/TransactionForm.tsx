@@ -122,7 +122,7 @@ export default function TransactionForm({
                 <button
                     type="submit"
                     disabled={loading}
-                    className="rounded-lg bg-slate-700 px-4 py-2 text-sm font-medium text-white hover:bg-slate-600 disabled:opacity-50"
+                    className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-slate-600 disabled:opacity-50"
                 >
                     {loading ? "Saving..." : submitLabel}
                 </button>
@@ -131,8 +131,7 @@ export default function TransactionForm({
                     <button
                         type="button"
                         onClick={onCancel}
-                        className="rounded-lg border border-slate-600 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800"
-                    >
+                        className="rounded-lg border bg-red-600 border-slate-600 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800">
                         Cancel
                     </button>
                 )}
