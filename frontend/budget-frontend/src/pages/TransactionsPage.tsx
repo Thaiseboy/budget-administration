@@ -37,7 +37,7 @@ export default function TransactionsPage() {
       await deleteTransaction(id);
       setItems((prev) => prev.filter((t) => t.id !== id));
       toast.success("Transaction deleted");
-    } catch (e) {
+    } catch {
       toast.error("Failed to delete transaction");
     }
   }
