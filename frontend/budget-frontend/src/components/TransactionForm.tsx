@@ -31,7 +31,7 @@ export default function TransactionForm({
     const [formData, setFormData] = useState<FormData>({
         type: initialValues?.type ?? "expense",
         amount: initialValues?.amount ?? "",
-        date: initialValues?.date ?? "",
+        date: initialValues?.date ?? new Date().toISOString().split('T')[0], //Today as default
         description: initialValues?.description ?? "",
         category: initialValues?.category ?? "",
     });
@@ -65,7 +65,7 @@ export default function TransactionForm({
             name: "date",
             label: "Date",
             type: "date" as const,
-            required: true,
+            required: false,
         },
         {
             id: "description",
@@ -92,9 +92,6 @@ export default function TransactionForm({
             const amountNumber = Number(formData.amount);
             if (!Number.isFinite(amountNumber)) {
                 throw new Error("Amount must be a number");
-            }
-            if (!formData.date) {
-                throw new Error("Date is required");
             }
 
             await onSubmit({
