@@ -27,10 +27,19 @@ export default function NewTransactionPage() {
         setError(null);
 
         try {
+            if (!formData.amount || !formData.date) {
+                throw new Error("Amount and date are required");
+            }
+
+            const amount = Number(formData.amount);
+            if (isNaN(amount) || amount <= 0) {
+                throw new Error("Amount must be a positive number");
+            }
+
             await createTransaction({
                 type: formData.type as 'income' | 'expense',
-                amount: Number(formData.amount),
-                date: String(formData.date),
+                amount,
+                date: formData.date,
                 description: formData.description || undefined,
                 category: formData.category || undefined,
             });
