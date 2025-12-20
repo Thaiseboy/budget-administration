@@ -6,6 +6,8 @@ import { Link } from "react-router-dom";
 import IncomeExpenseChart from "../components/charts/IncomeExpenseChart";
 import { buildMonthlyTotals, withCumulativeBalance } from "../utils/monthlyTotals";
 import BalanceTrendChart from "../components/charts/BalanceTrendChart";
+import { buildCategoryTotals } from "../utils/categoryTotals";
+import CategoryBreakdownChart from "../components/charts/CategoryBreakdownChart";
 
 function getYear(date: string) {
     return Number(date.slice(0, 4));
@@ -15,6 +17,7 @@ export default function DashboardPage() {
     const { items } = useAppContext();
     const currentYear = new Date().getFullYear();
     const [selectedYear, setSelectedYear] = useState<number>(currentYear);
+    const [categoryType, setCategoryType] = useState<"expense" | "income">("expense");
 
     const years = useMemo(() => {
         const set = new Set(items.map((t) => getYear(t.date)));
@@ -33,6 +36,10 @@ export default function DashboardPage() {
     const balanceTrendData = useMemo(() => {
         return withCumulativeBalance(monthlyTotals);
     }, [monthlyTotals]);
+
+    const categoryData = useMemo(() => {
+        return buildCategoryTotals(yearItems, categoryType);
+    }, [yearItems, categoryType]);
 
     return (
         <AppLayout>
@@ -85,6 +92,42 @@ export default function DashboardPage() {
 
                 <div className="mt-4">
                     <IncomeExpenseChart data={monthlyTotals} />
+                </div>
+            </div>
+
+            <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-6">
+                <div className="flex items-center justify-between">
+                    <h2 className="text-base font-semibold text-white">
+                        Category breakdown
+                    </h2>
+
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => setCategoryType("expense")}
+                            className={`rounded-lg px-3 py-1 text-sm ${categoryType === "expense"
+                                    ? "bg-red-500 text-white"
+                                    : "bg-slate-700 text-slate-300"
+                                }`}>
+                            Expense
+                        </button>
+
+                        <button
+                            onClick={() => setCategoryType("income")}
+                            className={`rounded-lg px-3 py-1 text-sm ${categoryType === "income"
+                                    ? "bg-green-500 text-white"
+                                    : "bg-slate-700 text-slate-300"
+                                }`} >
+                            Income
+                        </button>
+                    </div>
+                </div>
+
+                <p className="mt-2 text-sm text-slate-400">
+                    {categoryType === "expense" ? "Expenses" : "Income"} per category in {selectedYear}.
+                </p>
+
+                <div className="mt-4">
+                    <CategoryBreakdownChart data={categoryData} />
                 </div>
             </div>
         </AppLayout>
