@@ -1,5 +1,6 @@
 import { useOutletContext } from "react-router-dom";
 import type { Transaction } from "../types/transaction";
+import type { CategoryBudget } from "../types/budget";
 
 type AppContextType = {
   items: Transaction[];
@@ -7,6 +8,10 @@ type AppContextType = {
   onCreated: (transaction: Transaction) => void;
   onUpdated: (transaction: Transaction) => void;
   onDeleted: (id: number) => void;
+  // Budget cache
+  budgetsByYear: Record<number, CategoryBudget[]>;
+  loadBudgets: (year: number) => Promise<void>;
+  upsertBudgetInCache: (budget: CategoryBudget) => void;
 };
 
 /**

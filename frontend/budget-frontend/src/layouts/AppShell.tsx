@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { getTransactions } from "../api/transactions";
 import type { Transaction } from "../types/transaction";
@@ -6,6 +6,8 @@ import TransactionsPage from "../pages/TransactionsPage";
 import NewTransactionPage from "../pages/NewTransactionPage";
 import EditTransactionPage from "../pages/EditTransactionPage";
 import DashboardPage from "../pages/DashboardPage";
+import type { CategoryBudget } from "../types/budget";
+import { getBudgets } from "../api/budgets";
 
 /**
  * AppShell - Central data management and routing for the entire app
@@ -15,6 +17,8 @@ export default function AppShell() {
   const [items, setItems] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [budgetsByYear, setBudgetsByYear] = useState<Record<number, CategoryBudget[]>>({});
+const budgetsLoadingRef = useRef<Record<number, boolean>>({});
 
   // Load transactions once on mount
   useEffect(() => {
@@ -44,6 +48,34 @@ export default function AppShell() {
     setItems((prev) => prev.filter((item) => item.id !== id));
   }
 
+  async function loadBudgets(year: number) {
+  if (budgetsByYear[year]) return;
+
+  if (budgetsLoadingRef.current[year]) return;
+  budgetsLoadingRef.current[year] = true;
+
+  try {
+    const data = await getBudgets(year);
+    setBudgetsByYear((prev) => ({ ...prev, [year]: data }));
+  } finally {
+    budgetsLoadingRef.current[year] = false;
+  }
+}
+
+function upsertBudgetInCache(budget: CategoryBudget) {
+  setBudgetsByYear((prev) => {
+    const list = prev[budget.year] ?? [];
+    const idx = list.findIndex((b) => b.category === budget.category);
+
+    const next =
+      idx === -1
+        ? [...list, budget]
+        : list.map((b) => (b.category === budget.category ? budget : b));
+
+    return { ...prev, [budget.year]: next };
+  });
+}
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-900">
@@ -70,6 +102,10 @@ export default function AppShell() {
     onCreated: handleCreated,
     onUpdated: handleUpdated,
     onDeleted: handleDeleted,
+    // Budget cache
+    budgetsByYear,
+    loadBudgets,
+    upsertBudgetInCache,
   };
 
   return (
