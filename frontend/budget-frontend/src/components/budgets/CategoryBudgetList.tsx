@@ -100,15 +100,17 @@ export default function CategoryBudgetList({
               // Calculate percentage of remaining budget (for expenses only)
               const p = percentOfRemaining(expense);
 
-              // Status based on percentage of remaining budget
+              // Status based on percentage of remaining budget or if already in negative
               const status =
                 expense === 0 ? null :
+                totalRemaining < 0 ? "Over budget" :
                 p >= 50 ? "Over limit" :
                 p >= 30 ? "Near limit" :
                 p >= 20 ? "Warning" :
                 null;
 
               const statusClass =
+                totalRemaining < 0 ? "bg-red-600 text-white" :
                 p >= 50 ? "bg-red-600 text-white" :
                 p >= 30 ? "bg-amber-400 text-slate-900" :
                 p >= 20 ? "bg-orange-500 text-white" :
@@ -138,9 +140,11 @@ export default function CategoryBudgetList({
                       )}
                     </div>
                   </div>
-                  {expense > 0 && totalRemaining > 0 && (
+                  {expense > 0 && (
                     <div className="mt-2 text-xs text-slate-400">
-                      {p}% of remaining budget
+                      {totalRemaining < 0
+                        ? "Budget exceeded"
+                        : `${p}% of remaining budget`}
                     </div>
                   )}
                 </div>
