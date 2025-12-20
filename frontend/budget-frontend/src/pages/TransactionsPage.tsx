@@ -18,9 +18,12 @@ export default function TransactionsPage() {
   const confirm = useConfirm();
   const { items, onDeleted, onCreated } = useAppContext();
   const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth() + 1;
   const [selectedYear, setSelectedYear] = useState<number>(currentYear);
   const [openMonthKeys, setOpenMonthKeys] = useState<string[]>([]);
   const [fixedItems, setFixedItems] = useState<FixedMonthlyItem[]>([]);
+  const [applyYear, setApplyYear] = useState<number>(currentYear);
+  const [applyMonth, setApplyMonth] = useState<number>(currentMonth);
 
   function handleEdit(id: number) {
     navigate(`/transactions/${id}/edit`);
@@ -197,6 +200,64 @@ export default function TransactionsPage() {
       <div className="mt-4">
         <TransactionSummary items={selectedItems} />
       </div>
+
+      {fixedItems.length > 0 && (
+        <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-6">
+          <h2 className="text-base font-semibold text-white mb-4">Apply Fixed Items to Month</h2>
+          <div className="flex items-end gap-4">
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-slate-300 mb-2">Year</label>
+              <select
+                value={applyYear}
+                onChange={(e) => setApplyYear(Number(e.target.value))}
+                className="w-full rounded-lg border border-slate-600 bg-slate-700 text-white px-3 py-2 focus:border-slate-500 focus:outline-none"
+              >
+                {[currentYear - 1, currentYear, currentYear + 1].map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-slate-300 mb-2">Month</label>
+              <select
+                value={applyMonth}
+                onChange={(e) => setApplyMonth(Number(e.target.value))}
+                className="w-full rounded-lg border border-slate-600 bg-slate-700 text-white px-3 py-2 focus:border-slate-500 focus:outline-none"
+              >
+                <option value={1}>January</option>
+                <option value={2}>February</option>
+                <option value={3}>March</option>
+                <option value={4}>April</option>
+                <option value={5}>May</option>
+                <option value={6}>June</option>
+                <option value={7}>July</option>
+                <option value={8}>August</option>
+                <option value={9}>September</option>
+                <option value={10}>October</option>
+                <option value={11}>November</option>
+                <option value={12}>December</option>
+              </select>
+            </div>
+            <div className="flex-1">
+              <button
+                onClick={() => {
+                  const monthStr = String(applyMonth).padStart(2, '0');
+                  const monthKey = `${applyYear}-${monthStr}`;
+                  handleApplyFixedItems(monthKey);
+                }}
+                className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+              >
+                Apply Fixed Items
+              </button>
+            </div>
+          </div>
+          <p className="mt-3 text-xs text-slate-400">
+            Apply your {fixedItems.length} fixed item(s) to the selected month. They will be created as regular transactions that you can edit or delete.
+          </p>
+        </div>
+      )}
 
       {monthEntries.map(([monthKey, monthItems]) => (
         <MonthlyTransactionSection
