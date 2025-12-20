@@ -9,20 +9,21 @@ import BalanceTrendChart from "../components/charts/BalanceTrendChart";
 import { buildCategoryTotals } from "../utils/categoryTotals";
 import CategoryBreakdownChart from "../components/charts/CategoryBreakdownChart";
 import CategoryBudgetList from "../components/budgets/CategoryBudgetList";
+import type { CategoryBudget } from "../types/budget";
+import { getBudgets } from "../api/budgets";
 
 function getYear(date: string) {
     return Number(date.slice(0, 4));
 }
 
 export default function DashboardPage() {
-    const { items, budgetsByYear, loadBudgets, upsertBudgetInCache } = useAppContext();
+    const { items } = useAppContext();
     const currentYear = new Date().getFullYear();
     const [selectedYear, setSelectedYear] = useState<number>(currentYear);
     const [categoryType, setCategoryType] = useState<"expense" | "income">("expense");
+    const [budgets, setBudgets] = useState<CategoryBudget[]>([]);
+    const [budgetsLoading, setBudgetsLoading] = useState(false);
 
-    useEffect(() => {
-        loadBudgets(selectedYear);
-    }, [selectedYear, loadBudgets]);
 
     const years = useMemo(() => {
         const set = new Set(items.map((t) => getYear(t.date)));
@@ -33,6 +34,23 @@ export default function DashboardPage() {
     const yearItems = useMemo(() => {
         return items.filter((t) => getYear(t.date) === selectedYear);
     }, [items, selectedYear]);
+
+    useEffect(() => {
+        setBudgetsLoading(true);
+
+        getBudgets(selectedYear)
+            .then((data) => setBudgets(data))
+            .catch(() => setBudgets([]))
+            .finally(() => setBudgetsLoading(false));
+    }, [selectedYear]);
+
+    function handleBudgetSaved(saved: CategoryBudget) {
+        setBudgets((prev) => {
+            const idx = prev.findIndex((b) => b.category === saved.category && b.year === saved.year);
+            if (idx === -1) return [...prev, saved];
+            return prev.map((b) => (b.category === saved.category && b.year === saved.year ? saved : b));
+        });
+    }
 
     const monthlyTotals = useMemo(() => {
         return buildMonthlyTotals(yearItems, selectedYear, "nl-NL");
@@ -48,7 +66,6 @@ export default function DashboardPage() {
 
     const hasYearData = yearItems.length > 0;
 
-    const budgets = budgetsByYear[selectedYear] ?? [];
 
     return (
         <AppLayout>
@@ -125,8 +142,8 @@ export default function DashboardPage() {
                                 <button
                                     onClick={() => setCategoryType("expense")}
                                     className={`rounded-lg px-3 py-1 text-sm ${categoryType === "expense"
-                                            ? "bg-red-500 text-white"
-                                            : "bg-slate-700 text-slate-300"
+                                        ? "bg-red-500 text-white"
+                                        : "bg-slate-700 text-slate-300"
                                         }`}
                                 >
                                     Expense
@@ -135,8 +152,8 @@ export default function DashboardPage() {
                                 <button
                                     onClick={() => setCategoryType("income")}
                                     className={`rounded-lg px-3 py-1 text-sm ${categoryType === "income"
-                                            ? "bg-green-500 text-white"
-                                            : "bg-slate-700 text-slate-300"
+                                        ? "bg-green-500 text-white"
+                                        : "bg-slate-700 text-slate-300"
                                         }`}
                                 >
                                     Income
@@ -154,13 +171,20 @@ export default function DashboardPage() {
                         </div>
                     </div>
 
+
                     <div className="mt-6">
-                        <CategoryBudgetList
-                            year={selectedYear}
-                            yearItems={yearItems}
-                            budgets={budgets}
-                            onBudgetSaved={upsertBudgetInCache}
-                        />
+                        {budgetsLoading ? (
+                            <div className="rounded-xl border border-slate-700 bg-slate-800 p-6 text-sm text-slate-400">
+                                Loading budgets...
+                            </div>
+                        ) : (
+                            <CategoryBudgetList
+                                year={selectedYear}
+                                yearItems={yearItems}
+                                budgets={budgets}
+                                onBudgetSaved={handleBudgetSaved}
+                            />
+                        )}
                     </div>
                 </>
             )}
