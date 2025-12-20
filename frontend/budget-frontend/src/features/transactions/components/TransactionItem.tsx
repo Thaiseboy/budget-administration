@@ -1,5 +1,5 @@
-import type { Transaction } from "../types/transaction";
-import { formatCurrency } from "../utils/formatCurrency";
+import type { Transaction } from "../../../types/transaction";
+import { formatCurrency } from "../../../utils/formatCurrency";
 
 type Props = {
   item: Transaction;

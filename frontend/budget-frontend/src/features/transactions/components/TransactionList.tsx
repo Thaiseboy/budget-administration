@@ -1,6 +1,6 @@
-import type { Transaction } from "../types/transaction";
+import type { Transaction } from "../../../types/transaction";
 import TransactionItem from "./TransactionItem";
-import Card from "./ui/Card";
+import Card from "../../../components/ui/Card";
 
 type Props = {
   items: Transaction[];

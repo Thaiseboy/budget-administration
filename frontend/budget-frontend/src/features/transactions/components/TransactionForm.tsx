@@ -1,6 +1,6 @@
 import { useState } from "react";
-import FormFieldGroup from "./FormFieldGroup";
-import { normalizeCategory } from "../utils/categories";
+import FormFieldGroup from "../../../components/form/FormFieldGroup";
+import { normalizeCategory } from "../../../utils/categories";
 
 type FormData = {
     type: "income" | "expense";

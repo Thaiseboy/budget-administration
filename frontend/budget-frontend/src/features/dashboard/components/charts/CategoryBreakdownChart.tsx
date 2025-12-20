@@ -6,8 +6,8 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-import type { CategoryTotal } from "../../utils/categoryTotals";
-import { formatCurrency } from "../../utils/formatCurrency";
+import type { CategoryTotal } from "../../../../utils/categoryTotals";
+import { formatCurrency } from "../../../../utils/formatCurrency";
 
 type Props = {
   data: CategoryTotal[];

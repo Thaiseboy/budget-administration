@@ -1,20 +1,20 @@
 import { useEffect, useState, useMemo } from "react";
-import AppLayout from "../layouts/AppLayout";
-import TransactionSummary from "../components/TransactionSummary";
+import AppLayout from "../../../layouts/AppLayout";
+import TransactionSummary from "../../../components/transactions/TransactionSummary";
 import { Link, useNavigate } from "react-router-dom";
-import { deleteTransaction, createTransaction } from "../api/transactions";
-import { useToast } from "../components/toast/ToastContext";
-import { useConfirm } from "../components/confirm/ConfirmContext";
-import { groupByMonth } from "../utils/groupTransactions";
+import { deleteTransaction, createTransaction } from "../../../api/transactions";
+import { useToast } from "../../../components/feedback/ToastContext";
+import { useConfirm } from "../../../components/feedback/ConfirmContext";
+import { groupByMonth } from "../../../utils/groupTransactions";
 import MonthlyTransactionSection from "../components/MonthlyTransactionSection";
-import { useAppContext } from "../hooks/useAppContext";
-import type { FixedMonthlyItem } from "../types/fixedItem";
-import { getFixedItems } from "../api/fixedItems";
-import { normalizeCategory } from "../utils/categories";
-import { downloadCsv } from "../utils/csv";
-import PageHeader from "../components/ui/PageHeader";
-import Card from "../components/ui/Card";
-import { MONTH_OPTIONS, MONTH_OPTIONS_PADDED } from "../utils/months";
+import { useAppContext } from "../../../hooks/useAppContext";
+import type { FixedMonthlyItem } from "../../../types/fixedItem";
+import { getFixedItems } from "../../../api/fixedItems";
+import { normalizeCategory } from "../../../utils/categories";
+import { downloadCsv } from "../../../utils/csv";
+import PageHeader from "../../../components/ui/PageHeader";
+import Card from "../../../components/ui/Card";
+import { MONTH_OPTIONS, MONTH_OPTIONS_PADDED } from "../../../utils/months";
 
 export default function TransactionsPage() {
   const navigate = useNavigate();

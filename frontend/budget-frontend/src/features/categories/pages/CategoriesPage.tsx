@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
-import AppLayout from "../layouts/AppLayout";
-import { useAppContext } from "../hooks/useAppContext";
-import { normalizeCategory } from "../utils/categories";
-import { mergeCategories } from "../api/categories";
-import { useToast } from "../components/toast/ToastContext";
-import { useConfirm } from "../components/confirm/ConfirmContext";
-import PageHeader from "../components/ui/PageHeader";
-import Card from "../components/ui/Card";
+import AppLayout from "../../../layouts/AppLayout";
+import { useAppContext } from "../../../hooks/useAppContext";
+import { normalizeCategory } from "../../../utils/categories";
+import { mergeCategories } from "../../../api/categories";
+import { useToast } from "../../../components/feedback/ToastContext";
+import { useConfirm } from "../../../components/feedback/ConfirmContext";
+import PageHeader from "../../../components/ui/PageHeader";
+import Card from "../../../components/ui/Card";
 
 export default function CategoriesPage() {
   const { items, setItems } = useAppContext();

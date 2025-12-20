@@ -1,5 +1,5 @@
-import type { Transaction } from "../types/transaction";
-import TransactionSummary from "./TransactionSummary";
+import type { Transaction } from "../../../types/transaction";
+import TransactionSummary from "../../../components/transactions/TransactionSummary";
 import TransactionList from "./TransactionList";
 import { VscEye } from "react-icons/vsc";
 import { VscEyeClosed } from "react-icons/vsc";

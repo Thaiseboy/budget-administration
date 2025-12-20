@@ -1,9 +1,9 @@
 import { useMemo } from "react";
-import type { Transaction } from "../../types/transaction";
-import { formatCurrency } from "../../utils/formatCurrency";
-import { normalizeCategory } from "../../utils/categories";
-import Card from "../ui/Card";
-import { MONTH_NAMES } from "../../utils/months";
+import type { Transaction } from "../../../types/transaction";
+import { formatCurrency } from "../../../utils/formatCurrency";
+import { normalizeCategory } from "../../../utils/categories";
+import Card from "../../../components/ui/Card";
+import { MONTH_NAMES } from "../../../utils/months";
 
 type Props = {
   year: number;
