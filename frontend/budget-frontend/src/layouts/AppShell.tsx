@@ -46,14 +46,14 @@ export default function AppShell() {
     setItems((prev) => prev.filter((item) => item.id !== id));
   }
 
-  async function loadBudgets(year: number) {
+  async function loadBudgets(year: number, month: number) {
     if (budgetsByYear[year]) return;
 
     if (budgetsLoadingRef.current[year]) return;
     budgetsLoadingRef.current[year] = true;
 
     try {
-      const data = await getBudgets(year);
+      const data = await getBudgets(year, month);
       setBudgetsByYear((prev) => ({ ...prev, [year]: data }));
     } finally {
       budgetsLoadingRef.current[year] = false;

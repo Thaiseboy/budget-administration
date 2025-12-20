@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { deleteTransaction, createTransaction } from "../../../api/transactions";
 import { useToast } from "../../../components/feedback/ToastContext";
 import { useConfirm } from "../../../components/feedback/ConfirmContext";
-import { groupByMonth } from "../../../utils/groupTransactions";
+import { groupByMonth, type MonthKey } from "../../../utils/groupTransactions";
 import MonthlyTransactionSection from "../components/MonthlyTransactionSection";
 import { useAppContext } from "../../../hooks/useAppContext";
 import type { FixedMonthlyItem } from "../../../types/fixedItem";
@@ -24,7 +24,7 @@ export default function TransactionsPage() {
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
   const [selectedYear, setSelectedYear] = useState<number>(currentYear);
-  const [openMonthKeys, setOpenMonthKeys] = useState<string[]>([]);
+  const [openMonthKeys, setOpenMonthKeys] = useState<MonthKey[]>([]);
   const [fixedItems, setFixedItems] = useState<FixedMonthlyItem[]>([]);
   const [applyYear, setApplyYear] = useState<number>(currentYear);
   const [applyMonth, setApplyMonth] = useState<number>(currentMonth);
@@ -174,17 +174,17 @@ export default function TransactionsPage() {
     return monthEntries.map(([k]) => k);
   }, [monthEntries]);
 
-  function toggleMonth(key: string) {
+  function toggleMonth(key: MonthKey) {
     setOpenMonthKeys((prev) =>
       prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
     );
   }
 
-  function getCurrentMonthKey() {
+  function getCurrentMonthKey(): MonthKey {
     const now = new Date();
     const y = now.getFullYear();
     const m = String(now.getMonth() + 1).padStart(2, "0");
-    return `${y}-${m}`;
+    return `${y}-${m}` as MonthKey;
   }
 
   useEffect(() => {
@@ -215,7 +215,7 @@ export default function TransactionsPage() {
   useEffect(() => {
     if (monthFilter === "all") return;
 
-    const key = `${selectedYear}-${monthFilter}`;
+    const key = `${selectedYear}-${monthFilter}` as MonthKey;
 
     if (monthKeys.includes(key)) {
       setOpenMonthKeys([key]);
