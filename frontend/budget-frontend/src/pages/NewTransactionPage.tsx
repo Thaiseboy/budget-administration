@@ -6,6 +6,7 @@ import TransactionForm from "../components/TransactionForm";
 import { useToast } from "../components/toast/ToastContext";
 import { useAppContext } from "../hooks/useAppContext";
 import { getCategories } from "../utils/categories";
+import PageHeader from "../components/ui/PageHeader";
 
 export default function NewTransactionPage() {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ export default function NewTransactionPage() {
 
   return (
     <AppLayout>
-      <h1 className="text-lg font-semibold sm:text-xl">New transaction</h1>
+      <PageHeader title="New transaction" />
 
       <TransactionForm
         submitLabel="Create"

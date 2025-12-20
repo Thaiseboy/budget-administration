@@ -16,15 +16,13 @@ import type { FixedMonthlyItem } from "../types/fixedItem";
 import { getFixedItems } from "../api/fixedItems";
 import { FixedItemsList } from "../components/fixed/FixedItemsList";
 import { getCategories, normalizeCategory } from "../utils/categories";
+import PageHeader from "../components/ui/PageHeader";
+import Card from "../components/ui/Card";
+import { MONTH_NAMES, MONTH_OPTIONS } from "../utils/months";
 
 function getYear(date: string) {
     return Number(date.slice(0, 4));
 }
-
-const MONTH_NAMES = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-];
 
 export default function DashboardPage() {
     const { items } = useAppContext();
@@ -147,25 +145,26 @@ export default function DashboardPage() {
 
     return (
         <AppLayout>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <h1 className="text-lg font-semibold text-white sm:text-xl">Dashboard</h1>
+            <PageHeader
+                title="Dashboard"
+                actions={
+                    <>
+                        <Link
+                            to="/transactions"
+                            className="w-full rounded-lg border border-slate-600 px-4 py-2 text-center text-sm text-slate-300 hover:bg-slate-800 sm:w-auto"
+                        >
+                            View Transactions
+                        </Link>
 
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                    <Link
-                        to="/transactions"
-                        className="w-full rounded-lg border border-slate-600 px-4 py-2 text-center text-sm text-slate-300 hover:bg-slate-800 sm:w-auto"
-                    >
-                        View Transactions
-                    </Link>
-
-                    <Link
-                        to="/transactions/new"
-                        className="w-full rounded-lg bg-emerald-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-slate-800 sm:ml-4 sm:w-auto"
-                    >
-                        Add transaction
-                    </Link>
-                </div>
-            </div>
+                        <Link
+                            to="/transactions/new"
+                            className="w-full rounded-lg bg-emerald-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-slate-800 sm:ml-4 sm:w-auto"
+                        >
+                            Add transaction
+                        </Link>
+                    </>
+                }
+            />
 
             <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6">
                 <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
@@ -190,18 +189,11 @@ export default function DashboardPage() {
                         onChange={(e) => setSelectedMonth(Number(e.target.value))}
                         className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-sm text-white focus:border-slate-500 focus:outline-none sm:w-auto"
                     >
-                        <option value={1}>January</option>
-                        <option value={2}>February</option>
-                        <option value={3}>March</option>
-                        <option value={4}>April</option>
-                        <option value={5}>May</option>
-                        <option value={6}>June</option>
-                        <option value={7}>July</option>
-                        <option value={8}>August</option>
-                        <option value={9}>September</option>
-                        <option value={10}>October</option>
-                        <option value={11}>November</option>
-                        <option value={12}>December</option>
+                        {MONTH_OPTIONS.map((option) => (
+                            <option key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
                     </select>
                 </div>
             </div>
@@ -211,19 +203,19 @@ export default function DashboardPage() {
             </div>
 
             {!hasYearData && (
-                <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-4 sm:p-6">
+                <Card className="mt-6 p-4 sm:p-6">
                     <h2 className="text-base font-semibold text-white">
                         No data for {selectedYear}
                     </h2>
                     <p className="mt-2 text-sm text-slate-400">
                         Add a transaction or pick another year to see charts and category insights.
                     </p>
-                </div>
+                </Card>
             )}
 
             {hasYearData && (
                 <>
-                    <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-4 sm:p-6">
+                    <Card className="mt-6 p-4 sm:p-6">
                         <h2 className="text-base font-semibold text-white">Balance Trend</h2>
                         <p className="mt-2 text-sm text-slate-400">
                             Cumulative balance over {selectedYear}.
@@ -232,9 +224,9 @@ export default function DashboardPage() {
                         <div className="mt-4">
                             <BalanceTrendChart data={balanceTrendData} />
                         </div>
-                    </div>
+                    </Card>
 
-                    <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-4 sm:p-6">
+                    <Card className="mt-6 p-4 sm:p-6">
                         <h2 className="text-base font-semibold text-white">Income vs Expense</h2>
                         <p className="mt-2 text-sm text-slate-400">
                             Overview per month for {selectedYear}.
@@ -243,9 +235,9 @@ export default function DashboardPage() {
                         <div className="mt-4">
                             <IncomeExpenseChart data={monthlyTotals} />
                         </div>
-                    </div>
+                    </Card>
 
-                    <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-4 sm:p-6">
+                    <Card className="mt-6 p-4 sm:p-6">
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <h2 className="text-base font-semibold text-white">Category breakdown</h2>
 
@@ -321,10 +313,10 @@ export default function DashboardPage() {
                                 </div>
                             </div>
                         )}
-                    </div>
+                    </Card>
 
                     {/* Monthly Plan */}
-                    <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-4 sm:p-6">
+                    <Card className="mt-6 p-4 sm:p-6">
                         <h2 className="text-base font-semibold text-white">
                             Monthly plan ({MONTH_NAMES[selectedMonth - 1]} {selectedYear})
                         </h2>
@@ -389,7 +381,7 @@ export default function DashboardPage() {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </Card>
 
                     <CategoryBudgetList
                         year={selectedYear}

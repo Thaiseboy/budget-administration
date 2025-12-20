@@ -12,6 +12,9 @@ import type { FixedMonthlyItem } from "../types/fixedItem";
 import { getFixedItems } from "../api/fixedItems";
 import { normalizeCategory } from "../utils/categories";
 import { downloadCsv } from "../utils/csv";
+import PageHeader from "../components/ui/PageHeader";
+import Card from "../components/ui/Card";
+import { MONTH_OPTIONS, MONTH_OPTIONS_PADDED } from "../utils/months";
 
 export default function TransactionsPage() {
   const navigate = useNavigate();
@@ -231,25 +234,26 @@ export default function TransactionsPage() {
 
   return (
     <AppLayout>
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-lg font-semibold sm:text-xl">Transactions</h1>
+      <PageHeader
+        title="Transactions"
+        actions={
+          <>
+            <Link
+              to="/dashboard"
+              className="w-full rounded-lg border border-slate-600 px-4 py-2 text-center text-sm text-slate-300 hover:bg-slate-800 sm:w-auto"
+            >
+              Dashboard
+            </Link>
 
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <Link
-            to="/dashboard"
-            className="w-full rounded-lg border border-slate-600 px-4 py-2 text-center text-sm text-slate-300 hover:bg-slate-800 sm:w-auto"
-          >
-            Dashboard
-          </Link>
-
-          <Link
-            to="/transactions/new"
-            className="w-full rounded-lg bg-emerald-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-slate-800 sm:ml-4 sm:w-auto"
-          >
-            Add transaction
-          </Link>
-        </div>
-      </div>
+            <Link
+              to="/transactions/new"
+              className="w-full rounded-lg bg-emerald-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-slate-800 sm:ml-4 sm:w-auto"
+            >
+              Add transaction
+            </Link>
+          </>
+        }
+      />
 
       {years.length > 0 && (
         <div className="mt-4">
@@ -305,18 +309,11 @@ export default function TransactionsPage() {
           className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-sm text-white focus:border-slate-500 focus:outline-none sm:w-auto"
         >
           <option value="all">All months</option>
-          {Array.from({ length: 12 }, (_, i) => {
-            const monthNumber = i + 1;
-            const value = String(monthNumber).padStart(2, "0");
-            const label = new Intl.DateTimeFormat("en-US", { month: "long" }).format(
-              new Date(2025, i, 1)
-            );
-            return (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            );
-          })}
+          {MONTH_OPTIONS_PADDED.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
         </select>
 
         <select
@@ -358,7 +355,7 @@ export default function TransactionsPage() {
       </div>
 
       {fixedItems.length > 0 && (
-        <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-4 sm:p-6">
+        <Card className="mt-6 p-4 sm:p-6">
           <h2 className="mb-4 text-base font-semibold text-white">Apply Fixed Items to Month</h2>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
             <div className="w-full sm:flex-1">
@@ -382,18 +379,11 @@ export default function TransactionsPage() {
                 onChange={(e) => setApplyMonth(Number(e.target.value))}
                 className="w-full rounded-lg border border-slate-600 bg-slate-700 text-white px-3 py-2 focus:border-slate-500 focus:outline-none"
               >
-                <option value={1}>January</option>
-                <option value={2}>February</option>
-                <option value={3}>March</option>
-                <option value={4}>April</option>
-                <option value={5}>May</option>
-                <option value={6}>June</option>
-                <option value={7}>July</option>
-                <option value={8}>August</option>
-                <option value={9}>September</option>
-                <option value={10}>October</option>
-                <option value={11}>November</option>
-                <option value={12}>December</option>
+                {MONTH_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="w-full sm:flex-1">
@@ -412,7 +402,7 @@ export default function TransactionsPage() {
           <p className="mt-3 text-xs text-slate-400">
             Apply your {fixedItems.length} fixed item(s) to the selected month. They will be created as regular transactions that you can edit or delete.
           </p>
-        </div>
+        </Card>
       )}
 
       {monthEntries.map(([monthKey, monthItems]) => (
@@ -430,9 +420,9 @@ export default function TransactionsPage() {
       ))}
 
       {filteredSortedItems.length === 0 && (
-        <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-4 text-center text-sm text-slate-400 sm:p-6">
+        <Card className="mt-6 p-4 text-center text-sm text-slate-400 sm:p-6">
           No transactions found for {selectedYear} with the current filters.
-        </div>
+        </Card>
       )}
 
     </AppLayout>

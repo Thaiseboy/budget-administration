@@ -9,6 +9,7 @@ import DashboardPage from "../pages/DashboardPage";
 import CategoriesPage from "../pages/CategoriesPage";
 import type { CategoryBudget } from "../types/budget";
 import { getBudgets } from "../api/budgets";
+import Card from "../components/ui/Card";
 
 /**
  * AppShell - Central data management and routing for the entire app
@@ -80,9 +81,9 @@ export default function AppShell() {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-900">
-        <div className="rounded-xl border border-slate-700 bg-slate-800 p-6 text-slate-300">
+        <Card className="p-6 text-slate-300">
           Loading transactions...
-        </div>
+        </Card>
       </div>
     );
   }
@@ -90,9 +91,9 @@ export default function AppShell() {
   if (error) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-900">
-        <div className="rounded-xl border border-slate-700 bg-slate-800 p-6 text-red-400">
+        <Card className="p-6 text-red-400">
           {error}
-        </div>
+        </Card>
       </div>
     );
   }

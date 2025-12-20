@@ -2,6 +2,8 @@ import { useMemo } from "react";
 import type { Transaction } from "../../types/transaction";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { normalizeCategory } from "../../utils/categories";
+import Card from "../ui/Card";
+import { MONTH_NAMES } from "../../utils/months";
 
 type Props = {
   year: number;
@@ -60,14 +62,10 @@ export default function CategoryBudgetList({
     return Math.round((spent / totalRemaining) * 100);
   }
 
-  const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
-  const monthName = monthNames[month - 1];
+  const monthName = MONTH_NAMES[month - 1];
 
   return (
-    <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-4 sm:p-6">
+    <Card className="mt-6 p-4 sm:p-6">
       <h2 className="text-base font-semibold text-white">Spending Overview ({monthName} {year})</h2>
       <p className="mt-2 text-sm text-slate-400">
         Income and expenses per category. Status shows if a category uses too much of your remaining budget.
@@ -160,6 +158,6 @@ export default function CategoryBudgetList({
           No transactions for this month yet.
         </div>
       )}
-    </div>
+    </Card>
   );
 }
