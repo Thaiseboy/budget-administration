@@ -17,10 +17,17 @@ function getYear(date: string) {
     return Number(date.slice(0, 4));
 }
 
+const MONTH_NAMES = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+];
+
 export default function DashboardPage() {
     const { items } = useAppContext();
     const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth() + 1;
     const [selectedYear, setSelectedYear] = useState<number>(currentYear);
+    const [selectedMonth, setSelectedMonth] = useState<number>(currentMonth);
     const [categoryType, setCategoryType] = useState<"expense" | "income">("expense");
     const [budgets, setBudgets] = useState<CategoryBudget[]>([]);
     const [budgetsLoading, setBudgetsLoading] = useState(false);
@@ -37,20 +44,34 @@ export default function DashboardPage() {
         return items.filter((t) => getYear(t.date) === selectedYear);
     }, [items, selectedYear]);
 
+    const monthItems = useMemo(() => {
+        const monthStr = String(selectedMonth).padStart(2, '0');
+        const prefix = `${selectedYear}-${monthStr}`;
+        return items.filter((t) => t.date.startsWith(prefix));
+    }, [items, selectedYear, selectedMonth]);
+
     useEffect(() => {
         setBudgetsLoading(true);
 
-        getBudgets(selectedYear)
+        getBudgets(selectedYear, selectedMonth)
             .then((data) => setBudgets(data))
             .catch(() => setBudgets([]))
             .finally(() => setBudgetsLoading(false));
-    }, [selectedYear]);
+    }, [selectedYear, selectedMonth]);
 
     function handleBudgetSaved(saved: CategoryBudget) {
         setBudgets((prev) => {
-            const idx = prev.findIndex((b) => b.category === saved.category && b.year === saved.year);
+            const idx = prev.findIndex((b) =>
+                b.category === saved.category &&
+                b.year === saved.year &&
+                b.month === saved.month
+            );
             if (idx === -1) return [...prev, saved];
-            return prev.map((b) => (b.category === saved.category && b.year === saved.year ? saved : b));
+            return prev.map((b) =>
+                b.category === saved.category && b.year === saved.year && b.month === saved.month
+                    ? saved
+                    : b
+            );
         });
     }
 
@@ -66,11 +87,11 @@ export default function DashboardPage() {
         return buildCategoryTotals(yearItems, categoryType);
     }, [yearItems, categoryType]);
 
-    // Calculate over budget categories
+    // Calculate over budget categories (month-based)
     const overBudgetCategories = useMemo(() => {
         const expensesByCategory = new Map<string, number>();
 
-        for (const t of yearItems) {
+        for (const t of monthItems) {
             if (t.type !== "expense") continue;
             const cat = t.category || "Other";
             expensesByCategory.set(cat, (expensesByCategory.get(cat) ?? 0) + t.amount);
@@ -91,7 +112,7 @@ export default function DashboardPage() {
         }
 
         return overBudget.sort((a, b) => b.over - a.over);
-    }, [yearItems, budgets]);
+    }, [monthItems, budgets]);
 
     const hasYearData = yearItems.length > 0;
 
@@ -128,19 +149,43 @@ export default function DashboardPage() {
                 </div>
             </div>
 
-            <div className="mt-4 flex items-center gap-3">
-                <span className="text-sm text-slate-300">Year:</span>
-                <select
-                    value={selectedYear}
-                    onChange={(e) => setSelectedYear(Number(e.target.value))}
-                    className="rounded-lg border border-slate-600 bg-slate-700 text-white px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
-                >
-                    {years.map((y) => (
-                        <option key={y} value={y}>
-                            {y}
-                        </option>
-                    ))}
-                </select>
+            <div className="mt-4 flex items-center gap-6">
+                <div className="flex items-center gap-3">
+                    <span className="text-sm text-slate-300">Year:</span>
+                    <select
+                        value={selectedYear}
+                        onChange={(e) => setSelectedYear(Number(e.target.value))}
+                        className="rounded-lg border border-slate-600 bg-slate-700 text-white px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+                    >
+                        {years.map((y) => (
+                            <option key={y} value={y}>
+                                {y}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="flex items-center gap-3">
+                    <span className="text-sm text-slate-300">Month:</span>
+                    <select
+                        value={selectedMonth}
+                        onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                        className="rounded-lg border border-slate-600 bg-slate-700 text-white px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+                    >
+                        <option value={1}>January</option>
+                        <option value={2}>February</option>
+                        <option value={3}>March</option>
+                        <option value={4}>April</option>
+                        <option value={5}>May</option>
+                        <option value={6}>June</option>
+                        <option value={7}>July</option>
+                        <option value={8}>August</option>
+                        <option value={9}>September</option>
+                        <option value={10}>October</option>
+                        <option value={11}>November</option>
+                        <option value={12}>December</option>
+                    </select>
+                </div>
             </div>
 
             <div className="mt-4">
@@ -156,7 +201,7 @@ export default function DashboardPage() {
                                 Over Budget Alert
                             </h3>
                             <p className="mt-1 text-xs text-red-300">
-                                {overBudgetCategories.length} {overBudgetCategories.length === 1 ? "category is" : "categories are"} over budget for {selectedYear}
+                                {overBudgetCategories.length} {overBudgetCategories.length === 1 ? "category is" : "categories are"} over budget for {MONTH_NAMES[selectedMonth - 1]} {selectedYear}
                             </p>
                             <div className="mt-3 space-y-2">
                                 {overBudgetCategories.map((item) => (
@@ -300,7 +345,8 @@ export default function DashboardPage() {
                         ) : (
                             <CategoryBudgetList
                                 year={selectedYear}
-                                yearItems={yearItems}
+                                month={selectedMonth}
+                                monthItems={monthItems}
                                 budgets={budgets}
                                 onBudgetSaved={handleBudgetSaved}
                             />

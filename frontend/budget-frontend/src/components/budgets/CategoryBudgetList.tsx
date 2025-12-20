@@ -7,9 +7,10 @@ import { formatCurrency } from "../../utils/formatCurrency";
 
 type Props = {
   year: number;
-  yearItems: Transaction[]; 
+  month: number;
+  monthItems: Transaction[];
   budgets: CategoryBudget[];
-  onBudgetSaved: (b: CategoryBudget) => void; 
+  onBudgetSaved: (b: CategoryBudget) => void;
 };
 
 function getCategory(t: Transaction) {
@@ -18,27 +19,39 @@ function getCategory(t: Transaction) {
 
 export default function CategoryBudgetList({
   year,
-  yearItems,
+  month,
+  monthItems,
   budgets,
   onBudgetSaved,
 }: Props) {
   const toast = useToast();
 
+  // Calculate monthly totals
+  const monthlyIncome = useMemo(() => {
+    return monthItems.filter((t) => t.type === "income").reduce((sum, t) => sum + t.amount, 0);
+  }, [monthItems]);
+
+  const monthlyExpense = useMemo(() => {
+    return monthItems.filter((t) => t.type === "expense").reduce((sum, t) => sum + t.amount, 0);
+  }, [monthItems]);
+
+  const monthlyRemaining = monthlyIncome - monthlyExpense;
+
   const expenseTotalsByCategory = useMemo(() => {
     const map = new Map<string, number>();
-    for (const t of yearItems) {
+    for (const t of monthItems) {
       if (t.type !== "expense") continue;
       const key = getCategory(t);
       map.set(key, (map.get(key) ?? 0) + t.amount);
     }
     return map;
-  }, [yearItems]);
+  }, [monthItems]);
 
   const categories = useMemo(() => {
     const set = new Set<string>(["Other"]);
-    for (const t of yearItems) set.add(getCategory(t));
+    for (const t of monthItems) set.add(getCategory(t));
     return Array.from(set).sort((a, b) => a.localeCompare(b));
-  }, [yearItems]);
+  }, [monthItems]);
 
   const budgetMap = useMemo(() => {
     const map = new Map<string, number>();
@@ -74,7 +87,7 @@ export default function CategoryBudgetList({
       }
 
       try {
-        const saved = await upsertBudget({ year, category, amount });
+        const saved = await upsertBudget({ year, month, category, amount });
         onBudgetSaved(saved);
         toast.success(`Budget saved for ${category}`);
       } catch {
@@ -88,12 +101,35 @@ export default function CategoryBudgetList({
     return Math.round((spent / budget) * 100);
   }
 
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  const monthName = monthNames[month - 1];
+
   return (
     <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-6">
-      <h2 className="text-base font-semibold text-white">Budgets (Expenses)</h2>
+      <h2 className="text-base font-semibold text-white">Budgets ({monthName} {year})</h2>
       <p className="mt-2 text-sm text-slate-400">
-        Set yearly budgets per category. Auto saves after you stop typing.
+        Set monthly budgets per category. Auto saves after you stop typing.
       </p>
+
+      <div className="mt-4 grid grid-cols-3 gap-4 rounded-lg border border-slate-600 bg-slate-700 p-4">
+        <div>
+          <div className="text-xs text-slate-400">Income (Month)</div>
+          <div className="mt-1 text-lg font-semibold text-green-400">{formatCurrency(monthlyIncome)}</div>
+        </div>
+        <div>
+          <div className="text-xs text-slate-400">Expense (Month)</div>
+          <div className="mt-1 text-lg font-semibold text-red-400">{formatCurrency(monthlyExpense)}</div>
+        </div>
+        <div>
+          <div className="text-xs text-slate-400">Remaining</div>
+          <div className={`mt-1 text-lg font-semibold ${monthlyRemaining >= 0 ? "text-emerald-400" : "text-red-500"}`}>
+            {formatCurrency(monthlyRemaining)}
+          </div>
+        </div>
+      </div>
 
       <div className="mt-4 space-y-4">
         {categories.map((category) => {
