@@ -87,17 +87,17 @@ export default function CategoriesPage() {
 
   return (
     <AppLayout>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-white">Categories</h1>
+          <h1 className="text-lg font-semibold text-white sm:text-xl">Categories</h1>
           <p className="mt-1 text-sm text-slate-400">
             Rename or merge categories to keep your data clean.
           </p>
         </div>
       </div>
 
-      <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-6">
-        <div className="grid grid-cols-12 gap-4 border-b border-slate-700 pb-3 text-xs font-semibold text-slate-400">
+      <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-4 sm:p-6">
+        <div className="hidden grid-cols-12 gap-4 border-b border-slate-700 pb-3 text-xs font-semibold text-slate-400 sm:grid">
           <div className="col-span-3">Category</div>
           <div className="col-span-2">Transactions</div>
           <div className="col-span-3">Rename</div>
@@ -121,12 +121,19 @@ export default function CategoriesPage() {
           return (
             <div
               key={category.name}
-              className="grid grid-cols-12 items-center gap-4 border-b border-slate-700 py-3 last:border-b-0"
+              className="grid grid-cols-1 gap-3 border-b border-slate-700 py-3 last:border-b-0 sm:grid-cols-12 sm:items-center sm:gap-4"
             >
-              <div className="col-span-3 text-sm font-medium text-white">{category.name}</div>
-              <div className="col-span-2 text-sm text-slate-300">{category.count}</div>
-              <div className="col-span-3">
-                <div className="flex items-center gap-2">
+              <div className="sm:col-span-3">
+                <div className="text-xs font-semibold text-slate-400 sm:hidden">Category</div>
+                <div className="break-words text-sm font-medium text-white">{category.name}</div>
+              </div>
+              <div className="sm:col-span-2">
+                <div className="text-xs font-semibold text-slate-400 sm:hidden">Transactions</div>
+                <div className="text-sm text-slate-300">{category.count}</div>
+              </div>
+              <div className="sm:col-span-3">
+                <div className="text-xs font-semibold text-slate-400 sm:hidden">Rename</div>
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                   <input
                     type="text"
                     value={renameValue}
@@ -139,14 +146,15 @@ export default function CategoriesPage() {
                     type="button"
                     onClick={() => applyMerge(category.name, renameValue, "Rename")}
                     disabled={isBusy}
-                    className="rounded-lg border border-slate-600 px-3 py-2 text-xs text-slate-200 hover:bg-slate-700 disabled:opacity-50"
+                    className="w-full rounded-lg border border-slate-600 px-3 py-2 text-xs text-slate-200 hover:bg-slate-700 disabled:opacity-50 sm:w-auto"
                   >
                     Rename
                   </button>
                 </div>
               </div>
-              <div className="col-span-4">
-                <div className="flex items-center gap-2">
+              <div className="sm:col-span-4">
+                <div className="text-xs font-semibold text-slate-400 sm:hidden">Merge into</div>
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                   <select
                     value={mergeValue}
                     onChange={(e) =>
@@ -165,7 +173,7 @@ export default function CategoriesPage() {
                     type="button"
                     onClick={() => applyMerge(category.name, mergeValue, "Merge")}
                     disabled={!mergeValue || isBusy}
-                    className="rounded-lg bg-emerald-600 px-3 py-2 text-xs text-white hover:bg-emerald-700 disabled:opacity-50"
+                    className="w-full rounded-lg bg-emerald-600 px-3 py-2 text-xs text-white hover:bg-emerald-700 disabled:opacity-50 sm:w-auto"
                   >
                     Merge
                   </button>

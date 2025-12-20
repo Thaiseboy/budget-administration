@@ -21,7 +21,7 @@ export default function EditTransactionPage() {
   if (!item) {
     return (
       <AppLayout>
-        <div className="rounded-xl border border-slate-700 bg-slate-800 p-6 text-slate-400">
+        <div className="rounded-xl border border-slate-700 bg-slate-800 p-4 text-slate-400 sm:p-6">
           Transaction not found
         </div>
       </AppLayout>
@@ -30,7 +30,7 @@ export default function EditTransactionPage() {
 
   return (
     <AppLayout>
-      <h1 className="text-xl font-semibold">Edit transaction</h1>
+      <h1 className="text-lg font-semibold sm:text-xl">Edit transaction</h1>
 
       <TransactionForm
         submitLabel="Update"

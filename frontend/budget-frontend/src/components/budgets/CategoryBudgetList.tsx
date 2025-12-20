@@ -67,13 +67,13 @@ export default function CategoryBudgetList({
   const monthName = monthNames[month - 1];
 
   return (
-    <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-6">
+    <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-4 sm:p-6">
       <h2 className="text-base font-semibold text-white">Spending Overview ({monthName} {year})</h2>
       <p className="mt-2 text-sm text-slate-400">
         Income and expenses per category. Status shows if a category uses too much of your remaining budget.
       </p>
 
-      <div className="mt-4 grid grid-cols-3 gap-4 rounded-lg border border-slate-600 bg-slate-700 p-4">
+      <div className="mt-4 grid grid-cols-1 gap-4 rounded-lg border border-slate-600 bg-slate-700 p-4 sm:grid-cols-3">
         <div>
           <div className="text-xs text-slate-400">Income (Month)</div>
           <div className="mt-1 text-lg font-semibold text-green-400">{formatCurrency(monthlyIncome)}</div>
@@ -119,16 +119,16 @@ export default function CategoryBudgetList({
 
               return (
                 <div key={category} className="rounded-lg border border-slate-700 bg-slate-800/50 p-3">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-center gap-2">
-                      <div className="text-sm font-medium text-white">{category}</div>
+                      <div className="break-words text-sm font-medium text-white">{category}</div>
                       {status && (
                         <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusClass}`}>
                           {status}
                         </span>
                       )}
                     </div>
-                    <div className="text-right">
+                    <div className="text-left sm:text-right">
                       {income > 0 && (
                         <div className="text-sm font-semibold text-green-400">
                           +{formatCurrency(income)}

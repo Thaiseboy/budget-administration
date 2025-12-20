@@ -10,7 +10,7 @@ type Props = {
 export default function TransactionList({ items, onEdit, onDelete }: Props) {
   if (items.length === 0) {
     return (
-      <div className="rounded-xl border border-slate-700 bg-slate-800 p-6 text-sm text-slate-300">
+      <div className="rounded-xl border border-slate-700 bg-slate-800 p-4 text-sm text-slate-300 sm:p-6">
         No transactions yet.
       </div>
     );

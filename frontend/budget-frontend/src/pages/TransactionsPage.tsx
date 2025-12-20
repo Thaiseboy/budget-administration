@@ -231,20 +231,20 @@ useEffect(() => {
 
   return (
     <AppLayout>
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Transactions</h1>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-lg font-semibold sm:text-xl">Transactions</h1>
 
-        <div>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <Link
             to="/dashboard"
-            className="rounded-lg border border-slate-600 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800"
+            className="w-full rounded-lg border border-slate-600 px-4 py-2 text-center text-sm text-slate-300 hover:bg-slate-800 sm:w-auto"
           >
             Dashboard
           </Link>
 
           <Link
             to="/transactions/new"
-            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 ml-4"
+            className="w-full rounded-lg bg-emerald-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-slate-800 sm:ml-4 sm:w-auto"
           >
             Add transaction
           </Link>
@@ -260,7 +260,7 @@ useEffect(() => {
             id="year-select"
             value={selectedYear}
             onChange={(e) => setSelectedYear(Number(e.target.value))}
-            className="rounded-lg border border-slate-600 bg-slate-700 text-white px-3 py-2 focus:border-slate-500 focus:outline-none"
+            className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-white focus:border-slate-500 focus:outline-none sm:w-auto"
           >
             {years.map((year) => (
               <option key={year} value={year}>
@@ -271,13 +271,13 @@ useEffect(() => {
         </div>
       )}
 
-      <div className="mt-6 flex flex-wrap items-center gap-3">
-        <div className="flex rounded-lg border border-slate-600 bg-slate-800 p-1">
+      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+        <div className="flex w-full rounded-lg border border-slate-600 bg-slate-800 p-1 sm:w-auto">
           {(["all", "income", "expense"] as const).map((v) => (
             <button
               key={v}
               onClick={() => setTypeFilter(v)}
-              className={`rounded-md px-3 py-1 text-sm transition-colors ${
+              className={`flex-1 rounded-md px-3 py-1 text-sm transition-colors sm:flex-none ${
                 typeFilter === v
                   ? "bg-slate-700 text-white"
                   : "text-slate-300 hover:text-white"
@@ -291,7 +291,7 @@ useEffect(() => {
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
-          className="rounded-lg border border-slate-600 bg-slate-700 text-white px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+          className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-sm text-white focus:border-slate-500 focus:outline-none sm:w-auto"
         >
           {categories.map((c) => (
             <option key={c} value={c}>
@@ -303,7 +303,7 @@ useEffect(() => {
         <select
           value={monthFilter}
           onChange={(e) => setMonthFilter(e.target.value)}
-          className="rounded-lg border border-slate-600 bg-slate-700 text-white px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+          className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-sm text-white focus:border-slate-500 focus:outline-none sm:w-auto"
         >
           <option value="all">All months</option>
           {Array.from({ length: 12 }, (_, i) => {
@@ -323,7 +323,7 @@ useEffect(() => {
         <select
           value={sortKey}
           onChange={(e) => setSortKey(e.target.value as SortKey)}
-          className="rounded-lg border border-slate-600 bg-slate-700 text-white px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+          className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-sm text-white focus:border-slate-500 focus:outline-none sm:w-auto"
         >
           <option value="date_desc">Date: new → old</option>
           <option value="date_asc">Date: old → new</option>
@@ -338,7 +338,7 @@ useEffect(() => {
             setMonthFilter("all");
             setSortKey("date_desc");
           }}
-          className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-300 hover:text-white"
+          className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-center text-sm text-slate-300 hover:text-white sm:w-auto"
         >
           Reset
         </button>
@@ -348,7 +348,7 @@ useEffect(() => {
             const filename = `transactions-${selectedYear}-${monthFilter}.csv`;
             downloadCsv(filename, exportRows);
           }}
-          className="rounded-lg bg-slate-700 px-3 py-2 text-sm text-white hover:bg-slate-600"
+          className="w-full rounded-lg bg-slate-700 px-3 py-2 text-center text-sm text-white hover:bg-slate-600 sm:w-auto"
         >
           Export CSV
         </button>
@@ -359,10 +359,10 @@ useEffect(() => {
       </div>
 
       {fixedItems.length > 0 && (
-        <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-6">
-          <h2 className="text-base font-semibold text-white mb-4">Apply Fixed Items to Month</h2>
-          <div className="flex items-end gap-4">
-            <div className="flex-1">
+        <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-4 sm:p-6">
+          <h2 className="mb-4 text-base font-semibold text-white">Apply Fixed Items to Month</h2>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+            <div className="w-full sm:flex-1">
               <label className="block text-sm font-medium text-slate-300 mb-2">Year</label>
               <select
                 value={applyYear}
@@ -376,7 +376,7 @@ useEffect(() => {
                 ))}
               </select>
             </div>
-            <div className="flex-1">
+            <div className="w-full sm:flex-1">
               <label className="block text-sm font-medium text-slate-300 mb-2">Month</label>
               <select
                 value={applyMonth}
@@ -397,7 +397,7 @@ useEffect(() => {
                 <option value={12}>December</option>
               </select>
             </div>
-            <div className="flex-1">
+            <div className="w-full sm:flex-1">
               <button
                 onClick={() => {
                   const monthStr = String(applyMonth).padStart(2, '0');
@@ -431,7 +431,7 @@ useEffect(() => {
       ))}
 
       {filteredSortedItems.length === 0 && (
-        <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-6 text-center text-sm text-slate-400">
+        <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-4 text-center text-sm text-slate-400 sm:p-6">
           No transactions found for {selectedYear} with the current filters.
         </div>
       )}

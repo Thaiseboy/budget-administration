@@ -53,7 +53,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
 
             {state.open && (
                 <div
-                    className="fixed inset-0 z-50 flex items-center justify-center"
+                    className="fixed inset-0 z-50 flex items-center justify-center px-4"
                     role="dialog"
                     aria-modal="true">
                     <button

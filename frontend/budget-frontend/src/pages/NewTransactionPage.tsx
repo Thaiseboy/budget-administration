@@ -16,7 +16,7 @@ export default function NewTransactionPage() {
 
   return (
     <AppLayout>
-      <h1 className="text-xl font-semibold">New transaction</h1>
+      <h1 className="text-lg font-semibold sm:text-xl">New transaction</h1>
 
       <TransactionForm
         submitLabel="Create"

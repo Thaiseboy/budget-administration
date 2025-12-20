@@ -139,10 +139,10 @@ export default function TransactionForm({
     }
 
     return (
-        <form onSubmit={handleSubmit} className="mt-6 max-w-md space-y-4">
+        <form onSubmit={handleSubmit} className="mt-6 w-full max-w-md space-y-4">
             <FormFieldGroup fields={fields} formData={formData} onFieldChange={handleFieldChange} />
 
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 {formData.category && (
                     <button
                         type="button"
@@ -155,7 +155,7 @@ export default function TransactionForm({
                         ✕ Clear category
                     </button>
                 )}
-                <div className={formData.category ? "" : "ml-auto"}>
+                <div className={formData.category ? "" : "sm:ml-auto"}>
                     <button
                         type="button"
                         onClick={() => setUseCustomCategory((prev) => !prev)}
@@ -168,11 +168,11 @@ export default function TransactionForm({
 
             {error && <div className="text-sm text-red-400">{error}</div>}
 
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-2 sm:flex-row">
                 <button
                     type="submit"
                     disabled={loading}
-                    className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-slate-600 disabled:opacity-50"
+                    className="w-full rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-slate-600 disabled:opacity-50 sm:w-auto"
                 >
                     {loading ? "Saving..." : submitLabel}
                 </button>
@@ -181,7 +181,7 @@ export default function TransactionForm({
                     <button
                         type="button"
                         onClick={onCancel}
-                        className="rounded-lg border bg-red-600 border-slate-600 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800">
+                        className="w-full rounded-lg border border-slate-600 bg-red-600 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 sm:w-auto">
                         Cancel
                     </button>
                 )}

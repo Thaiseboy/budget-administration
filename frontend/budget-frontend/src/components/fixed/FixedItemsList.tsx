@@ -95,22 +95,22 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
+    <div className="rounded-lg bg-white p-4 shadow dark:bg-slate-800 sm:p-6">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-white sm:text-xl">
           Fixed Monthly Items
         </h2>
         {!isAdding && (
           <button
             onClick={() => setIsAdding(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="w-full rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 sm:w-auto"
           >
             + Add Fixed Item
           </button>
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-6">
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded">
           <div className="text-sm text-green-700 dark:text-green-400">Total Fixed Income</div>
           <div className="text-2xl font-bold text-green-900 dark:text-green-300">
@@ -126,8 +126,8 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
       </div>
 
       {isAdding && (
-        <form onSubmit={handleSubmit} className="mb-6 p-4 bg-slate-50 dark:bg-slate-700 rounded">
-          <div className="grid grid-cols-2 gap-4 mb-4">
+        <form onSubmit={handleSubmit} className="mb-6 rounded bg-slate-50 p-4 dark:bg-slate-700">
+          <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Description
@@ -171,7 +171,7 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
                   ))}
                 </select>
               )}
-              <div className="flex justify-between items-center">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 {formData.category && (
                   <button
                     type="button"
@@ -184,7 +184,7 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
                     ✕ Clear category
                   </button>
                 )}
-                <div className={formData.category ? "" : "ml-auto"}>
+                <div className={formData.category ? "" : "sm:ml-auto"}>
                   <button
                     type="button"
                     onClick={() => setUseCustomCategory((prev) => !prev)}
@@ -228,17 +228,17 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
               </select>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <button
               type="submit"
-              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+              className="w-full rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700 sm:w-auto"
             >
               {editingId ? "Update" : "Save"}
             </button>
             <button
               type="button"
               onClick={handleCancel}
-              className="px-4 py-2 bg-slate-300 dark:bg-slate-600 text-slate-900 dark:text-white rounded hover:bg-slate-400 dark:hover:bg-slate-500"
+              className="w-full rounded bg-slate-300 px-4 py-2 text-slate-900 hover:bg-slate-400 dark:bg-slate-600 dark:text-white dark:hover:bg-slate-500 sm:w-auto"
             >
               Cancel
             </button>
@@ -256,19 +256,19 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
               {incomeItems.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded"
+                  className="flex flex-col gap-3 rounded bg-green-50 p-3 dark:bg-green-900/20 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div>
-                    <div className="font-medium text-slate-900 dark:text-white">
+                    <div className="break-words font-medium text-slate-900 dark:text-white">
                       {item.description}
                     </div>
                     {item.category && (
-                      <div className="text-sm text-slate-600 dark:text-slate-400">
+                      <div className="break-words text-sm text-slate-600 dark:text-slate-400">
                         {item.category}
                       </div>
                     )}
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex w-full items-center justify-between gap-3 sm:w-auto sm:justify-end">
                     <span className="text-lg font-semibold text-green-900 dark:text-green-300">
                       €{item.amount.toFixed(2)}
                     </span>
@@ -300,19 +300,19 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
               {expenseItems.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-center justify-between p-3 bg-red-50 dark:bg-red-900/20 rounded"
+                  className="flex flex-col gap-3 rounded bg-red-50 p-3 dark:bg-red-900/20 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div>
-                    <div className="font-medium text-slate-900 dark:text-white">
+                    <div className="break-words font-medium text-slate-900 dark:text-white">
                       {item.description}
                     </div>
                     {item.category && (
-                      <div className="text-sm text-slate-600 dark:text-slate-400">
+                      <div className="break-words text-sm text-slate-600 dark:text-slate-400">
                         {item.category}
                       </div>
                     )}
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex w-full items-center justify-between gap-3 sm:w-auto sm:justify-end">
                     <span className="text-lg font-semibold text-red-900 dark:text-red-300">
                       €{item.amount.toFixed(2)}
                     </span>
