@@ -9,8 +9,6 @@ import BalanceTrendChart from "../components/charts/BalanceTrendChart";
 import { buildCategoryTotals } from "../utils/categoryTotals";
 import CategoryBreakdownChart from "../components/charts/CategoryBreakdownChart";
 import CategoryBudgetList from "../components/budgets/CategoryBudgetList";
-import type { CategoryBudget } from "../types/budget";
-import { getBudgets } from "../api/budgets";
 import { formatCurrency } from "../utils/formatCurrency";
 import type { MonthPlan } from "../types/monthPlan";
 import { getMonthPlan, upsertMonthPlan } from "../api/monthPlan";
@@ -35,8 +33,6 @@ export default function DashboardPage() {
     const [selectedYear, setSelectedYear] = useState<number>(currentYear);
     const [selectedMonth, setSelectedMonth] = useState<number>(currentMonth);
     const [categoryType, setCategoryType] = useState<"expense" | "income">("expense");
-    const [budgets, setBudgets] = useState<CategoryBudget[]>([]);
-    const [budgetsLoading, setBudgetsLoading] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [monthPlan, setMonthPlan] = useState<MonthPlan>({
         year: selectedYear,
@@ -62,15 +58,6 @@ export default function DashboardPage() {
         return items.filter((t) => t.date.startsWith(prefix));
     }, [items, selectedYear, selectedMonth]);
 
-    useEffect(() => {
-        setBudgetsLoading(true);
-
-        getBudgets(selectedYear, selectedMonth)
-            .then((data) => setBudgets(data))
-            .catch(() => setBudgets([]))
-            .finally(() => setBudgetsLoading(false));
-    }, [selectedYear, selectedMonth]);
-
     // Load month plan when year/month changes
     useEffect(() => {
         getMonthPlan(selectedYear, selectedMonth)
@@ -82,16 +69,16 @@ export default function DashboardPage() {
             }));
     }, [selectedYear, selectedMonth]);
 
-    // Load fixed items
-    useEffect(() => {
-        loadFixedItems();
-    }, []);
-
     const loadFixedItems = () => {
         getFixedItems()
             .then((data) => setFixedItems(data))
             .catch(() => setFixedItems([]));
     };
+
+    // Load fixed items
+    useEffect(() => {
+        loadFixedItems();
+    }, []);
 
     // Auto-save month plan (debounced)
     useEffect(() => {
@@ -106,22 +93,6 @@ export default function DashboardPage() {
         return () => clearTimeout(timer);
     }, [monthPlan]);
 
-    function handleBudgetSaved(saved: CategoryBudget) {
-        setBudgets((prev) => {
-            const idx = prev.findIndex((b) =>
-                b.category === saved.category &&
-                b.year === saved.year &&
-                b.month === saved.month
-            );
-            if (idx === -1) return [...prev, saved];
-            return prev.map((b) =>
-                b.category === saved.category && b.year === saved.year && b.month === saved.month
-                    ? saved
-                    : b
-            );
-        });
-    }
-
     const monthlyTotals = useMemo(() => {
         return buildMonthlyTotals(yearItems, selectedYear, "nl-NL");
     }, [yearItems, selectedYear]);
@@ -133,33 +104,6 @@ export default function DashboardPage() {
     const categoryData = useMemo(() => {
         return buildCategoryTotals(yearItems, categoryType);
     }, [yearItems, categoryType]);
-
-    // Calculate over budget categories (month-based)
-    const overBudgetCategories = useMemo(() => {
-        const expensesByCategory = new Map<string, number>();
-
-        for (const t of monthItems) {
-            if (t.type !== "expense") continue;
-            const cat = t.category || "Other";
-            expensesByCategory.set(cat, (expensesByCategory.get(cat) ?? 0) + t.amount);
-        }
-
-        const overBudget: Array<{ category: string; spent: number; budget: number; over: number }> = [];
-
-        for (const budget of budgets) {
-            const spent = expensesByCategory.get(budget.category) ?? 0;
-            if (budget.amount > 0 && spent > budget.amount) {
-                overBudget.push({
-                    category: budget.category,
-                    spent,
-                    budget: budget.amount,
-                    over: spent - budget.amount,
-                });
-            }
-        }
-
-        return overBudget.sort((a, b) => b.over - a.over);
-    }, [monthItems, budgets]);
 
     const hasYearData = yearItems.length > 0;
 
@@ -267,37 +211,6 @@ export default function DashboardPage() {
             <div className="mt-4">
                 <TransactionSummary items={yearItems} />
             </div>
-
-            {overBudgetCategories.length > 0 && (
-                <div className="mt-4 rounded-xl border border-red-600 bg-red-950/30 p-4">
-                    <div className="flex items-start gap-3">
-                        <div className="text-red-400 text-xl">⚠️</div>
-                        <div className="flex-1">
-                            <h3 className="text-sm font-semibold text-red-400">
-                                Over Budget Alert
-                            </h3>
-                            <p className="mt-1 text-xs text-red-300">
-                                {overBudgetCategories.length} {overBudgetCategories.length === 1 ? "category is" : "categories are"} over budget for {MONTH_NAMES[selectedMonth - 1]} {selectedYear}
-                            </p>
-                            <div className="mt-3 space-y-2">
-                                {overBudgetCategories.map((item) => (
-                                    <div
-                                        key={item.category}
-                                        className="flex items-center justify-between text-xs"
-                                    >
-                                        <span className="text-red-200">
-                                            <strong>{item.category}</strong>
-                                        </span>
-                                        <span className="text-red-300">
-                                            Over by {formatCurrency(item.over)}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
 
             {!hasYearData && (
                 <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-6">
@@ -480,21 +393,12 @@ export default function DashboardPage() {
                         </div>
                     </div>
 
-                    <div className="mt-6">
-                        {budgetsLoading ? (
-                            <div className="rounded-xl border border-slate-700 bg-slate-800 p-6 text-sm text-slate-400">
-                                Loading budgets...
-                            </div>
-                        ) : (
-                            <CategoryBudgetList
-                                year={selectedYear}
-                                month={selectedMonth}
-                                monthItems={monthItems}
-                                budgets={budgets}
-                                onBudgetSaved={handleBudgetSaved}
-                            />
-                        )}
-                    </div>
+                    <CategoryBudgetList
+                        year={selectedYear}
+                        month={selectedMonth}
+                        monthItems={monthItems}
+                        totalRemaining={monthIncome - monthExpense}
+                    />
 
                     <div className="mt-6">
                         <FixedItemsList
