@@ -12,6 +12,7 @@ type FormData = {
 type Props = {
     initialValues?: Partial<FormData>;
     submitLabel?: string;
+    categories: string[];
     onSubmit: (data: {
         type: "income" | "expense";
         amount: number;
@@ -25,6 +26,7 @@ type Props = {
 export default function TransactionForm({
     initialValues,
     submitLabel = "Save",
+    categories,
     onSubmit,
     onCancel,
 }: Props) {
@@ -38,6 +40,13 @@ export default function TransactionForm({
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    // Track if user wants to use custom category input instead of select
+    const [useCustomCategory, setUseCustomCategory] = useState<boolean>(() => {
+        const current = (formData.category ?? "").trim();
+        return current.length > 0 && !categories.includes(current);
+    });
+
     // as const is a TypeScript const assertion that makes the type narrower/more specific!
     // If is `type: text` then is type text and not type string.
     const fields = [
@@ -74,13 +83,25 @@ export default function TransactionForm({
             type: "text" as const,
             placeholder: "Optional",
         },
-        {
-            id: "category",
-            name: "category",
-            label: "Category",
-            type: "text" as const,
-            placeholder: "Optional",
-        },
+        useCustomCategory
+            ? {
+                id: "category",
+                name: "category",
+                label: "Category (Custom)",
+                type: "text" as const,
+                placeholder: "Enter custom category",
+            }
+            : {
+                id: "category",
+                name: "category",
+                label: "Category",
+                type: "select" as const,
+                required: false,
+                options: [
+                    { label: "-- Select Category --", value: "" },
+                    ...categories.map((cat) => ({ label: cat, value: cat })),
+                ],
+            },
     ];
 
     async function handleSubmit(e: React.FormEvent) {
@@ -115,6 +136,30 @@ export default function TransactionForm({
     return (
         <form onSubmit={handleSubmit} className="mt-6 max-w-md space-y-4">
             <FormFieldGroup fields={fields} formData={formData} onFieldChange={handleFieldChange} />
+
+            <div className="flex justify-between items-center">
+                {formData.category && (
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setFormData((prev) => ({ ...prev, category: "" }));
+                            setUseCustomCategory(false);
+                        }}
+                        className="text-xs text-red-400 hover:text-red-300 underline"
+                    >
+                        ✕ Clear category
+                    </button>
+                )}
+                <div className={formData.category ? "" : "ml-auto"}>
+                    <button
+                        type="button"
+                        onClick={() => setUseCustomCategory((prev) => !prev)}
+                        className="text-xs text-slate-400 hover:text-slate-300 underline"
+                    >
+                        {useCustomCategory ? "← Use existing category" : "+ Add custom category"}
+                    </button>
+                </div>
+            </div>
 
             {error && <div className="text-sm text-red-400">{error}</div>}
 
