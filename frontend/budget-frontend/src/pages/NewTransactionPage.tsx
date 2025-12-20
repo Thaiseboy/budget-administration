@@ -3,10 +3,12 @@ import AppLayout from "../layouts/AppLayout";
 import { createTransaction } from "../api/transactions";
 import TransactionForm from "../components/TransactionForm";
 import { useToast } from "../components/toast/ToastContext";
+import { useAppContext } from "../hooks/useAppContext";
 
 export default function NewTransactionPage() {
   const navigate = useNavigate();
   const toast = useToast();
+  const { onCreated } = useAppContext();
 
   return (
     <AppLayout>
@@ -15,7 +17,8 @@ export default function NewTransactionPage() {
       <TransactionForm
         submitLabel="Create"
         onSubmit={async (data) => {
-          await createTransaction(data);
+          const newTransaction = await createTransaction(data);
+          onCreated(newTransaction);
           toast.success("Transaction created");
           navigate("/transactions");
         }}
