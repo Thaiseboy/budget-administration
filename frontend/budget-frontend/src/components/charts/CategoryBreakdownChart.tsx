@@ -11,6 +11,7 @@ import { formatCurrency } from "../../utils/formatCurrency";
 
 type Props = {
   data: CategoryTotal[];
+  onCategoryClick?: (category: string) => void;
 };
 
 const COLORS = [
@@ -24,7 +25,7 @@ const COLORS = [
   "#4ade80",
 ];
 
-export default function CategoryBreakdownChart({ data }: Props) {
+export default function CategoryBreakdownChart({ data, onCategoryClick }: Props) {
   return (
     <div className="h-80 w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -37,6 +38,12 @@ export default function CategoryBreakdownChart({ data }: Props) {
             cy="50%"
             outerRadius={110}
             label
+            onClick={(entry) => {
+              if (onCategoryClick && entry?.category) {
+                onCategoryClick(entry.category);
+              }
+            }}
+            style={{ cursor: onCategoryClick ? "pointer" : "default" }}
           >
             {data.map((_, index) => (
               <Cell key={index} fill={COLORS[index % COLORS.length]} />

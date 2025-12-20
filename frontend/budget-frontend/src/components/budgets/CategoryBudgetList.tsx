@@ -104,11 +104,28 @@ export default function CategoryBudgetList({
           const barClass =
             p >= 100 ? "bg-red-500" : p >= 70 ? "bg-amber-400" : "bg-emerald-500";
 
+          const status =
+            budget <= 0 ? "No budget" :
+            p >= 100 ? "Over budget" :
+            p >= 70 ? "Near limit" :
+            "OK";
+
+          const statusClass =
+            budget <= 0 ? "bg-slate-700 text-slate-200" :
+            p >= 100 ? "bg-red-600 text-white" :
+            p >= 70 ? "bg-amber-400 text-slate-900" :
+            "bg-emerald-500 text-white";
+
           return (
             <div key={category} className="rounded-xl border border-slate-700 p-4">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <div className="text-sm font-semibold text-white">{category}</div>
+                  <div className="flex items-center gap-2">
+                    <div className="text-sm font-semibold text-white">{category}</div>
+                    <span className={`rounded-full px-2 py-0.5 text-xs ${statusClass}`}>
+                      {status}
+                    </span>
+                  </div>
                   <div className="mt-1 text-xs text-slate-400">
                     Spent: {formatCurrency(spent)} • Budget: {formatCurrency(budget)} • {p}%
                   </div>
