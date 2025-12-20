@@ -106,8 +106,10 @@ export default function TransactionsPage() {
   }, [monthKeys.join("|")]);
 
   const selectedItems = useMemo(() => {
+    if (openMonthKeys.length === 0) return yearItems;
+
     return openMonthKeys.flatMap((key) => monthMap.get(key) ?? []);
-  }, [openMonthKeys, monthMap]);
+  }, [openMonthKeys, monthMap, yearItems]);
 
   return (
     <AppLayout>
