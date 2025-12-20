@@ -4,7 +4,8 @@ import TransactionSummary from "../components/TransactionSummary";
 import { useAppContext } from "../hooks/useAppContext";
 import { Link } from "react-router-dom";
 import IncomeExpenseChart from "../components/charts/IncomeExpenseChart";
-import { buildMonthlyTotals } from "../utils/monthlyTotals";
+import { buildMonthlyTotals, withCumulativeBalance } from "../utils/monthlyTotals";
+import BalanceTrendChart from "../components/charts/BalanceTrendChart";
 
 function getYear(date: string) {
     return Number(date.slice(0, 4));
@@ -15,10 +16,6 @@ export default function DashboardPage() {
     const currentYear = new Date().getFullYear();
     const [selectedYear, setSelectedYear] = useState<number>(currentYear);
 
-    const chartData = useMemo(() => {
-        return buildMonthlyTotals(items, selectedYear, "nl-NL");
-    }, [items, selectedYear]);
-
     const years = useMemo(() => {
         const set = new Set(items.map((t) => getYear(t.date)));
         const arr = Array.from(set).sort((a, b) => b - a);
@@ -28,6 +25,14 @@ export default function DashboardPage() {
     const yearItems = useMemo(() => {
         return items.filter((t) => getYear(t.date) === selectedYear);
     }, [items, selectedYear]);
+
+    const monthlyTotals = useMemo(() => {
+        return buildMonthlyTotals(items, selectedYear, "nl-NL");
+    }, [items, selectedYear]);
+
+    const balanceTrendData = useMemo(() => {
+        return withCumulativeBalance(monthlyTotals);
+    }, [monthlyTotals]);
 
     return (
         <AppLayout>
@@ -61,14 +66,25 @@ export default function DashboardPage() {
                 <TransactionSummary items={yearItems} />
             </div>
 
-            <div className="mt-6 rounded-xl border bg-slate-900 p-6">
-                <h2 className="text-base font-semibold">Income vs Expense</h2>
-                <p className="mt-2 text-sm text-slate-600">
+            <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-6">
+                <h2 className="text-base font-semibold text-white">Balance Trend</h2>
+                <p className="mt-2 text-sm text-slate-400">
+                    Cumulative balance over {selectedYear}.
+                </p>
+
+                <div className="mt-4">
+                    <BalanceTrendChart data={balanceTrendData} />
+                </div>
+            </div>
+
+            <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-6">
+                <h2 className="text-base font-semibold text-white">Income vs Expense</h2>
+                <p className="mt-2 text-sm text-slate-400">
                     Overview per month for {selectedYear}.
                 </p>
 
                 <div className="mt-4">
-                    <IncomeExpenseChart data={chartData} />
+                    <IncomeExpenseChart data={monthlyTotals} />
                 </div>
             </div>
         </AppLayout>

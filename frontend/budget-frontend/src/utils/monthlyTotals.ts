@@ -50,3 +50,15 @@ export function buildMonthlyTotals(
 
   return Array.from(map.values());
 }
+
+export function withCumulativeBalance(data: MonthlyTotal[]) {
+  let running = 0;
+
+  return data.map((row) => {
+    running += row.balance;
+    return {
+      ...row,
+      cumulativeBalance: running,
+    };
+  });
+}
