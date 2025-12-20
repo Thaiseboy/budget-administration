@@ -17,6 +17,10 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
     amount: 0,
     type: "expense",
   });
+  const [useCustomCategory, setUseCustomCategory] = useState<boolean>(() => {
+    const current = (formData.category ?? "").trim();
+    return current.length > 0 && !categories.includes(current);
+  });
 
   const incomeItems = items.filter((item) => item.type === "income");
   const expenseItems = items.filter((item) => item.type === "expense");
@@ -40,6 +44,7 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
         amount: 0,
         type: "expense",
       });
+      setUseCustomCategory(false);
       onUpdate();
     } catch (err) {
       console.error("Failed to save fixed item", err);
@@ -54,6 +59,8 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
       amount: item.amount,
       type: item.type,
     });
+    const currentCategory = (item.category ?? "").trim();
+    setUseCustomCategory(currentCategory.length > 0 && !categories.includes(currentCategory));
     setIsAdding(true);
   };
 
@@ -78,6 +85,7 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
       amount: 0,
       type: "expense",
     });
+    setUseCustomCategory(false);
   };
 
   return (
@@ -131,20 +139,55 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Category
               </label>
-              <select
-                value={formData.category ?? ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, category: e.target.value || null })
-                }
-                className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
-              >
-                <option value="">-- Select Category --</option>
-                {categories.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
+              {useCustomCategory ? (
+                <input
+                  type="text"
+                  value={formData.category ?? ""}
+                  onChange={(e) =>
+                    setFormData({ ...formData, category: e.target.value || null })
+                  }
+                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+                  placeholder="Enter custom category"
+                />
+              ) : (
+                <select
+                  value={formData.category ?? ""}
+                  onChange={(e) =>
+                    setFormData({ ...formData, category: e.target.value || null })
+                  }
+                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+                >
+                  <option value="">-- Select Category --</option>
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+              )}
+              <div className="flex justify-between items-center">
+                {formData.category && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData((prev) => ({ ...prev, category: null }));
+                      setUseCustomCategory(false);
+                    }}
+                    className="text-xs text-red-400 hover:text-red-300 underline"
+                  >
+                    ✕ Clear category
+                  </button>
+                )}
+                <div className={formData.category ? "" : "ml-auto"}>
+                  <button
+                    type="button"
+                    onClick={() => setUseCustomCategory((prev) => !prev)}
+                    className="text-xs text-slate-400 hover:text-slate-300 underline"
+                  >
+                    {useCustomCategory ? "← Use existing category" : "+ Add custom category"}
+                  </button>
+                </div>
+              </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
