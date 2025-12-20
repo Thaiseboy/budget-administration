@@ -142,6 +142,7 @@ export default function TransactionsPage() {
               items={monthItems}
               isOpen={openMonthKeys.includes(monthKey)}
               onToggle={() => toggleMonth(monthKey)}
+              onEdit={handleEdit}
               onDelete={handleDelete}
             />
           ))}

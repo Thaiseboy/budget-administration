@@ -16,6 +16,7 @@ type Props = {
     items: Transaction[];
     isOpen: boolean;
     onToggle: () => void;
+    onEdit?: (id: number) => void;
     onDelete?: (id: number) => void;
 };
 
@@ -24,6 +25,7 @@ export default function MonthlyTransactionSection({
     items,
     isOpen,
     onToggle,
+    onEdit,
     onDelete,
 }: Props) {
     return (
@@ -46,7 +48,7 @@ export default function MonthlyTransactionSection({
 
             {isOpen && (
                 <div className="border-t border-slate-700 px-4 py-4">
-                    <TransactionList items={items} onDelete={onDelete} />
+                    <TransactionList items={items} onEdit={onEdit} onDelete={onDelete} />
                 </div>
             )}
         </section>
