@@ -1,7 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { getTransactions } from "../api/transactions";
 import AppLayout from "../layouts/AppLayout";
-import type { Transaction } from "../types/transaction";
 import TransactionSummary from "../components/TransactionSummary";
 import { Link, useNavigate } from "react-router-dom";
 import { deleteTransaction } from "../api/transactions";
@@ -9,27 +7,16 @@ import { useToast } from "../components/toast/ToastContext";
 import { useConfirm } from "../components/confirm/ConfirmContext";
 import { groupByMonth } from "../utils/groupTransactions";
 import MonthlyTransactionSection from "../components/MonthlyTransactionSection";
+import { useAppContext } from "../hooks/useAppContext";
 
 export default function TransactionsPage() {
   const navigate = useNavigate();
   const toast = useToast();
   const confirm = useConfirm();
-  const [items, setItems] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const { items, onDeleted } = useAppContext();
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState<number>(currentYear);
   const [openMonthKeys, setOpenMonthKeys] = useState<string[]>([]);
-
-  useEffect(() => {
-    getTransactions()
-      .then((data) => setItems(data))
-      .catch((e: unknown) => {
-        const message = e instanceof Error ? e.message : "Failed to load transactions";
-        setError(message);
-      })
-      .finally(() => setLoading(false));
-  }, []);
 
   function handleEdit(id: number) {
     navigate(`/transactions/${id}/edit`);
@@ -48,7 +35,7 @@ export default function TransactionsPage() {
 
     try {
       await deleteTransaction(id);
-      setItems((prev) => prev.filter((t) => t.id !== id));
+      onDeleted(id);
       toast.success("Transaction deleted");
     } catch {
       toast.error("Failed to delete transaction");
@@ -124,21 +111,7 @@ export default function TransactionsPage() {
         </Link>
       </div>
 
-      {loading && (
-        <div className="mt-4 rounded-xl border border-slate-700 bg-slate-800 p-4 text-sm text-slate-300">
-          Loading...
-        </div>
-      )}
-
-      {error && (
-        <div className="mt-4 rounded-xl border border-slate-700 bg-slate-800 p-4 text-sm text-red-400">
-          {error}
-        </div>
-      )}
-
-      {!loading && !error && (
-        <>
-          {years.length > 0 && (
+      {years.length > 0 && (
             <div className="mt-4">
               <label htmlFor="year-select" className="block text-sm font-medium text-slate-300 mb-2">
                 Select Year
@@ -169,16 +142,15 @@ export default function TransactionsPage() {
               items={monthItems}
               isOpen={openMonthKeys.includes(monthKey)}
               onToggle={() => toggleMonth(monthKey)}
+              onEdit={handleEdit}
               onDelete={handleDelete}
             />
           ))}
 
-          {yearItems.length === 0 && (
-            <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-6 text-center text-sm text-slate-400">
-              No transactions for {selectedYear}
-            </div>
-          )}
-        </>
+      {yearItems.length === 0 && (
+        <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-6 text-center text-sm text-slate-400">
+          No transactions for {selectedYear}
+        </div>
       )}
 
     </AppLayout>
