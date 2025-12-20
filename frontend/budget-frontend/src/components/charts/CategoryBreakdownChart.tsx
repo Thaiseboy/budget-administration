@@ -27,7 +27,7 @@ const COLORS = [
 
 export default function CategoryBreakdownChart({ data, onCategoryClick }: Props) {
   return (
-    <div className="h-80 w-full">
+    <div className="h-64 w-full sm:h-80">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
@@ -36,7 +36,7 @@ export default function CategoryBreakdownChart({ data, onCategoryClick }: Props)
             nameKey="category"
             cx="50%"
             cy="50%"
-            outerRadius={110}
+            outerRadius={90}
             label
             onClick={(entry) => {
               if (onCategoryClick && entry?.category) {

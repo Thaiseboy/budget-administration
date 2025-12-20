@@ -60,12 +60,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     <ToastContext.Provider value={value}>
       {children}
 
-      <div className="pointer-events-none fixed left-1/2 top-4 z-50 flex -translate-x-1/2 flex-col gap-3">
+      <div className="pointer-events-none fixed left-1/2 top-4 z-50 flex w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 flex-col gap-3">
         {toasts.map((toast) => (
           <div
             key={toast.id}
             className={`
-              pointer-events-auto flex items-center gap-3 rounded-xl border px-4 py-3 shadow-xl backdrop-blur-sm transition-all duration-300
+              pointer-events-auto flex w-full items-center gap-3 rounded-xl border px-4 py-3 shadow-xl backdrop-blur-sm transition-all duration-300
               ${toast.isExiting
                 ? '-translate-y-2 scale-95 opacity-0'
                 : 'translate-y-0 scale-100 opacity-100'

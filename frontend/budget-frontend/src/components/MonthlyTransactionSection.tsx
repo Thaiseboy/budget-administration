@@ -42,7 +42,7 @@ export default function MonthlyTransactionSection({
 
                 <div className="flex items-center justify-between">
                     <h2 className="text-base font-semibold capitalize text-white">{formatMonthTitle(monthKey)}</h2>
-                    <span className="text-3xl text-slate-400">{isOpen ? <VscEye /> : <VscEyeClosed />}</span>
+                    <span className="text-2xl text-slate-400 sm:text-3xl">{isOpen ? <VscEye /> : <VscEyeClosed />}</span>
                 </div>
 
                 <div className="mt-3">

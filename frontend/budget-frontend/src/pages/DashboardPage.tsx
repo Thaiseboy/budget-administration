@@ -149,33 +149,33 @@ export default function DashboardPage() {
 
     return (
         <AppLayout>
-            <div className="flex items-center justify-between">
-                <h1 className="text-xl font-semibold text-white">Dashboard</h1>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <h1 className="text-lg font-semibold text-white sm:text-xl">Dashboard</h1>
 
-                <div>
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                     <Link
                         to="/transactions"
-                        className="rounded-lg border border-slate-600 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800"
+                        className="w-full rounded-lg border border-slate-600 px-4 py-2 text-center text-sm text-slate-300 hover:bg-slate-800 sm:w-auto"
                     >
                         View Transactions
                     </Link>
 
                     <Link
                         to="/transactions/new"
-                        className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 ml-4"
+                        className="w-full rounded-lg bg-emerald-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-slate-800 sm:ml-4 sm:w-auto"
                     >
                         Add transaction
                     </Link>
                 </div>
             </div>
 
-            <div className="mt-4 flex items-center gap-6">
-                <div className="flex items-center gap-3">
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6">
+                <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
                     <span className="text-sm text-slate-300">Year:</span>
                     <select
                         value={selectedYear}
                         onChange={(e) => setSelectedYear(Number(e.target.value))}
-                        className="rounded-lg border border-slate-600 bg-slate-700 text-white px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+                        className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-sm text-white focus:border-slate-500 focus:outline-none sm:w-auto"
                     >
                         {years.map((y) => (
                             <option key={y} value={y}>
@@ -185,12 +185,12 @@ export default function DashboardPage() {
                     </select>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
                     <span className="text-sm text-slate-300">Month:</span>
                     <select
                         value={selectedMonth}
                         onChange={(e) => setSelectedMonth(Number(e.target.value))}
-                        className="rounded-lg border border-slate-600 bg-slate-700 text-white px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+                        className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-sm text-white focus:border-slate-500 focus:outline-none sm:w-auto"
                     >
                         <option value={1}>January</option>
                         <option value={2}>February</option>
@@ -213,7 +213,7 @@ export default function DashboardPage() {
             </div>
 
             {!hasYearData && (
-                <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-6">
+                <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-4 sm:p-6">
                     <h2 className="text-base font-semibold text-white">
                         No data for {selectedYear}
                     </h2>
@@ -225,7 +225,7 @@ export default function DashboardPage() {
 
             {hasYearData && (
                 <>
-                    <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-6">
+                    <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-4 sm:p-6">
                         <h2 className="text-base font-semibold text-white">Balance Trend</h2>
                         <p className="mt-2 text-sm text-slate-400">
                             Cumulative balance over {selectedYear}.
@@ -236,7 +236,7 @@ export default function DashboardPage() {
                         </div>
                     </div>
 
-                    <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-6">
+                    <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-4 sm:p-6">
                         <h2 className="text-base font-semibold text-white">Income vs Expense</h2>
                         <p className="mt-2 text-sm text-slate-400">
                             Overview per month for {selectedYear}.
@@ -247,17 +247,17 @@ export default function DashboardPage() {
                         </div>
                     </div>
 
-                    <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-6">
-                        <div className="flex items-center justify-between">
+                    <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-4 sm:p-6">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <h2 className="text-base font-semibold text-white">Category breakdown</h2>
 
-                            <div className="flex gap-2">
+                            <div className="flex w-full gap-2 sm:w-auto">
                                 <button
                                     onClick={() => {
                                         setCategoryType("expense");
                                         setSelectedCategory(null);
                                     }}
-                                    className={`rounded-lg px-3 py-1 text-sm ${categoryType === "expense"
+                                    className={`flex-1 rounded-lg px-3 py-1 text-sm sm:flex-none ${categoryType === "expense"
                                         ? "bg-red-500 text-white"
                                         : "bg-slate-700 text-slate-300"
                                         }`}
@@ -270,7 +270,7 @@ export default function DashboardPage() {
                                         setCategoryType("income");
                                         setSelectedCategory(null);
                                     }}
-                                    className={`rounded-lg px-3 py-1 text-sm ${categoryType === "income"
+                                    className={`flex-1 rounded-lg px-3 py-1 text-sm sm:flex-none ${categoryType === "income"
                                         ? "bg-green-500 text-white"
                                         : "bg-slate-700 text-slate-300"
                                         }`}
@@ -294,7 +294,7 @@ export default function DashboardPage() {
 
                         {selectedCategory && filteredTransactions.length > 0 && (
                             <div className="mt-4 rounded-xl border border-slate-600 bg-slate-700 p-4">
-                                <div className="flex items-center justify-between mb-3">
+                                <div className="mb-3 flex items-center justify-between">
                                     <h3 className="text-sm font-semibold text-white">
                                         {selectedCategory} - {categoryType === "expense" ? "Expenses" : "Income"}
                                     </h3>
@@ -309,13 +309,13 @@ export default function DashboardPage() {
                                     {filteredTransactions.map((t) => (
                                         <div
                                             key={t.id}
-                                            className="flex items-center justify-between rounded-lg bg-slate-800 px-3 py-2 text-sm"
+                                            className="flex flex-col gap-2 rounded-lg bg-slate-800 px-3 py-2 text-sm sm:flex-row sm:items-center sm:justify-between"
                                         >
                                             <div>
-                                                <div className="text-white">{t.description || "No description"}</div>
+                                                <div className="break-words text-white">{t.description || "No description"}</div>
                                                 <div className="text-xs text-slate-400">{t.date}</div>
                                             </div>
-                                            <div className={`font-semibold ${t.type === "expense" ? "text-red-400" : "text-green-400"}`}>
+                                            <div className={`text-left font-semibold sm:text-right ${t.type === "expense" ? "text-red-400" : "text-green-400"}`}>
                                                 {t.type === "expense" ? "-" : "+"}{formatCurrency(t.amount)}
                                             </div>
                                         </div>
@@ -326,7 +326,7 @@ export default function DashboardPage() {
                     </div>
 
                     {/* Monthly Plan */}
-                    <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-6">
+                    <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-4 sm:p-6">
                         <h2 className="text-base font-semibold text-white">
                             Monthly plan ({MONTH_NAMES[selectedMonth - 1]} {selectedYear})
                         </h2>
