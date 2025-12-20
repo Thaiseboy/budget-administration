@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\CategoryBudgetController;
+use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\MonthlyPlanController;
 use App\Http\Controllers\Api\FixedMonthlyItemController;
 
@@ -19,3 +20,4 @@ Route::get('/fixed-items', [FixedMonthlyItemController::class, 'index']);
 Route::post('/fixed-items', [FixedMonthlyItemController::class, 'store']);
 Route::put('/fixed-items/{fixedMonthlyItem}', [FixedMonthlyItemController::class, 'update']);
 Route::delete('/fixed-items/{fixedMonthlyItem}', [FixedMonthlyItemController::class, 'destroy']);
+Route::post('/categories/merge', [CategoryController::class, 'merge']);

@@ -35,6 +35,17 @@ export default function AppHeader() {
             }`}>
             Transactions
           </Link>
+
+          <Link
+            to="/categories"
+            className={`text-sm transition-colors ${
+              isActive("/categories")
+                ? "text-emerald-400 font-medium"
+                : "text-slate-400 hover:text-slate-200"
+            }`}
+          >
+            Categories
+          </Link>
         </nav>
 
         <div className="text-4xl text-red-600">

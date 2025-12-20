@@ -10,7 +10,8 @@ import MonthlyTransactionSection from "../components/MonthlyTransactionSection";
 import { useAppContext } from "../hooks/useAppContext";
 import type { FixedMonthlyItem } from "../types/fixedItem";
 import { getFixedItems } from "../api/fixedItems";
-import type { Transaction } from "../types/transaction";
+import { normalizeCategory } from "../utils/categories";
+import { downloadCsv } from "../utils/csv";
 
 export default function TransactionsPage() {
   const navigate = useNavigate();
@@ -24,6 +25,14 @@ export default function TransactionsPage() {
   const [fixedItems, setFixedItems] = useState<FixedMonthlyItem[]>([]);
   const [applyYear, setApplyYear] = useState<number>(currentYear);
   const [applyMonth, setApplyMonth] = useState<number>(currentMonth);
+
+  type TypeFilter = "all" | "income" | "expense";
+  type SortKey = "date_desc" | "date_asc" | "amount_desc" | "amount_asc";
+
+  const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [sortKey, setSortKey] = useState<SortKey>("date_desc");
+  const [monthFilter, setMonthFilter] = useState<string>("all"); // "all" or "01".."12"
 
   function handleEdit(id: number) {
     navigate(`/transactions/${id}/edit`);
@@ -105,9 +114,56 @@ export default function TransactionsPage() {
     return items.filter((t) => t.date.startsWith(String(selectedYear)));
   }, [items, selectedYear]);
 
-  const monthMap = useMemo(() => {
-    return groupByMonth(yearItems);
+  const categories = useMemo(() => {
+    const set = new Set<string>();
+    yearItems.forEach((t) => {
+      set.add(normalizeCategory(t.category));
+    });
+    return ["all", ...Array.from(set).sort((a, b) => a.localeCompare(b))];
   }, [yearItems]);
+
+  const filteredSortedItems = useMemo(() => {
+    let list = [...yearItems];
+
+    if (typeFilter !== "all") {
+      list = list.filter((t) => t.type === typeFilter);
+    }
+
+    if (categoryFilter !== "all") {
+      list = list.filter((t) => {
+        const c = normalizeCategory(t.category);
+        return c === categoryFilter;
+      });
+    }
+
+    if (monthFilter !== "all") {
+      list = list.filter((t) => t.date.slice(5, 7) === monthFilter);
+    }
+
+    list.sort((a, b) => {
+      if (sortKey === "date_desc") return b.date.localeCompare(a.date);
+      if (sortKey === "date_asc") return a.date.localeCompare(b.date);
+      if (sortKey === "amount_desc") return b.amount - a.amount;
+      if (sortKey === "amount_asc") return a.amount - b.amount;
+      return 0;
+    });
+
+    return list;
+  }, [yearItems, typeFilter, categoryFilter, monthFilter, sortKey]);
+
+  const exportRows = useMemo(() => {
+    return filteredSortedItems.map((item) => ({
+      date: item.date,
+      type: item.type,
+      category: normalizeCategory(item.category),
+      amount: item.amount,
+      description: item.description ?? "",
+    }));
+  }, [filteredSortedItems]);
+
+  const monthMap = useMemo(() => {
+    return groupByMonth(filteredSortedItems);
+  }, [filteredSortedItems]);
 
   const monthEntries = useMemo(() => {
     return Array.from(monthMap.entries());
@@ -150,10 +206,28 @@ export default function TransactionsPage() {
   }, [monthKeys.join("|")]);
 
   const selectedItems = useMemo(() => {
-    if (openMonthKeys.length === 0) return yearItems;
+    if (monthFilter === "all") return filteredSortedItems;
+    if (openMonthKeys.length === 0) return filteredSortedItems;
 
     return openMonthKeys.flatMap((key) => monthMap.get(key) ?? []);
-  }, [openMonthKeys, monthMap, yearItems]);
+  }, [monthFilter, openMonthKeys, monthMap, filteredSortedItems]);
+
+useEffect(() => {
+  if (monthFilter === "all") return;
+
+  const key = `${selectedYear}-${monthFilter}`;
+
+  if (monthKeys.includes(key)) {
+    setOpenMonthKeys([key]);
+    return;
+  }
+
+  if (monthKeys.length > 0) {
+    setOpenMonthKeys([monthKeys[0]]);
+  } else {
+    setOpenMonthKeys([]);
+  }
+}, [monthFilter, selectedYear, monthKeys, setOpenMonthKeys]);
 
   return (
     <AppLayout>
@@ -196,6 +270,89 @@ export default function TransactionsPage() {
           </select>
         </div>
       )}
+
+      <div className="mt-6 flex flex-wrap items-center gap-3">
+        <div className="flex rounded-lg border border-slate-600 bg-slate-800 p-1">
+          {(["all", "income", "expense"] as const).map((v) => (
+            <button
+              key={v}
+              onClick={() => setTypeFilter(v)}
+              className={`rounded-md px-3 py-1 text-sm transition-colors ${
+                typeFilter === v
+                  ? "bg-slate-700 text-white"
+                  : "text-slate-300 hover:text-white"
+              }`}
+            >
+              {v === "all" ? "All" : v === "income" ? "Income" : "Expense"}
+            </button>
+          ))}
+        </div>
+
+        <select
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+          className="rounded-lg border border-slate-600 bg-slate-700 text-white px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+        >
+          {categories.map((c) => (
+            <option key={c} value={c}>
+              {c === "all" ? "All categories" : c}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={monthFilter}
+          onChange={(e) => setMonthFilter(e.target.value)}
+          className="rounded-lg border border-slate-600 bg-slate-700 text-white px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+        >
+          <option value="all">All months</option>
+          {Array.from({ length: 12 }, (_, i) => {
+            const monthNumber = i + 1;
+            const value = String(monthNumber).padStart(2, "0");
+            const label = new Intl.DateTimeFormat("en-US", { month: "long" }).format(
+              new Date(2025, i, 1)
+            );
+            return (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            );
+          })}
+        </select>
+
+        <select
+          value={sortKey}
+          onChange={(e) => setSortKey(e.target.value as SortKey)}
+          className="rounded-lg border border-slate-600 bg-slate-700 text-white px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+        >
+          <option value="date_desc">Date: new → old</option>
+          <option value="date_asc">Date: old → new</option>
+          <option value="amount_desc">Amount: high → low</option>
+          <option value="amount_asc">Amount: low → high</option>
+        </select>
+
+        <button
+          onClick={() => {
+            setTypeFilter("all");
+            setCategoryFilter("all");
+            setMonthFilter("all");
+            setSortKey("date_desc");
+          }}
+          className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-300 hover:text-white"
+        >
+          Reset
+        </button>
+
+        <button
+          onClick={() => {
+            const filename = `transactions-${selectedYear}-${monthFilter}.csv`;
+            downloadCsv(filename, exportRows);
+          }}
+          className="rounded-lg bg-slate-700 px-3 py-2 text-sm text-white hover:bg-slate-600"
+        >
+          Export CSV
+        </button>
+      </div>
 
       <div className="mt-4">
         <TransactionSummary items={selectedItems} />
@@ -273,9 +430,9 @@ export default function TransactionsPage() {
         />
       ))}
 
-      {yearItems.length === 0 && (
+      {filteredSortedItems.length === 0 && (
         <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-6 text-center text-sm text-slate-400">
-          No transactions for {selectedYear}
+          No transactions found for {selectedYear} with the current filters.
         </div>
       )}
 

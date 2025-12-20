@@ -6,6 +6,7 @@ import TransactionsPage from "../pages/TransactionsPage";
 import NewTransactionPage from "../pages/NewTransactionPage";
 import EditTransactionPage from "../pages/EditTransactionPage";
 import DashboardPage from "../pages/DashboardPage";
+import CategoriesPage from "../pages/CategoriesPage";
 import type { CategoryBudget } from "../types/budget";
 import { getBudgets } from "../api/budgets";
 
@@ -116,6 +117,7 @@ function upsertBudgetInCache(budget: CategoryBudget) {
         <Route path="transactions/new" element={<NewTransactionPage />} />
         <Route path="transactions/:id/edit" element={<EditTransactionPage />} />
         <Route path="dashboard" element={<DashboardPage />} />
+        <Route path="categories" element={<CategoriesPage />} />
       </Route>
     </Routes>
   );
