@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import type { Transaction } from "../../types/transaction";
 import { formatCurrency } from "../../utils/formatCurrency";
+import { normalizeCategory } from "../../utils/categories";
 
 type Props = {
   year: number;
@@ -10,7 +11,7 @@ type Props = {
 };
 
 function getCategory(t: Transaction) {
-  return t.category || "Other";
+  return normalizeCategory(t.category);
 }
 
 export default function CategoryBudgetList({

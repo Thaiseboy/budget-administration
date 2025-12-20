@@ -1,5 +1,12 @@
 import type { Transaction } from "../types/transaction";
 
+export function normalizeCategory(raw?: string | null): string {
+  const s = (raw ?? "").trim();
+  if (!s) return "Other";
+  const lower = s.toLowerCase();
+  return `${lower.charAt(0).toUpperCase()}${lower.slice(1)}`;
+}
+
 /**
  * Extract unique categories from transactions
  * @param items - Array of transactions
@@ -9,8 +16,8 @@ export function getCategories(items: Transaction[]): string[] {
   const set = new Set<string>();
 
   for (const t of items) {
-    const c = (t.category ?? "").trim();
-    if (c) set.add(c);
+    const normalized = normalizeCategory(t.category);
+    if (normalized) set.add(normalized);
   }
 
   // Always include Other as fallback

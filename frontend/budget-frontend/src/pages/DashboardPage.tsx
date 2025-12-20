@@ -15,7 +15,7 @@ import { getMonthPlan, upsertMonthPlan } from "../api/monthPlan";
 import type { FixedMonthlyItem } from "../types/fixedItem";
 import { getFixedItems } from "../api/fixedItems";
 import { FixedItemsList } from "../components/fixed/FixedItemsList";
-import { getCategories } from "../utils/categories";
+import { getCategories, normalizeCategory } from "../utils/categories";
 
 function getYear(date: string) {
     return Number(date.slice(0, 4));
@@ -141,7 +141,7 @@ export default function DashboardPage() {
         if (!selectedCategory) return [];
         return yearItems.filter((t) => {
             const matchesType = t.type === categoryType;
-            const matchesCategory = (t.category || "Other") === selectedCategory;
+            const matchesCategory = normalizeCategory(t.category) === selectedCategory;
             return matchesType && matchesCategory;
         });
     }, [yearItems, selectedCategory, categoryType]);

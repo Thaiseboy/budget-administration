@@ -10,6 +10,7 @@ import MonthlyTransactionSection from "../components/MonthlyTransactionSection";
 import { useAppContext } from "../hooks/useAppContext";
 import type { FixedMonthlyItem } from "../types/fixedItem";
 import { getFixedItems } from "../api/fixedItems";
+import { normalizeCategory } from "../utils/categories";
 
 export default function TransactionsPage() {
   const navigate = useNavigate();
@@ -115,8 +116,7 @@ export default function TransactionsPage() {
   const categories = useMemo(() => {
     const set = new Set<string>();
     yearItems.forEach((t) => {
-      const c = (t.category || "Other").trim() || "Other";
-      set.add(c);
+      set.add(normalizeCategory(t.category));
     });
     return ["all", ...Array.from(set).sort((a, b) => a.localeCompare(b))];
   }, [yearItems]);
@@ -130,7 +130,7 @@ export default function TransactionsPage() {
 
     if (categoryFilter !== "all") {
       list = list.filter((t) => {
-        const c = (t.category || "Other").trim() || "Other";
+        const c = normalizeCategory(t.category);
         return c === categoryFilter;
       });
     }

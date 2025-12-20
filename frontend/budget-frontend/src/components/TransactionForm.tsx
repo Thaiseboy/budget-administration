@@ -1,5 +1,6 @@
 import { useState } from "react";
 import FormFieldGroup from "./FormFieldGroup";
+import { normalizeCategory } from "../utils/categories";
 
 type FormData = {
     type: "income" | "expense";
@@ -30,12 +31,16 @@ export default function TransactionForm({
     onSubmit,
     onCancel,
 }: Props) {
+    const initialCategoryRaw = (initialValues?.category ?? "").trim();
+    const initialCategory = initialCategoryRaw
+        ? normalizeCategory(initialCategoryRaw)
+        : "";
     const [formData, setFormData] = useState<FormData>({
         type: initialValues?.type ?? "expense",
         amount: initialValues?.amount ?? "",
         date: initialValues?.date ?? new Date().toISOString().split('T')[0], //Today as default
         description: initialValues?.description ?? "",
-        category: initialValues?.category ?? "",
+        category: initialCategory,
     });
 
     const [loading, setLoading] = useState(false);
@@ -120,7 +125,7 @@ export default function TransactionForm({
                 amount: amountNumber,
                 date: formData.date,
                 description: formData.description || undefined,
-                category: formData.category || undefined,
+                category: normalizeCategory(formData.category),
             });
         } catch (err) {
             setError(err instanceof Error ? err.message : "Failed to save transaction");

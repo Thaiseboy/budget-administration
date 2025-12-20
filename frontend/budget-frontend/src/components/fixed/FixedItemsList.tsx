@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { FixedMonthlyItem } from "../../types/fixedItem";
 import { createFixedItem, updateFixedItem, deleteFixedItem } from "../../api/fixedItems";
+import { normalizeCategory } from "../../utils/categories";
 
 type Props = {
   items: FixedMonthlyItem[];
@@ -31,11 +32,15 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      const payload = {
+        ...formData,
+        category: normalizeCategory(formData.category),
+      };
       if (editingId) {
-        await updateFixedItem(editingId, formData);
+        await updateFixedItem(editingId, payload);
         setEditingId(null);
       } else {
-        await createFixedItem(formData);
+        await createFixedItem(payload);
         setIsAdding(false);
       }
       setFormData({
@@ -53,13 +58,14 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
 
   const handleEdit = (item: FixedMonthlyItem) => {
     setEditingId(item.id ?? null);
+    const normalizedCategory = item.category ? normalizeCategory(item.category) : null;
     setFormData({
       description: item.description,
-      category: item.category,
+      category: normalizedCategory,
       amount: item.amount,
       type: item.type,
     });
-    const currentCategory = (item.category ?? "").trim();
+    const currentCategory = (normalizedCategory ?? "").trim();
     setUseCustomCategory(currentCategory.length > 0 && !categories.includes(currentCategory));
     setIsAdding(true);
   };

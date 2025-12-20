@@ -1,4 +1,5 @@
 import type { Transaction } from "../types/transaction";
+import { normalizeCategory } from "./categories";
 
 export type CategoryTotal = {
   category: string;
@@ -14,7 +15,7 @@ export function buildCategoryTotals(
   for (const t of items) {
     if (t.type !== type) continue;
 
-    const key = t.category || "Other";
+    const key = normalizeCategory(t.category);
     map.set(key, (map.get(key) ?? 0) + t.amount);
   }
 
