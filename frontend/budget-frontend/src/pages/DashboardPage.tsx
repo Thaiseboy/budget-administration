@@ -56,7 +56,6 @@ export default function DashboardPage() {
         return items.filter((t) => t.date.startsWith(prefix));
     }, [items, selectedYear, selectedMonth]);
 
-    // Load month plan when year/month changes
     useEffect(() => {
         getMonthPlan(selectedYear, selectedMonth)
             .then((data) => setMonthPlan(data))
@@ -73,12 +72,11 @@ export default function DashboardPage() {
             .catch(() => setFixedItems([]));
     };
 
-    // Load fixed items
     useEffect(() => {
         loadFixedItems();
     }, []);
 
-    // Auto-save month plan (debounced)
+    // Auto-save month plan (debounced).
     useEffect(() => {
         const timer = setTimeout(() => {
             if (monthPlan.expected_income >= 0) {
@@ -105,7 +103,6 @@ export default function DashboardPage() {
 
     const hasYearData = yearItems.length > 0;
 
-    // Calculate fixed income and expense
     const fixedIncome = useMemo(() => {
         return fixedItems.filter((item) => item.type === "income").reduce((sum, item) => sum + item.amount, 0);
     }, [fixedItems]);
@@ -114,7 +111,6 @@ export default function DashboardPage() {
         return fixedItems.filter((item) => item.type === "expense").reduce((sum, item) => sum + item.amount, 0);
     }, [fixedItems]);
 
-    // Calculate monthly income and expense from monthItems (variable transactions)
     const variableIncome = useMemo(() => {
         return monthItems.filter((t) => t.type === "income").reduce((sum, t) => sum + t.amount, 0);
     }, [monthItems]);
@@ -123,16 +119,13 @@ export default function DashboardPage() {
         return monthItems.filter((t) => t.type === "expense").reduce((sum, t) => sum + t.amount, 0);
     }, [monthItems]);
 
-    // Total income and expense (fixed + variable)
     const monthIncome = fixedIncome + variableIncome;
     const monthExpense = fixedExpense + variableExpense;
 
-    // Get categories for dropdowns
     const categories = useMemo(() => {
         return getCategories(items);
     }, [items]);
 
-    // Filter transactions for drilldown
     const filteredTransactions = useMemo(() => {
         if (!selectedCategory) return [];
         return yearItems.filter((t) => {
@@ -315,7 +308,6 @@ export default function DashboardPage() {
                         )}
                     </Card>
 
-                    {/* Monthly Plan */}
                     <Card className="mt-6 p-4 sm:p-6">
                         <h2 className="text-base font-semibold text-white">
                             Monthly plan ({MONTH_NAMES[selectedMonth - 1]} {selectedYear})

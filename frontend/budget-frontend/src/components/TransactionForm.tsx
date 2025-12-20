@@ -38,7 +38,7 @@ export default function TransactionForm({
     const [formData, setFormData] = useState<FormData>({
         type: initialValues?.type ?? "expense",
         amount: initialValues?.amount ?? "",
-        date: initialValues?.date ?? new Date().toISOString().split('T')[0], //Today as default
+        date: initialValues?.date ?? new Date().toISOString().split('T')[0],
         description: initialValues?.description ?? "",
         category: initialCategory,
     });
@@ -46,14 +46,11 @@ export default function TransactionForm({
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Track if user wants to use custom category input instead of select
     const [useCustomCategory, setUseCustomCategory] = useState<boolean>(() => {
         const current = (formData.category ?? "").trim();
         return current.length > 0 && !categories.includes(current);
     });
 
-    // as const is a TypeScript const assertion that makes the type narrower/more specific!
-    // If is `type: text` then is type text and not type string.
     const fields = [
         {
             id: "type",

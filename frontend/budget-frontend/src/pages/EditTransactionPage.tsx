@@ -40,7 +40,7 @@ export default function EditTransactionPage() {
         initialValues={{
           type: item.type,
           amount: String(item.amount),
-          date: item.date.slice(0, 10), // ISO -> YYYY-MM-DD
+          date: item.date.slice(0, 10),
           description: item.description ?? "",
           category: item.category ?? "",
         }}

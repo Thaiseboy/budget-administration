@@ -28,16 +28,12 @@ export function sortByDateDesc(items: Transaction[]) {
  * // Returns: Map { "2025-12" => [tx1, tx2], "2025-11" => [tx3] }
  */
 export function groupByMonth(items: Transaction[]) {
-  // Sort transactions by date (newest first)
   const sorted = sortByDateDesc(items);
   const map = new Map<MonthKey, Transaction[]>();
 
-  // Iterate through sorted transactions and group by month
   for (const t of sorted) {
     const key = monthKeyFromDate(t.date);
-    // Create new array for month if it doesn't exist
     if (!map.has(key)) map.set(key, []);
-    // Add transaction to the month's array
     map.get(key)!.push(t);
   }
 

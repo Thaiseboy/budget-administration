@@ -22,7 +22,6 @@ export default function AppShell() {
   const [budgetsByYear, setBudgetsByYear] = useState<Record<number, CategoryBudget[]>>({});
   const budgetsLoadingRef = useRef<Record<number, boolean>>({});
 
-  // Load transactions once on mount
   useEffect(() => {
     getTransactions()
       .then((data) => setItems(data))
@@ -33,19 +32,16 @@ export default function AppShell() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Callback when a new transaction is created
   function handleCreated(newTransaction: Transaction) {
     setItems((prev) => [...prev, newTransaction]);
   }
 
-  // Callback when a transaction is updated
   function handleUpdated(updatedTransaction: Transaction) {
     setItems((prev) =>
       prev.map((item) => (item.id === updatedTransaction.id ? updatedTransaction : item))
     );
   }
 
-  // Callback when a transaction is deleted
   function handleDeleted(id: number) {
     setItems((prev) => prev.filter((item) => item.id !== id));
   }
@@ -104,7 +100,6 @@ export default function AppShell() {
     onCreated: handleCreated,
     onUpdated: handleUpdated,
     onDeleted: handleDeleted,
-    // Budget cache
     budgetsByYear,
     loadBudgets,
     upsertBudgetInCache,

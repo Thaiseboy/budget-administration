@@ -35,7 +35,7 @@ export default function TransactionsPage() {
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [sortKey, setSortKey] = useState<SortKey>("date_desc");
-  const [monthFilter, setMonthFilter] = useState<string>("all"); // "all" or "01".."12"
+  const [monthFilter, setMonthFilter] = useState<string>("all");
 
   function handleEdit(id: number) {
     navigate(`/transactions/${id}/edit`);
@@ -81,7 +81,6 @@ export default function TransactionsPage() {
       const [year, month] = monthKey.split("-");
       const dateStr = `${year}-${month}-01`;
 
-      // Create transactions from fixed items
       const promises = fixedItems.map((fixedItem) => {
         return createTransaction({
           date: dateStr,
@@ -94,7 +93,6 @@ export default function TransactionsPage() {
 
       const createdTransactions = await Promise.all(promises);
 
-      // Add to context
       createdTransactions.forEach((t) => onCreated(t));
 
       toast.success(`Applied ${fixedItems.length} fixed item(s) to ${monthKey}`);
@@ -110,7 +108,7 @@ export default function TransactionsPage() {
       const year = parseInt(t.date.slice(0, 4), 10);
       yearSet.add(year);
     });
-    return Array.from(yearSet).sort((a, b) => b - a); // newest first
+    return Array.from(yearSet).sort((a, b) => b - a);
   }, [items]);
 
   const yearItems = useMemo(() => {
@@ -189,18 +187,16 @@ export default function TransactionsPage() {
     return `${y}-${m}`;
   }
 
-  // Load fixed items
   useEffect(() => {
     getFixedItems()
       .then((data) => setFixedItems(data))
       .catch(() => setFixedItems([]));
   }, []);
 
+  // Keep visible month sections aligned with available data.
   useEffect(() => {
-    // remove invalid keys when year/data changes
     setOpenMonthKeys((prev) => prev.filter((k) => monthKeys.includes(k)));
 
-    // open current month by default if nothing open
     const cmk = getCurrentMonthKey();
     if (openMonthKeys.length === 0 && monthKeys.includes(cmk)) {
       setOpenMonthKeys([cmk]);
@@ -215,6 +211,7 @@ export default function TransactionsPage() {
     return openMonthKeys.flatMap((key) => monthMap.get(key) ?? []);
   }, [monthFilter, openMonthKeys, monthMap, filteredSortedItems]);
 
+  // When a month filter is set, open that month or fall back to the first available one.
   useEffect(() => {
     if (monthFilter === "all") return;
 
