@@ -61,7 +61,7 @@ export default function DashboardPage() {
                 <TransactionSummary items={yearItems} />
             </div>
 
-            <div className="mt-6 rounded-xl border bg-white p-6">
+            <div className="mt-6 rounded-xl border bg-slate-900 p-6">
                 <h2 className="text-base font-semibold">Income vs Expense</h2>
                 <p className="mt-2 text-sm text-slate-600">
                     Overview per month for {selectedYear}.
