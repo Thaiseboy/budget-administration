@@ -1,14 +1,18 @@
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import AppLayout from "../layouts/AppLayout";
 import { createTransaction } from "../api/transactions";
 import TransactionForm from "../components/TransactionForm";
 import { useToast } from "../components/toast/ToastContext";
 import { useAppContext } from "../hooks/useAppContext";
+import { getCategories } from "../utils/categories";
 
 export default function NewTransactionPage() {
   const navigate = useNavigate();
   const toast = useToast();
-  const { onCreated } = useAppContext();
+  const { items, onCreated } = useAppContext();
+
+  const categories = useMemo(() => getCategories(items), [items]);
 
   return (
     <AppLayout>
@@ -16,6 +20,7 @@ export default function NewTransactionPage() {
 
       <TransactionForm
         submitLabel="Create"
+        categories={categories}
         onSubmit={async (data) => {
           const newTransaction = await createTransaction(data);
           onCreated(newTransaction);

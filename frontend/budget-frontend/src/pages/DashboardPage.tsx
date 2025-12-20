@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import AppLayout from "../layouts/AppLayout";
 import TransactionSummary from "../components/TransactionSummary";
 import { useAppContext } from "../hooks/useAppContext";
@@ -8,16 +8,21 @@ import { buildMonthlyTotals, withCumulativeBalance } from "../utils/monthlyTotal
 import BalanceTrendChart from "../components/charts/BalanceTrendChart";
 import { buildCategoryTotals } from "../utils/categoryTotals";
 import CategoryBreakdownChart from "../components/charts/CategoryBreakdownChart";
+import CategoryBudgetList from "../components/budgets/CategoryBudgetList";
 
 function getYear(date: string) {
     return Number(date.slice(0, 4));
 }
 
 export default function DashboardPage() {
-    const { items } = useAppContext();
+    const { items, budgetsByYear, loadBudgets, upsertBudgetInCache } = useAppContext();
     const currentYear = new Date().getFullYear();
     const [selectedYear, setSelectedYear] = useState<number>(currentYear);
     const [categoryType, setCategoryType] = useState<"expense" | "income">("expense");
+
+    useEffect(() => {
+        loadBudgets(selectedYear);
+    }, [selectedYear, loadBudgets]);
 
     const years = useMemo(() => {
         const set = new Set(items.map((t) => getYear(t.date)));
@@ -42,6 +47,8 @@ export default function DashboardPage() {
     }, [yearItems, categoryType]);
 
     const hasYearData = yearItems.length > 0;
+
+    const budgets = budgetsByYear[selectedYear] ?? [];
 
     return (
         <AppLayout>
@@ -145,6 +152,15 @@ export default function DashboardPage() {
                         <div className="mt-4">
                             <CategoryBreakdownChart data={categoryData} />
                         </div>
+                    </div>
+
+                    <div className="mt-6">
+                        <CategoryBudgetList
+                            year={selectedYear}
+                            yearItems={yearItems}
+                            budgets={budgets}
+                            onBudgetSaved={upsertBudgetInCache}
+                        />
                     </div>
                 </>
             )}
