@@ -103,49 +103,58 @@ export default function TransactionsPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Transactions</h1>
 
-        <Link
-          to="/transactions/new"
-          className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
-        >
-          Add transaction
-        </Link>
+        <div>
+          <Link
+            to="/dashboard"
+            className="rounded-lg border border-slate-600 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800"
+          >
+            Dashboard
+          </Link>
+
+          <Link
+            to="/transactions/new"
+            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 ml-4"
+          >
+            Add transaction
+          </Link>
+        </div>
       </div>
 
       {years.length > 0 && (
-            <div className="mt-4">
-              <label htmlFor="year-select" className="block text-sm font-medium text-slate-300 mb-2">
-                Select Year
-              </label>
-              <select
-                id="year-select"
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(Number(e.target.value))}
-                className="rounded-lg border border-slate-600 bg-slate-700 text-white px-3 py-2 focus:border-slate-500 focus:outline-none"
-              >
-                {years.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
+        <div className="mt-4">
+          <label htmlFor="year-select" className="block text-sm font-medium text-slate-300 mb-2">
+            Select Year
+          </label>
+          <select
+            id="year-select"
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(Number(e.target.value))}
+            className="rounded-lg border border-slate-600 bg-slate-700 text-white px-3 py-2 focus:border-slate-500 focus:outline-none"
+          >
+            {years.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
-          <div className="mt-4">
-            <TransactionSummary items={selectedItems} />
-          </div>
+      <div className="mt-4">
+        <TransactionSummary items={selectedItems} />
+      </div>
 
-          {monthEntries.map(([monthKey, monthItems]) => (
-            <MonthlyTransactionSection
-              key={monthKey}
-              monthKey={monthKey}
-              items={monthItems}
-              isOpen={openMonthKeys.includes(monthKey)}
-              onToggle={() => toggleMonth(monthKey)}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-          ))}
+      {monthEntries.map(([monthKey, monthItems]) => (
+        <MonthlyTransactionSection
+          key={monthKey}
+          monthKey={monthKey}
+          items={monthItems}
+          isOpen={openMonthKeys.includes(monthKey)}
+          onToggle={() => toggleMonth(monthKey)}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      ))}
 
       {yearItems.length === 0 && (
         <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-6 text-center text-sm text-slate-400">
