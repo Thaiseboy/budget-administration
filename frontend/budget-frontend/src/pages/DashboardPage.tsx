@@ -72,12 +72,21 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
                 <h1 className="text-xl font-semibold text-white">Dashboard</h1>
 
-                <Link
-                    to="/transactions"
-                    className="rounded-lg border border-slate-600 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800"
-                >
-                    View Transactions
-                </Link>
+                <div>
+                    <Link
+                        to="/transactions"
+                        className="rounded-lg border border-slate-600 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800"
+                    >
+                        View Transactions
+                    </Link>
+
+                    <Link
+                        to="/transactions/new"
+                        className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 ml-4"
+                    >
+                        Add transaction
+                    </Link>
+                </div>
             </div>
 
             <div className="mt-4 flex items-center gap-3">
