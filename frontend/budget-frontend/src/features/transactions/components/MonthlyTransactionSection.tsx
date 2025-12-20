@@ -1,10 +1,9 @@
-import type { Transaction } from "../types/transaction";
-import TransactionSummary from "./TransactionSummary";
+import type { Transaction } from "../../../types/transaction";
+import TransactionSummary from "../../../components/transactions/TransactionSummary";
 import TransactionList from "./TransactionList";
 import { VscEye } from "react-icons/vsc";
 import { VscEyeClosed } from "react-icons/vsc";
 
-// Formatted month and year in Dutch (e.g. "december 2025")
 function formatMonthTitle(monthKey: string) {
     const [y, m] = monthKey.split("-").map(Number);
     const date = new Date(y, m - 1, 1);

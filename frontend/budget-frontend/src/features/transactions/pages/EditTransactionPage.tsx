@@ -1,11 +1,13 @@
 import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import AppLayout from "../layouts/AppLayout";
-import { updateTransaction } from "../api/transactions";
+import AppLayout from "../../../layouts/AppLayout";
+import { updateTransaction } from "../../../api/transactions";
 import TransactionForm from "../components/TransactionForm";
-import { useToast } from "../components/toast/ToastContext";
-import { useAppContext } from "../hooks/useAppContext";
-import { getCategories } from "../utils/categories";
+import { useToast } from "../../../components/feedback/ToastContext";
+import { useAppContext } from "../../../hooks/useAppContext";
+import { getCategories } from "../../../utils/categories";
+import PageHeader from "../../../components/ui/PageHeader";
+import Card from "../../../components/ui/Card";
 
 export default function EditTransactionPage() {
   const navigate = useNavigate();
@@ -21,16 +23,16 @@ export default function EditTransactionPage() {
   if (!item) {
     return (
       <AppLayout>
-        <div className="rounded-xl border border-slate-700 bg-slate-800 p-4 text-slate-400 sm:p-6">
+        <Card className="p-4 text-slate-400 sm:p-6">
           Transaction not found
-        </div>
+        </Card>
       </AppLayout>
     );
   }
 
   return (
     <AppLayout>
-      <h1 className="text-lg font-semibold sm:text-xl">Edit transaction</h1>
+      <PageHeader title="Edit transaction" />
 
       <TransactionForm
         submitLabel="Update"
@@ -38,7 +40,7 @@ export default function EditTransactionPage() {
         initialValues={{
           type: item.type,
           amount: String(item.amount),
-          date: item.date.slice(0, 10), // ISO -> YYYY-MM-DD
+          date: item.date.slice(0, 10),
           description: item.description ?? "",
           category: item.category ?? "",
         }}

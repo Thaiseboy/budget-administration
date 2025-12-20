@@ -1,5 +1,5 @@
 export type MonthPlan = {
   year: number;
-  month: number; // 1-12
+  month: number;
   expected_income: number;
 };

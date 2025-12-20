@@ -155,7 +155,6 @@ export default function FormField(props: FormFieldProps) {
       );
     }
 
-    // Default input
     const { value, onChange, step, placeholder, min, max } = props as TextInputProps;
     return (
       <input
@@ -174,7 +173,6 @@ export default function FormField(props: FormFieldProps) {
     );
   };
 
-  // Other layout for checkbox and radio
   if (type === "checkbox" || type === "radio") {
     return (
       <div className={wrapperClass || "flex items-center"}>
@@ -197,7 +195,6 @@ export default function FormField(props: FormFieldProps) {
     );
   }
 
-  // Normale layout voor andere inputs
   return (
     <div className={wrapperClass}>
       {label && (

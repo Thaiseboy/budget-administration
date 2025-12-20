@@ -1,7 +1,9 @@
 import { useMemo } from "react";
-import type { Transaction } from "../../types/transaction";
-import { formatCurrency } from "../../utils/formatCurrency";
-import { normalizeCategory } from "../../utils/categories";
+import type { Transaction } from "../../../types/transaction";
+import { formatCurrency } from "../../../utils/formatCurrency";
+import { normalizeCategory } from "../../../utils/categories";
+import Card from "../../../components/ui/Card";
+import { MONTH_NAMES } from "../../../utils/months";
 
 type Props = {
   year: number;
@@ -20,7 +22,6 @@ export default function CategoryBudgetList({
   monthItems,
   totalRemaining,
 }: Props) {
-  // Calculate monthly totals
   const monthlyIncome = useMemo(() => {
     return monthItems.filter((t) => t.type === "income").reduce((sum, t) => sum + t.amount, 0);
   }, [monthItems]);
@@ -31,7 +32,6 @@ export default function CategoryBudgetList({
 
   const monthlyRemaining = monthlyIncome - monthlyExpense;
 
-  // Calculate totals by category (both income and expense)
   const categoryTotals = useMemo(() => {
     const incomeMap = new Map<string, number>();
     const expenseMap = new Map<string, number>();
@@ -54,20 +54,15 @@ export default function CategoryBudgetList({
     return Array.from(set).sort((a, b) => a.localeCompare(b));
   }, [monthItems]);
 
-  // Calculate percentage of remaining budget for expense categories
   function percentOfRemaining(spent: number) {
     if (totalRemaining <= 0) return 0;
     return Math.round((spent / totalRemaining) * 100);
   }
 
-  const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
-  const monthName = monthNames[month - 1];
+  const monthName = MONTH_NAMES[month - 1];
 
   return (
-    <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-4 sm:p-6">
+    <Card className="mt-6 p-4 sm:p-6">
       <h2 className="text-base font-semibold text-white">Spending Overview ({monthName} {year})</h2>
       <p className="mt-2 text-sm text-slate-400">
         Income and expenses per category. Status shows if a category uses too much of your remaining budget.
@@ -98,10 +93,9 @@ export default function CategoryBudgetList({
               const income = categoryTotals.incomeMap.get(category) ?? 0;
               const expense = categoryTotals.expenseMap.get(category) ?? 0;
 
-              // Calculate percentage of remaining budget (for expenses only)
               const p = percentOfRemaining(expense);
 
-              // Status based on percentage of remaining budget or if already in negative
+              // Status thresholds are based on share of remaining budget.
               const status =
                 expense === 0 ? null :
                 totalRemaining < 0 ? "Over budget" :
@@ -160,6 +154,6 @@ export default function CategoryBudgetList({
           No transactions for this month yet.
         </div>
       )}
-    </div>
+    </Card>
   );
 }

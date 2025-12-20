@@ -20,7 +20,6 @@ export function getCategories(items: Transaction[]): string[] {
     if (normalized) set.add(normalized);
   }
 
-  // Always include Other as fallback
   set.add("Other");
 
   return Array.from(set).sort((a, b) => a.localeCompare(b));

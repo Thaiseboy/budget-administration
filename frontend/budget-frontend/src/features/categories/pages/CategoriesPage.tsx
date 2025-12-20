@@ -1,15 +1,12 @@
 import { useMemo, useState } from "react";
-import AppLayout from "../layouts/AppLayout";
-import { useAppContext } from "../hooks/useAppContext";
-import { normalizeCategory } from "../utils/categories";
-import { mergeCategories } from "../api/categories";
-import { useToast } from "../components/toast/ToastContext";
-import { useConfirm } from "../components/confirm/ConfirmContext";
-
-type CategoryRow = {
-  name: string;
-  count: number;
-};
+import AppLayout from "../../../layouts/AppLayout";
+import { useAppContext } from "../../../hooks/useAppContext";
+import { normalizeCategory } from "../../../utils/categories";
+import { mergeCategories } from "../../../api/categories";
+import { useToast } from "../../../components/feedback/ToastContext";
+import { useConfirm } from "../../../components/feedback/ConfirmContext";
+import PageHeader from "../../../components/ui/PageHeader";
+import Card from "../../../components/ui/Card";
 
 export default function CategoriesPage() {
   const { items, setItems } = useAppContext();
@@ -87,16 +84,12 @@ export default function CategoriesPage() {
 
   return (
     <AppLayout>
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-lg font-semibold text-white sm:text-xl">Categories</h1>
-          <p className="mt-1 text-sm text-slate-400">
-            Rename or merge categories to keep your data clean.
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title="Categories"
+        description="Rename or merge categories to keep your data clean."
+      />
 
-      <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-4 sm:p-6">
+      <Card className="mt-6 p-4 sm:p-6">
         <div className="hidden grid-cols-12 gap-4 border-b border-slate-700 pb-3 text-xs font-semibold text-slate-400 sm:grid">
           <div className="col-span-3">Category</div>
           <div className="col-span-2">Transactions</div>
@@ -182,7 +175,7 @@ export default function CategoriesPage() {
             </div>
           );
         })}
-      </div>
+      </Card>
     </AppLayout>
   );
 }

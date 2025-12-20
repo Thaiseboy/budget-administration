@@ -7,7 +7,7 @@ import {
   Tooltip,
   CartesianGrid,
 } from "recharts";
-import { formatCurrency } from "../../utils/formatCurrency";
+import { formatCurrency } from "../../../../utils/formatCurrency";
 
 type Props = {
   data: {

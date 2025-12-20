@@ -1,7 +1,8 @@
 import { useState } from "react";
-import type { FixedMonthlyItem } from "../../types/fixedItem";
-import { createFixedItem, updateFixedItem, deleteFixedItem } from "../../api/fixedItems";
-import { normalizeCategory } from "../../utils/categories";
+import type { FixedMonthlyItem } from "../../../types/fixedItem";
+import { createFixedItem, updateFixedItem, deleteFixedItem } from "../../../api/fixedItems";
+import { normalizeCategory } from "../../../utils/categories";
+import FormFieldGroup from "../../../components/form/FormFieldGroup";
 
 type Props = {
   items: FixedMonthlyItem[];
@@ -28,6 +29,88 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
 
   const totalFixedIncome = incomeItems.reduce((sum, item) => sum + item.amount, 0);
   const totalFixedExpense = expenseItems.reduce((sum, item) => sum + item.amount, 0);
+
+  const fieldUi = {
+    labelClass: "block text-sm font-medium text-slate-700 dark:text-slate-300",
+    inputClass:
+      "border-slate-300 bg-white text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-white",
+  };
+
+  const fields = [
+    {
+      id: "description",
+      name: "description",
+      label: "Description",
+      type: "text" as const,
+      required: true,
+      placeholder: "e.g., Salary, Rent, Internet",
+      ...fieldUi,
+    },
+    useCustomCategory
+      ? {
+          id: "category",
+          name: "category",
+          label: "Category (Custom)",
+          type: "text" as const,
+          placeholder: "Enter custom category",
+          ...fieldUi,
+        }
+      : {
+          id: "category",
+          name: "category",
+          label: "Category",
+          type: "select" as const,
+          options: [
+            { label: "-- Select Category --", value: "" },
+            ...categories.map((cat) => ({ label: cat, value: cat })),
+          ],
+          ...fieldUi,
+        },
+    {
+      id: "amount",
+      name: "amount",
+      label: "Amount",
+      type: "number" as const,
+      required: true,
+      step: "0.01",
+      min: 0,
+      ...fieldUi,
+    },
+    {
+      id: "type",
+      name: "type",
+      label: "Type",
+      type: "select" as const,
+      required: true,
+      options: [
+        { label: "Income", value: "income" },
+        { label: "Expense", value: "expense" },
+      ],
+      ...fieldUi,
+    },
+  ];
+
+  const handleFieldChange = (name: string, value: string | boolean) => {
+    if (name === "amount") {
+      const amountValue = Number(value);
+      setFormData((prev) => ({
+        ...prev,
+        amount: Number.isFinite(amountValue) ? amountValue : 0,
+      }));
+      return;
+    }
+
+    if (name === "category") {
+      const nextValue = typeof value === "string" ? value : "";
+      setFormData((prev) => ({
+        ...prev,
+        category: nextValue.trim() ? nextValue : null,
+      }));
+      return;
+    }
+
+    setFormData((prev) => ({ ...prev, [name]: value as string }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -128,104 +211,33 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
       {isAdding && (
         <form onSubmit={handleSubmit} className="mb-6 rounded bg-slate-50 p-4 dark:bg-slate-700">
           <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                Description
-              </label>
-              <input
-                type="text"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                required
-                className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
-                placeholder="e.g., Salary, Rent, Internet"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                Category
-              </label>
-              {useCustomCategory ? (
-                <input
-                  type="text"
-                  value={formData.category ?? ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, category: e.target.value || null })
-                  }
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
-                  placeholder="Enter custom category"
-                />
-              ) : (
-                <select
-                  value={formData.category ?? ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, category: e.target.value || null })
-                  }
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+            <FormFieldGroup
+              fields={fields}
+              formData={formData}
+              onFieldChange={handleFieldChange}
+            />
+            <div className="flex flex-col gap-2 sm:col-span-2 sm:flex-row sm:items-center sm:justify-between">
+              {formData.category && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData((prev) => ({ ...prev, category: null }));
+                    setUseCustomCategory(false);
+                  }}
+                  className="text-xs text-red-400 hover:text-red-300 underline"
                 >
-                  <option value="">-- Select Category --</option>
-                  {categories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
-                </select>
+                  ✕ Clear category
+                </button>
               )}
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                {formData.category && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setFormData((prev) => ({ ...prev, category: null }));
-                      setUseCustomCategory(false);
-                    }}
-                    className="text-xs text-red-400 hover:text-red-300 underline"
-                  >
-                    ✕ Clear category
-                  </button>
-                )}
-                <div className={formData.category ? "" : "sm:ml-auto"}>
-                  <button
-                    type="button"
-                    onClick={() => setUseCustomCategory((prev) => !prev)}
-                    className="text-xs text-slate-400 hover:text-slate-300 underline"
-                  >
-                    {useCustomCategory ? "← Use existing category" : "+ Add custom category"}
-                  </button>
-                </div>
+              <div className={formData.category ? "" : "sm:ml-auto"}>
+                <button
+                  type="button"
+                  onClick={() => setUseCustomCategory((prev) => !prev)}
+                  className="text-xs text-slate-400 hover:text-slate-300 underline"
+                >
+                  {useCustomCategory ? "← Use existing category" : "+ Add custom category"}
+                </button>
               </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                Amount
-              </label>
-              <input
-                type="number"
-                step="0.01"
-                min="0"
-                value={formData.amount}
-                onChange={(e) =>
-                  setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })
-                }
-                required
-                className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                Type
-              </label>
-              <select
-                value={formData.type}
-                onChange={(e) =>
-                  setFormData({ ...formData, type: e.target.value as "income" | "expense" })
-                }
-                required
-                className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
-              >
-                <option value="income">Income</option>
-                <option value="expense">Expense</option>
-              </select>
             </div>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row">
