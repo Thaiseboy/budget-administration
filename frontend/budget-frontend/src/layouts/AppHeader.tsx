@@ -10,35 +10,32 @@ export default function AppHeader() {
   return (
     <header className="border-b border-slate-700 bg-slate-800">
       <div className="mx-auto max-w-5xl px-4 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          <div className="font-semibold text-white">
-            <HiOutlineCurrencyEuro className="inline-block text-3xl text-amber-300 align-middle" />
-            Get money Administration
-          </div>
-
-          <nav className="flex gap-4">
-            <Link
-              to="/dashboard"
-              className={`text-sm transition-colors ${
-                isActive("/dashboard")
-                  ? "text-emerald-400 font-medium"
-                  : "text-slate-400 hover:text-slate-200"
-              }`}
-            >
-              Dashboard
-            </Link>
-            <Link
-              to="/transactions"
-              className={`text-sm transition-colors ${
-                isActive("/transactions")
-                  ? "text-emerald-400 font-medium"
-                  : "text-slate-400 hover:text-slate-200"
-              }`}
-            >
-              Transactions
-            </Link>
-          </nav>
+        <div className="font-semibold text-white">
+          <HiOutlineCurrencyEuro className="inline-block text-3xl text-amber-300 align-middle" />
+          Get money Administration
         </div>
+
+        <nav className="flex gap-6">
+          <Link
+            to="/dashboard"
+            className={`text-sm transition-colors ${
+              isActive("/dashboard")
+                ? "text-emerald-400 font-medium"
+                : "text-slate-400 hover:text-slate-200"
+            }`} >
+            Dashboard
+          </Link>
+
+          <Link
+            to="/transactions"
+            className={`text-sm transition-colors ${
+              isActive("/transactions")
+                ? "text-emerald-400 font-medium"
+                : "text-slate-400 hover:text-slate-200"
+            }`}>
+            Transactions
+          </Link>
+        </nav>
 
         <div className="text-4xl text-red-600">
           <VscVscodeInsiders />
