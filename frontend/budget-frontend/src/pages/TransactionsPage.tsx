@@ -11,6 +11,7 @@ import { useAppContext } from "../hooks/useAppContext";
 import type { FixedMonthlyItem } from "../types/fixedItem";
 import { getFixedItems } from "../api/fixedItems";
 import { normalizeCategory } from "../utils/categories";
+import { downloadCsv } from "../utils/csv";
 
 export default function TransactionsPage() {
   const navigate = useNavigate();
@@ -149,6 +150,16 @@ export default function TransactionsPage() {
 
     return list;
   }, [yearItems, typeFilter, categoryFilter, monthFilter, sortKey]);
+
+  const exportRows = useMemo(() => {
+    return filteredSortedItems.map((item) => ({
+      date: item.date,
+      type: item.type,
+      category: normalizeCategory(item.category),
+      amount: item.amount,
+      description: item.description ?? "",
+    }));
+  }, [filteredSortedItems]);
 
   const monthMap = useMemo(() => {
     return groupByMonth(filteredSortedItems);
@@ -330,6 +341,16 @@ useEffect(() => {
           className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-300 hover:text-white"
         >
           Reset
+        </button>
+
+        <button
+          onClick={() => {
+            const filename = `transactions-${selectedYear}-${monthFilter}.csv`;
+            downloadCsv(filename, exportRows);
+          }}
+          className="rounded-lg bg-slate-700 px-3 py-2 text-sm text-white hover:bg-slate-600"
+        >
+          Export CSV
         </button>
       </div>
 
