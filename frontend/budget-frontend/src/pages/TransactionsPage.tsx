@@ -2,21 +2,25 @@ import { useEffect, useState, useMemo } from "react";
 import AppLayout from "../layouts/AppLayout";
 import TransactionSummary from "../components/TransactionSummary";
 import { Link, useNavigate } from "react-router-dom";
-import { deleteTransaction } from "../api/transactions";
+import { deleteTransaction, createTransaction } from "../api/transactions";
 import { useToast } from "../components/toast/ToastContext";
 import { useConfirm } from "../components/confirm/ConfirmContext";
 import { groupByMonth } from "../utils/groupTransactions";
 import MonthlyTransactionSection from "../components/MonthlyTransactionSection";
 import { useAppContext } from "../hooks/useAppContext";
+import type { FixedMonthlyItem } from "../types/fixedItem";
+import { getFixedItems } from "../api/fixedItems";
+import type { Transaction } from "../types/transaction";
 
 export default function TransactionsPage() {
   const navigate = useNavigate();
   const toast = useToast();
   const confirm = useConfirm();
-  const { items, onDeleted } = useAppContext();
+  const { items, onDeleted, onCreated } = useAppContext();
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState<number>(currentYear);
   const [openMonthKeys, setOpenMonthKeys] = useState<string[]>([]);
+  const [fixedItems, setFixedItems] = useState<FixedMonthlyItem[]>([]);
 
   function handleEdit(id: number) {
     navigate(`/transactions/${id}/edit`);
@@ -39,6 +43,49 @@ export default function TransactionsPage() {
       toast.success("Transaction deleted");
     } catch {
       toast.error("Failed to delete transaction");
+    }
+  }
+
+  async function handleApplyFixedItems(monthKey: string) {
+    if (fixedItems.length === 0) {
+      toast.error("No fixed items to apply");
+      return;
+    }
+
+    const ok = await confirm({
+      title: "Apply fixed items?",
+      message: `This will create ${fixedItems.length} transaction(s) for ${monthKey}. You can edit or delete them afterwards.`,
+      confirmText: "Apply",
+      cancelText: "Cancel",
+      variant: "default",
+    });
+
+    if (!ok) return;
+
+    try {
+      const [year, month] = monthKey.split("-");
+      const dateStr = `${year}-${month}-01`;
+
+      // Create transactions from fixed items
+      const promises = fixedItems.map((fixedItem) => {
+        return createTransaction({
+          date: dateStr,
+          description: fixedItem.description,
+          amount: fixedItem.amount,
+          type: fixedItem.type,
+          category: fixedItem.category || undefined,
+        });
+      });
+
+      const createdTransactions = await Promise.all(promises);
+
+      // Add to context
+      createdTransactions.forEach((t) => onCreated(t));
+
+      toast.success(`Applied ${fixedItems.length} fixed item(s) to ${monthKey}`);
+    } catch (err) {
+      toast.error("Failed to apply fixed items");
+      console.error(err);
     }
   }
 
@@ -79,6 +126,13 @@ export default function TransactionsPage() {
     const m = String(now.getMonth() + 1).padStart(2, "0");
     return `${y}-${m}`;
   }
+
+  // Load fixed items
+  useEffect(() => {
+    getFixedItems()
+      .then((data) => setFixedItems(data))
+      .catch(() => setFixedItems([]));
+  }, []);
 
   useEffect(() => {
     // remove invalid keys when year/data changes
@@ -153,6 +207,8 @@ export default function TransactionsPage() {
           onToggle={() => toggleMonth(monthKey)}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          onApplyFixedItems={() => handleApplyFixedItems(monthKey)}
+          hasFixedItems={fixedItems.length > 0}
         />
       ))}
 

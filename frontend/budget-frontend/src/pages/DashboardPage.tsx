@@ -12,6 +12,12 @@ import CategoryBudgetList from "../components/budgets/CategoryBudgetList";
 import type { CategoryBudget } from "../types/budget";
 import { getBudgets } from "../api/budgets";
 import { formatCurrency } from "../utils/formatCurrency";
+import type { MonthPlan } from "../types/monthPlan";
+import { getMonthPlan, upsertMonthPlan } from "../api/monthPlan";
+import type { FixedMonthlyItem } from "../types/fixedItem";
+import { getFixedItems } from "../api/fixedItems";
+import { FixedItemsList } from "../components/fixed/FixedItemsList";
+import { getCategories } from "../utils/categories";
 
 function getYear(date: string) {
     return Number(date.slice(0, 4));
@@ -32,6 +38,12 @@ export default function DashboardPage() {
     const [budgets, setBudgets] = useState<CategoryBudget[]>([]);
     const [budgetsLoading, setBudgetsLoading] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const [monthPlan, setMonthPlan] = useState<MonthPlan>({
+        year: selectedYear,
+        month: selectedMonth,
+        expected_income: 0,
+    });
+    const [fixedItems, setFixedItems] = useState<FixedMonthlyItem[]>([]);
 
 
     const years = useMemo(() => {
@@ -58,6 +70,41 @@ export default function DashboardPage() {
             .catch(() => setBudgets([]))
             .finally(() => setBudgetsLoading(false));
     }, [selectedYear, selectedMonth]);
+
+    // Load month plan when year/month changes
+    useEffect(() => {
+        getMonthPlan(selectedYear, selectedMonth)
+            .then((data) => setMonthPlan(data))
+            .catch(() => setMonthPlan({
+                year: selectedYear,
+                month: selectedMonth,
+                expected_income: 0,
+            }));
+    }, [selectedYear, selectedMonth]);
+
+    // Load fixed items
+    useEffect(() => {
+        loadFixedItems();
+    }, []);
+
+    const loadFixedItems = () => {
+        getFixedItems()
+            .then((data) => setFixedItems(data))
+            .catch(() => setFixedItems([]));
+    };
+
+    // Auto-save month plan (debounced)
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (monthPlan.expected_income >= 0) {
+                upsertMonthPlan(monthPlan).catch(() => {
+                    console.error("Failed to save month plan");
+                });
+            }
+        }, 600);
+
+        return () => clearTimeout(timer);
+    }, [monthPlan]);
 
     function handleBudgetSaved(saved: CategoryBudget) {
         setBudgets((prev) => {
@@ -115,6 +162,35 @@ export default function DashboardPage() {
     }, [monthItems, budgets]);
 
     const hasYearData = yearItems.length > 0;
+
+    // Calculate fixed income and expense
+    const fixedIncome = useMemo(() => {
+        return fixedItems.filter((item) => item.type === "income").reduce((sum, item) => sum + item.amount, 0);
+    }, [fixedItems]);
+
+    const fixedExpense = useMemo(() => {
+        return fixedItems.filter((item) => item.type === "expense").reduce((sum, item) => sum + item.amount, 0);
+    }, [fixedItems]);
+
+    // Calculate monthly income and expense from monthItems (variable transactions)
+    const variableIncome = useMemo(() => {
+        return monthItems.filter((t) => t.type === "income").reduce((sum, t) => sum + t.amount, 0);
+    }, [monthItems]);
+
+    const variableExpense = useMemo(() => {
+        return monthItems.filter((t) => t.type === "expense").reduce((sum, t) => sum + t.amount, 0);
+    }, [monthItems]);
+
+    // Total income and expense (fixed + variable)
+    const monthIncome = fixedIncome + variableIncome;
+    const monthExpense = fixedExpense + variableExpense;
+
+    const remainingPlanned = monthPlan.expected_income - monthExpense;
+
+    // Get categories for dropdowns
+    const categories = useMemo(() => {
+        return getCategories(items);
+    }, [items]);
 
     // Filter transactions for drilldown
     const filteredTransactions = useMemo(() => {
@@ -336,6 +412,73 @@ export default function DashboardPage() {
                         )}
                     </div>
 
+                    {/* Monthly Plan */}
+                    <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-6">
+                        <h2 className="text-base font-semibold text-white">
+                            Monthly plan ({MONTH_NAMES[selectedMonth - 1]} {selectedYear})
+                        </h2>
+
+                        <div className="mt-4 grid gap-4 md:grid-cols-3">
+                            <div>
+                                <div className="text-xs text-slate-400 mb-2">Income</div>
+                                <div className="space-y-2 text-xs">
+                                    <div className="flex justify-between">
+                                        <span className="text-slate-400">Fixed income:</span>
+                                        <span className="text-green-400 font-semibold">{formatCurrency(fixedIncome)}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-slate-400">Variable income:</span>
+                                        <span className="text-green-400 font-semibold">{formatCurrency(variableIncome)}</span>
+                                    </div>
+                                    <div className="flex justify-between border-t border-slate-600 pt-2">
+                                        <span className="text-white font-semibold">Total income:</span>
+                                        <span className="text-green-300 font-bold">{formatCurrency(monthIncome)}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div className="text-xs text-slate-400 mb-2">Expenses</div>
+                                <div className="space-y-2 text-xs">
+                                    <div className="flex justify-between">
+                                        <span className="text-slate-400">Fixed expenses:</span>
+                                        <span className="text-red-400 font-semibold">{formatCurrency(fixedExpense)}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-slate-400">Variable expenses:</span>
+                                        <span className="text-red-400 font-semibold">{formatCurrency(variableExpense)}</span>
+                                    </div>
+                                    <div className="flex justify-between border-t border-slate-600 pt-2">
+                                        <span className="text-white font-semibold">Total expenses:</span>
+                                        <span className="text-red-300 font-bold">{formatCurrency(monthExpense)}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div className="text-xs text-slate-400 mb-2">Summary</div>
+                                <div className="space-y-2 text-xs">
+                                    <div className="flex justify-between">
+                                        <span className="text-slate-400">Total income:</span>
+                                        <span className="text-green-400 font-semibold">{formatCurrency(monthIncome)}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-slate-400">Total expenses:</span>
+                                        <span className="text-red-400 font-semibold">{formatCurrency(monthExpense)}</span>
+                                    </div>
+                                    <div className="flex justify-between border-t border-slate-600 pt-2">
+                                        <span className="text-white font-semibold">Remaining:</span>
+                                        <span
+                                            className={`font-bold ${(monthIncome - monthExpense) >= 0 ? "text-emerald-300" : "text-red-300"
+                                                }`}
+                                        >
+                                            {formatCurrency(monthIncome - monthExpense)}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <div className="mt-6">
                         {budgetsLoading ? (
@@ -351,6 +494,14 @@ export default function DashboardPage() {
                                 onBudgetSaved={handleBudgetSaved}
                             />
                         )}
+                    </div>
+
+                    <div className="mt-6">
+                        <FixedItemsList
+                            items={fixedItems}
+                            onUpdate={loadFixedItems}
+                            categories={categories}
+                        />
                     </div>
                 </>
             )}

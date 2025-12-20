@@ -18,6 +18,8 @@ type Props = {
     onToggle: () => void;
     onEdit?: (id: number) => void;
     onDelete?: (id: number) => void;
+    onApplyFixedItems?: () => void;
+    hasFixedItems?: boolean;
 };
 
 export default function MonthlyTransactionSection({
@@ -27,6 +29,8 @@ export default function MonthlyTransactionSection({
     onToggle,
     onEdit,
     onDelete,
+    onApplyFixedItems,
+    hasFixedItems = false,
 }: Props) {
     return (
         <section className="mt-6 rounded-xl border border-slate-700 bg-slate-800">
@@ -48,6 +52,16 @@ export default function MonthlyTransactionSection({
 
             {isOpen && (
                 <div className="border-t border-slate-700 px-4 py-4">
+                    {hasFixedItems && onApplyFixedItems && (
+                        <div className="mb-4">
+                            <button
+                                onClick={onApplyFixedItems}
+                                className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+                            >
+                                + Apply Fixed Items to This Month
+                            </button>
+                        </div>
+                    )}
                     <TransactionList items={items} onEdit={onEdit} onDelete={onDelete} />
                 </div>
             )}
