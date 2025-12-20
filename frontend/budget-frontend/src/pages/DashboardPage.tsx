@@ -129,8 +129,6 @@ export default function DashboardPage() {
     const monthIncome = fixedIncome + variableIncome;
     const monthExpense = fixedExpense + variableExpense;
 
-    const remainingPlanned = monthPlan.expected_income - monthExpense;
-
     // Get categories for dropdowns
     const categories = useMemo(() => {
         return getCategories(items);

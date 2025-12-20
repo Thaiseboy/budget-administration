@@ -19,7 +19,7 @@ export default function AppShell() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [budgetsByYear, setBudgetsByYear] = useState<Record<number, CategoryBudget[]>>({});
-const budgetsLoadingRef = useRef<Record<number, boolean>>({});
+  const budgetsLoadingRef = useRef<Record<number, boolean>>({});
 
   // Load transactions once on mount
   useEffect(() => {
@@ -50,32 +50,32 @@ const budgetsLoadingRef = useRef<Record<number, boolean>>({});
   }
 
   async function loadBudgets(year: number) {
-  if (budgetsByYear[year]) return;
+    if (budgetsByYear[year]) return;
 
-  if (budgetsLoadingRef.current[year]) return;
-  budgetsLoadingRef.current[year] = true;
+    if (budgetsLoadingRef.current[year]) return;
+    budgetsLoadingRef.current[year] = true;
 
-  try {
-    const data = await getBudgets(year);
-    setBudgetsByYear((prev) => ({ ...prev, [year]: data }));
-  } finally {
-    budgetsLoadingRef.current[year] = false;
+    try {
+      const data = await getBudgets(year);
+      setBudgetsByYear((prev) => ({ ...prev, [year]: data }));
+    } finally {
+      budgetsLoadingRef.current[year] = false;
+    }
   }
-}
 
-function upsertBudgetInCache(budget: CategoryBudget) {
-  setBudgetsByYear((prev) => {
-    const list = prev[budget.year] ?? [];
-    const idx = list.findIndex((b) => b.category === budget.category);
+  function upsertBudgetInCache(budget: CategoryBudget) {
+    setBudgetsByYear((prev) => {
+      const list = prev[budget.year] ?? [];
+      const idx = list.findIndex((b) => b.category === budget.category);
 
-    const next =
-      idx === -1
-        ? [...list, budget]
-        : list.map((b) => (b.category === budget.category ? budget : b));
+      const next =
+        idx === -1
+          ? [...list, budget]
+          : list.map((b) => (b.category === budget.category ? budget : b));
 
-    return { ...prev, [budget.year]: next };
-  });
-}
+      return { ...prev, [budget.year]: next };
+    });
+  }
 
   if (loading) {
     return (

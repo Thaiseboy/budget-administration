@@ -212,22 +212,22 @@ export default function TransactionsPage() {
     return openMonthKeys.flatMap((key) => monthMap.get(key) ?? []);
   }, [monthFilter, openMonthKeys, monthMap, filteredSortedItems]);
 
-useEffect(() => {
-  if (monthFilter === "all") return;
+  useEffect(() => {
+    if (monthFilter === "all") return;
 
-  const key = `${selectedYear}-${monthFilter}`;
+    const key = `${selectedYear}-${monthFilter}`;
 
-  if (monthKeys.includes(key)) {
-    setOpenMonthKeys([key]);
-    return;
-  }
+    if (monthKeys.includes(key)) {
+      setOpenMonthKeys([key]);
+      return;
+    }
 
-  if (monthKeys.length > 0) {
-    setOpenMonthKeys([monthKeys[0]]);
-  } else {
-    setOpenMonthKeys([]);
-  }
-}, [monthFilter, selectedYear, monthKeys, setOpenMonthKeys]);
+    if (monthKeys.length > 0) {
+      setOpenMonthKeys([monthKeys[0]]);
+    } else {
+      setOpenMonthKeys([]);
+    }
+  }, [monthFilter, selectedYear, monthKeys, setOpenMonthKeys]);
 
   return (
     <AppLayout>
@@ -277,11 +277,10 @@ useEffect(() => {
             <button
               key={v}
               onClick={() => setTypeFilter(v)}
-              className={`flex-1 rounded-md px-3 py-1 text-sm transition-colors sm:flex-none ${
-                typeFilter === v
+              className={`flex-1 rounded-md px-3 py-1 text-sm transition-colors sm:flex-none ${typeFilter === v
                   ? "bg-slate-700 text-white"
                   : "text-slate-300 hover:text-white"
-              }`}
+                }`}
             >
               {v === "all" ? "All" : v === "income" ? "Income" : "Expense"}
             </button>

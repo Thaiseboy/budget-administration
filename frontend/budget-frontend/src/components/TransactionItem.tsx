@@ -1,6 +1,5 @@
 import type { Transaction } from "../types/transaction";
 import { formatCurrency } from "../utils/formatCurrency";
-import { Link } from "react-router-dom";
 
 type Props = {
   item: Transaction;

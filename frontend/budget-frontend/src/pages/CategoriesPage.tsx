@@ -6,11 +6,6 @@ import { mergeCategories } from "../api/categories";
 import { useToast } from "../components/toast/ToastContext";
 import { useConfirm } from "../components/confirm/ConfirmContext";
 
-type CategoryRow = {
-  name: string;
-  count: number;
-};
-
 export default function CategoriesPage() {
   const { items, setItems } = useAppContext();
   const toast = useToast();
