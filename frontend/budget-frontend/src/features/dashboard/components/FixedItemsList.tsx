@@ -240,7 +240,10 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
                   type="button"
                   variant="link"
                   size="sm"
-                  onClick={() => setUseCustomCategory((prev) => !prev)}
+                  onClick={() => {
+                    setUseCustomCategory((prev) => !prev);
+                    setFormData((prev) => ({ ...prev, category: null }));
+                  }}
                   className="text-slate-400 hover:text-slate-300"
                 >
                   {useCustomCategory ? "← Use existing category" : "+ Add custom category"}

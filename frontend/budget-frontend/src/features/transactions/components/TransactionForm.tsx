@@ -222,9 +222,7 @@ export default function TransactionForm({
                         size="sm"
                         onClick={() => {
                             setUseCustomCategory((prev) => !prev);
-                            if (!useCustomCategory) {
-                                setFormData((prev) => ({ ...prev, category: "" }));
-                            }
+                            setFormData((prev) => ({ ...prev, category: "" }));
                         }}
                         className="ml-auto"
                     >

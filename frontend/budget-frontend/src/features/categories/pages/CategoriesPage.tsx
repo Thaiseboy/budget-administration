@@ -19,10 +19,17 @@ export default function CategoriesPage() {
       map.set(key, (map.get(key) ?? 0) + 1);
     }
 
+    for (const fixedItem of fixedItems) {
+      const key = normalizeCategory(fixedItem.category);
+      if (!map.has(key)) {
+        map.set(key, 0);
+      }
+    }
+
     return Array.from(map.entries())
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
-  }, [items]);
+  }, [items, fixedItems]);
 
   const loadFixedItems = () => {
     getFixedItems()

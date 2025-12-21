@@ -88,7 +88,7 @@ export default function TransactionsPage() {
           description: fixedItem.description,
           amount: fixedItem.amount,
           type: fixedItem.type,
-          category: fixedItem.category || undefined,
+          category: normalizeCategory(fixedItem.category),
         });
       });
 
@@ -190,14 +190,17 @@ export default function TransactionsPage() {
 
   // Keep visible month sections aligned with available data.
   useEffect(() => {
-    setOpenMonthKeys((prev) => prev.filter((k) => monthKeys.includes(k)));
+    setOpenMonthKeys((prev) => {
+      const next = prev.filter((k) => monthKeys.includes(k));
+      const cmk = getCurrentMonthKey();
 
-    const cmk = getCurrentMonthKey();
-    if (openMonthKeys.length === 0 && monthKeys.includes(cmk)) {
-      setOpenMonthKeys([cmk]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [monthKeys.join("|")]);
+      if (next.length === 0 && monthKeys.includes(cmk)) {
+        return [cmk];
+      }
+
+      return next;
+    });
+  }, [monthKeys]);
 
   const selectedItems = useMemo(() => {
     if (monthFilter === "all") return filteredSortedItems;
