@@ -2,8 +2,10 @@ import { useMemo } from "react";
 import type { Transaction } from "../../../types/transaction";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { normalizeCategory } from "../../../utils/categories";
+import { isFixedCategory } from "../../../utils/budgetCategories";
 import Card from "../../../components/ui/Card";
 import { MONTH_NAMES } from "../../../utils/months";
+import BudgetStatusBadge from "../../../components/budget/BudgetStatusBadge";
 
 type Props = {
   year: number;
@@ -14,11 +16,6 @@ type Props = {
 
 function getCategory(t: Transaction) {
   return normalizeCategory(t.category);
-}
-
-function isFixedCategory(category: string) {
-  const normalized = category.toLowerCase();
-  return normalized.includes("fixed") || normalized.includes("vaste");
 }
 
 export default function CategoryBudgetList({
@@ -49,24 +46,6 @@ export default function CategoryBudgetList({
 
   const monthlyRemaining = monthlyIncome - monthlyExpense;
   const availableForVariable = monthlyIncome - fixedExpenses;
-
-  const variablePercentage = availableForVariable > 0
-    ? Math.round((variableExpenses / availableForVariable) * 100)
-    : 0;
-
-  const remainingStatus =
-    monthlyRemaining < 0 ? "Over budget" :
-    variablePercentage >= 100 ? "Over limit" :
-    variablePercentage >= 80 ? "Near limit" :
-    variablePercentage >= 60 ? "Warning" :
-    null;
-
-  const remainingStatusClass =
-    monthlyRemaining < 0 ? "bg-red-600 text-white" :
-    variablePercentage >= 100 ? "bg-red-600 text-white" :
-    variablePercentage >= 80 ? "bg-amber-400 text-slate-900" :
-    variablePercentage >= 60 ? "bg-orange-500 text-white" :
-    "";
 
   const categoryTotals = useMemo(() => {
     const incomeMap = new Map<string, number>();
@@ -113,18 +92,11 @@ export default function CategoryBudgetList({
           <div className={`mt-1 text-lg font-semibold ${monthlyRemaining >= 0 ? "text-emerald-400" : "text-red-500"}`}>
             {formatCurrency(monthlyRemaining)}
           </div>
-          {remainingStatus && (
-            <div className="mt-1">
-              <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${remainingStatusClass}`}>
-                {remainingStatus}
-              </span>
-            </div>
-          )}
-          {variableExpenses > 0 && availableForVariable > 0 && (
-            <div className="mt-1 text-xs text-slate-400">
-              {variablePercentage}% of variable budget used
-            </div>
-          )}
+          <BudgetStatusBadge
+            variableExpenses={variableExpenses}
+            availableForVariable={availableForVariable}
+            monthlyRemaining={monthlyRemaining}
+          />
         </div>
       </div>
 
