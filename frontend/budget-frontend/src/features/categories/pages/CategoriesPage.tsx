@@ -1,10 +1,13 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import AppLayout from "../../../layouts/AppLayout";
 import { useAppContext } from "../../../hooks/useAppContext";
 import { normalizeCategory } from "../../../utils/categories";
 import { mergeCategories } from "../../../api/categories";
 import { useToast } from "../../../components/feedback/ToastContext";
 import { useConfirm } from "../../../components/feedback/ConfirmContext";
+import type { FixedMonthlyItem } from "../../../types/fixedItem";
+import { getFixedItems } from "../../../api/fixedItems";
+import { FixedItemsList } from "../../dashboard/components/FixedItemsList";
 import PageHeader from "../../../components/ui/PageHeader";
 import Card from "../../../components/ui/Card";
 
@@ -15,6 +18,7 @@ export default function CategoriesPage() {
   const [renameValues, setRenameValues] = useState<Record<string, string>>({});
   const [mergeTargets, setMergeTargets] = useState<Record<string, string>>({});
   const [busyCategory, setBusyCategory] = useState<string | null>(null);
+  const [fixedItems, setFixedItems] = useState<FixedMonthlyItem[]>([]);
 
   const categories = useMemo(() => {
     const map = new Map<string, number>();
@@ -27,6 +31,16 @@ export default function CategoriesPage() {
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
   }, [items]);
+
+  const loadFixedItems = () => {
+    getFixedItems()
+      .then((data) => setFixedItems(data))
+      .catch(() => setFixedItems([]));
+  };
+
+  useEffect(() => {
+    loadFixedItems();
+  }, []);
 
   async function applyMerge(from: string, toRaw: string, actionLabel: string) {
     const to = toRaw.trim();
@@ -176,6 +190,14 @@ export default function CategoriesPage() {
           );
         })}
       </Card>
+
+      <div className="mt-6">
+        <FixedItemsList
+          items={fixedItems}
+          onUpdate={loadFixedItems}
+          categories={categories.map(c => c.name)}
+        />
+      </div>
     </AppLayout>
   );
 }

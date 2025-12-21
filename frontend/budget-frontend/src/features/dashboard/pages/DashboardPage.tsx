@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import AppLayout from "../../../layouts/AppLayout";
 import TransactionSummary from "../../../components/transactions/TransactionSummary";
 import { useAppContext } from "../../../hooks/useAppContext";
@@ -8,9 +8,6 @@ import { buildMonthlyTotals, withCumulativeBalance } from "../../../utils/monthl
 import BalanceTrendChart from "../components/charts/BalanceTrendChart";
 import { buildCategoryTotals } from "../../../utils/categoryTotals";
 import CategoryBreakdownChart from "../components/charts/CategoryBreakdownChart";
-import type { FixedMonthlyItem } from "../../../types/fixedItem";
-import { getFixedItems } from "../../../api/fixedItems";
-import { FixedItemsList } from "../components/FixedItemsList";
 import { getCategories, normalizeCategory } from "../../../utils/categories";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import PageHeader from "../../../components/ui/PageHeader";
@@ -26,7 +23,6 @@ export default function DashboardPage() {
     const [selectedYear, setSelectedYear] = useState<number>(currentYear);
     const [categoryType, setCategoryType] = useState<"expense" | "income">("expense");
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-    const [fixedItems, setFixedItems] = useState<FixedMonthlyItem[]>([]);
 
 
     const years = useMemo(() => {
@@ -38,16 +34,6 @@ export default function DashboardPage() {
     const yearItems = useMemo(() => {
         return items.filter((t) => getYear(t.date) === selectedYear);
     }, [items, selectedYear]);
-
-    const loadFixedItems = () => {
-        getFixedItems()
-            .then((data) => setFixedItems(data))
-            .catch(() => setFixedItems([]));
-    };
-
-    useEffect(() => {
-        loadFixedItems();
-    }, []);
 
     const monthlyTotals = useMemo(() => {
         return buildMonthlyTotals(yearItems, selectedYear, "nl-NL");
@@ -233,14 +219,6 @@ export default function DashboardPage() {
                             </div>
                         )}
                     </Card>
-
-                    <div className="mt-6">
-                        <FixedItemsList
-                            items={fixedItems}
-                            onUpdate={loadFixedItems}
-                            categories={categories}
-                        />
-                    </div>
                 </>
             )}
         </AppLayout>
