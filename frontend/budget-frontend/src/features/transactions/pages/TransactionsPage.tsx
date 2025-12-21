@@ -18,6 +18,9 @@ import PageHeader from "../../../components/ui/PageHeader";
 import Card from "../../../components/ui/Card";
 import { MONTH_OPTIONS, MONTH_OPTIONS_PADDED } from "../../../utils/months";
 import { GoSync } from "react-icons/go";
+import ImportCsvPreviewModal, {
+  type ImportPreview,
+} from "../components/ImportCsvPreviewModal";
 
 export default function TransactionsPage() {
   const navigate = useNavigate();
@@ -31,18 +34,6 @@ export default function TransactionsPage() {
   const [fixedItems, setFixedItems] = useState<FixedMonthlyItem[]>([]);
 
   type TypeFilter = "all" | "income" | "expense";
-  type ImportPreviewRow = {
-    rowNumber: number;
-    date: string;
-    type: "income" | "expense";
-    amount: number;
-    category: string;
-    description: string;
-  };
-  type ImportPreview = {
-    fileName: string;
-    rows: ImportPreviewRow[];
-  };
 
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
@@ -565,98 +556,12 @@ export default function TransactionsPage() {
       )}
 
       {importPreview && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center px-4"
-          role="dialog"
-          aria-modal="true"
-        >
-          <button
-            type="button"
-            className="absolute inset-0 bg-black/40"
-            aria-label="Close dialog"
-            onClick={() => setImportPreview(null)}
-          />
-
-          <div className="relative z-10 w-full max-w-4xl rounded-2xl border border-slate-700 bg-slate-800 shadow-xl">
-            <div className="p-5">
-              <h2 className="text-base font-semibold text-white">Preview import</h2>
-              <p className="mt-1 text-sm text-slate-300">
-                File: {importPreview.fileName} - {importPreview.rows.length} rows
-              </p>
-
-              <div className="mt-4 max-h-[50vh] overflow-auto rounded-lg border border-slate-700">
-                <table className="w-full text-sm text-slate-200">
-                  <thead className="sticky top-0 bg-slate-700 text-slate-200">
-                    <tr>
-                      <th className="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide">
-                        Row
-                      </th>
-                      <th className="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide">
-                        Date
-                      </th>
-                      <th className="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide">
-                        Type
-                      </th>
-                      <th className="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide">
-                        Category
-                      </th>
-                      <th className="px-3 py-2 text-right text-xs font-semibold uppercase tracking-wide">
-                        Amount
-                      </th>
-                      <th className="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide">
-                        Description
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {importPreview.rows.slice(0, 20).map((row) => (
-                      <tr key={row.rowNumber} className="border-t border-slate-700">
-                        <td className="px-3 py-2 text-slate-400">{row.rowNumber}</td>
-                        <td className="px-3 py-2">{row.date}</td>
-                        <td className="px-3 py-2 capitalize">{row.type}</td>
-                        <td className="px-3 py-2">{row.category}</td>
-                        <td className="px-3 py-2 text-right tabular-nums">
-                          {row.amount}
-                        </td>
-                        <td
-                          className="px-3 py-2 max-w-[240px] truncate"
-                          title={row.description}
-                        >
-                          {row.description || "-"}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {importPreview.rows.length > 20 && (
-                <p className="mt-2 text-xs text-slate-400">
-                  Showing first 20 of {importPreview.rows.length} rows.
-                </p>
-              )}
-
-              <div className="mt-5 flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setImportPreview(null)}
-                  className="rounded-lg border border-slate-600 px-4 py-2 text-sm text-slate-300 hover:bg-slate-700"
-                >
-                  Cancel
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleConfirmImport}
-                  disabled={isImporting}
-                  className="rounded-lg bg-slate-700 px-4 py-2 text-sm font-medium text-white hover:bg-slate-600 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {isImporting ? "Importing..." : "Import"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ImportCsvPreviewModal
+          preview={importPreview}
+          isImporting={isImporting}
+          onCancel={() => setImportPreview(null)}
+          onConfirm={handleConfirmImport}
+        />
       )}
 
     </AppLayout>
