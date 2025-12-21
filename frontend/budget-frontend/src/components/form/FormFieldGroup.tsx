@@ -1,4 +1,5 @@
 import FormField from "./FormField";
+import type { ReactNode } from "react";
 
 type FieldConfig = {
   type?: "text" | "email" | "password" | "number" | "date" | "time" | "url" | "tel" | "search" | "textarea" | "checkbox" | "radio" | "select";
@@ -19,6 +20,8 @@ type FieldConfig = {
   inputClass?: string;
   options?: Array<{ value: string; label: string }>;
   onChange?: (value: string | boolean) => void;
+  prefix?: ReactNode;
+  suffix?: ReactNode;
 };
 
 interface FormFieldGroupProps {
@@ -141,6 +144,7 @@ export default function FormFieldGroup({
 
         const value = String(configValue ?? formData[name] ?? "");
         const inputType = type as "text" | "email" | "password" | "number" | "date" | "time" | "url" | "tel" | "search";
+        const { prefix, suffix } = field;
         return (
           <FormField
             key={id}
@@ -152,6 +156,8 @@ export default function FormFieldGroup({
             placeholder={placeholder}
             min={min}
             max={max}
+            prefix={prefix}
+            suffix={suffix}
             onChange={(newValue) => {
               onChange?.(newValue);
               handleChange(name, newValue);
