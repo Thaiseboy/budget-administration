@@ -348,6 +348,11 @@ export default function TransactionsPage() {
       </div>
 
       <div className="mt-4">
+        <h2 className="mb-3 text-base font-semibold text-white">
+          {monthFilter === "all"
+            ? `Total Overview (${selectedYear})`
+            : `Total Overview (${MONTH_OPTIONS[parseInt(monthFilter) - 1]?.label} ${selectedYear})`}
+        </h2>
         <TransactionSummary items={selectedItems} />
       </div>
 
