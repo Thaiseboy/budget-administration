@@ -30,11 +30,9 @@ export default function TransactionsPage() {
   const [fixedItems, setFixedItems] = useState<FixedMonthlyItem[]>([]);
 
   type TypeFilter = "all" | "income" | "expense";
-  type SortKey = "date_desc" | "date_asc" | "amount_desc" | "amount_asc";
 
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
-  const [sortKey, setSortKey] = useState<SortKey>("date_desc");
   const [monthFilter, setMonthFilter] = useState<string>("all");
 
   function handleEdit(id: number) {
@@ -143,16 +141,10 @@ export default function TransactionsPage() {
       list = list.filter((t) => t.date.slice(5, 7) === monthFilter);
     }
 
-    list.sort((a, b) => {
-      if (sortKey === "date_desc") return b.date.localeCompare(a.date);
-      if (sortKey === "date_asc") return a.date.localeCompare(b.date);
-      if (sortKey === "amount_desc") return b.amount - a.amount;
-      if (sortKey === "amount_asc") return a.amount - b.amount;
-      return 0;
-    });
+
 
     return list;
-  }, [yearItems, typeFilter, categoryFilter, monthFilter, sortKey]);
+  }, [yearItems, typeFilter, categoryFilter, monthFilter]);
 
   const exportRows = useMemo(() => {
     return filteredSortedItems.map((item) => ({
@@ -339,17 +331,6 @@ export default function TransactionsPage() {
           ))}
         </select>
 
-        <select
-          value={sortKey}
-          onChange={(e) => setSortKey(e.target.value as SortKey)}
-          className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-sm text-white focus:border-slate-500 focus:outline-none sm:w-auto"
-        >
-          <option value="date_desc">Date: new → old</option>
-          <option value="date_asc">Date: old → new</option>
-          <option value="amount_desc">Amount: high → low</option>
-          <option value="amount_asc">Amount: low → high</option>
-        </select>
-
         <button
           onClick={() => {
             const filename = `transactions-${selectedYear}-${monthFilter}.csv`;
@@ -365,7 +346,6 @@ export default function TransactionsPage() {
             setTypeFilter("all");
             setCategoryFilter("all");
             setMonthFilter("all");
-            setSortKey("date_desc");
           }}
           className="w-full rounded-lg border border-slate-600 bg-red-800 px-3 py-2 text-center text-sm text-slate-300 hover:text-white sm:w-auto"
         >
