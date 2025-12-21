@@ -394,19 +394,25 @@ export default function TransactionsPage() {
         />
       </div>
 
-      {monthEntries.map(([monthKey, monthItems]) => (
-        <MonthlyTransactionSection
-          key={monthKey}
-          monthKey={monthKey}
-          items={monthItems}
-          isOpen={openMonthKeys.includes(monthKey)}
-          onToggle={() => toggleMonth(monthKey)}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onApplyFixedItems={() => handleApplyFixedItems(monthKey)}
-          hasFixedItems={fixedItems.length > 0}
-        />
-      ))}
+      {monthEntries.map(([monthKey, monthItems]) => {
+        const [yearStr, monthStr] = monthKey.split('-');
+        const year = parseInt(yearStr, 10);
+        const month = parseInt(monthStr, 10);
+
+        return (
+          <MonthlyTransactionSection
+            key={monthKey}
+            monthKey={monthKey}
+            items={monthItems}
+            isOpen={openMonthKeys.includes(monthKey)}
+            onToggle={() => toggleMonth(monthKey)}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onApplyFixedItems={() => handleApplyFixedItems(year, month)}
+            hasFixedItems={fixedItems.length > 0}
+          />
+        );
+      })}
 
       {filteredSortedItems.length === 0 && (
         <Card className="mt-6 p-4 text-center text-sm text-slate-400 sm:p-6">
