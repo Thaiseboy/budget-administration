@@ -12,8 +12,8 @@ import { getFixedItems } from "../../../api/fixedItems";
 import { normalizeCategory } from "../../../utils/categories";
 import { isFixedCategory } from "../../../utils/budgetCategories";
 import { downloadCsv } from "../../../utils/csv";
-import { formatCurrency } from "../../../utils/formatCurrency";
 import FinancialSummary from "../../../components/financial/FinancialSummary";
+import ApplyFixedItems from "../../../components/fixed-items/ApplyFixedItems";
 import PageHeader from "../../../components/ui/PageHeader";
 import Card from "../../../components/ui/Card";
 import { MONTH_OPTIONS, MONTH_OPTIONS_PADDED } from "../../../utils/months";
@@ -28,8 +28,6 @@ export default function TransactionsPage() {
   const [selectedYear, setSelectedYear] = useState<number>(currentYear);
   const [openMonthKeys, setOpenMonthKeys] = useState<MonthKey[]>([]);
   const [fixedItems, setFixedItems] = useState<FixedMonthlyItem[]>([]);
-  const [applyYear, setApplyYear] = useState<number>(currentYear);
-  const [applyMonth, setApplyMonth] = useState<number>(currentMonth);
 
   type TypeFilter = "all" | "income" | "expense";
   type SortKey = "date_desc" | "date_asc" | "amount_desc" | "amount_asc";
@@ -63,11 +61,14 @@ export default function TransactionsPage() {
     }
   }
 
-  async function handleApplyFixedItems(monthKey: string) {
+  async function handleApplyFixedItems(year: number, month: number) {
     if (fixedItems.length === 0) {
       toast.error("No fixed items to apply");
       return;
     }
+
+    const monthStr = String(month).padStart(2, '0');
+    const monthKey = `${year}-${monthStr}`;
 
     const ok = await confirm({
       title: "Apply fixed items?",
@@ -80,8 +81,7 @@ export default function TransactionsPage() {
     if (!ok) return;
 
     try {
-      const [year, month] = monthKey.split("-");
-      const dateStr = `${year}-${month}-01`;
+      const dateStr = `${year}-${monthStr}-01`;
 
       const promises = fixedItems.map((fixedItem) => {
         return createTransaction({
@@ -385,82 +385,14 @@ export default function TransactionsPage() {
         />
       </div>
 
-      {fixedItems.length > 0 && (
-        <Card className="mt-6 p-4 sm:p-6">
-          <h2 className="mb-4 text-base font-semibold text-white">Apply Fixed Items to Month</h2>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
-            <div className="w-full sm:flex-1">
-              <label className="block text-sm font-medium text-slate-300 mb-2">Year</label>
-              <select
-                value={applyYear}
-                onChange={(e) => setApplyYear(Number(e.target.value))}
-                className="w-full rounded-lg border border-slate-600 bg-slate-700 text-white px-3 py-2 focus:border-slate-500 focus:outline-none"
-              >
-                {[currentYear - 1, currentYear, currentYear + 1].map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="w-full sm:flex-1">
-              <label className="block text-sm font-medium text-slate-300 mb-2">Month</label>
-              <select
-                value={applyMonth}
-                onChange={(e) => setApplyMonth(Number(e.target.value))}
-                className="w-full rounded-lg border border-slate-600 bg-slate-700 text-white px-3 py-2 focus:border-slate-500 focus:outline-none"
-              >
-                {MONTH_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="w-full sm:flex-1">
-              <button
-                onClick={() => {
-                  const monthStr = String(applyMonth).padStart(2, '0');
-                  const monthKey = `${applyYear}-${monthStr}`;
-                  handleApplyFixedItems(monthKey);
-                }}
-                className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
-              >
-                Apply Fixed Items
-              </button>
-            </div>
-          </div>
-          <p className="mt-3 text-xs text-slate-400">
-            Apply your {fixedItems.length} fixed item(s) to the selected month. They will be created as regular transactions that you can edit or delete.
-          </p>
-
-          <div className="mt-4">
-            <h3 className="text-sm font-semibold text-white mb-3">Fixed Items Preview</h3>
-            <div className="space-y-2">
-              {fixedItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-center justify-between rounded-lg border border-slate-700 bg-slate-800/50 p-3"
-                >
-                  <div className="flex-1">
-                    <div className="text-sm font-medium text-white">
-                      {item.description || "Unnamed"}
-                    </div>
-                    {item.category && (
-                      <div className="text-xs text-slate-400 mt-1">
-                        {normalizeCategory(item.category)}
-                      </div>
-                    )}
-                  </div>
-                  <div className={`text-sm font-semibold ${item.type === "expense" ? "text-red-400" : "text-green-400"}`}>
-                    {item.type === "expense" ? "-" : "+"}{formatCurrency(item.amount)}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </Card>
-      )}
+      <div className="mt-6">
+        <ApplyFixedItems
+          fixedItems={fixedItems}
+          onApply={handleApplyFixedItems}
+          currentYear={currentYear}
+          currentMonth={currentMonth}
+        />
+      </div>
 
       {monthEntries.map(([monthKey, monthItems]) => (
         <MonthlyTransactionSection
