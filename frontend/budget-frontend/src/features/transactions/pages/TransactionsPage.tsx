@@ -17,6 +17,7 @@ import ApplyFixedItems from "../../../components/fixed-items/ApplyFixedItems";
 import PageHeader from "../../../components/ui/PageHeader";
 import Card from "../../../components/ui/Card";
 import { MONTH_OPTIONS, MONTH_OPTIONS_PADDED } from "../../../utils/months";
+import { GoSync } from "react-icons/go";
 
 export default function TransactionsPage() {
   const navigate = useNavigate();
@@ -347,9 +348,9 @@ export default function TransactionsPage() {
             setCategoryFilter("all");
             setMonthFilter("all");
           }}
-          className="w-full rounded-lg border border-slate-600 bg-red-800 px-3 py-2 text-center text-sm text-slate-300 hover:text-white sm:w-auto"
+          className="w-full rounded-lg border border-slate-600 bg-red-800 px-3 py-2 text-center text-xl text-slate-300 hover:text-white sm:w-auto"
         >
-          Reset
+          <GoSync />
         </button>
       </div>
 
