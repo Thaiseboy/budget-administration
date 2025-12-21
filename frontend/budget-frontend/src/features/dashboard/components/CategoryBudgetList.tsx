@@ -16,6 +16,11 @@ function getCategory(t: Transaction) {
   return normalizeCategory(t.category);
 }
 
+function isFixedCategory(category: string) {
+  const normalized = category.toLowerCase();
+  return normalized.includes("fixed") || normalized.includes("vaste");
+}
+
 export default function CategoryBudgetList({
   year,
   month,
@@ -30,7 +35,38 @@ export default function CategoryBudgetList({
     return monthItems.filter((t) => t.type === "expense").reduce((sum, t) => sum + t.amount, 0);
   }, [monthItems]);
 
+  const fixedExpenses = useMemo(() => {
+    return monthItems
+      .filter((t) => t.type === "expense" && isFixedCategory(getCategory(t)))
+      .reduce((sum, t) => sum + t.amount, 0);
+  }, [monthItems]);
+
+  const variableExpenses = useMemo(() => {
+    return monthItems
+      .filter((t) => t.type === "expense" && !isFixedCategory(getCategory(t)))
+      .reduce((sum, t) => sum + t.amount, 0);
+  }, [monthItems]);
+
   const monthlyRemaining = monthlyIncome - monthlyExpense;
+  const availableForVariable = monthlyIncome - fixedExpenses;
+
+  const variablePercentage = availableForVariable > 0
+    ? Math.round((variableExpenses / availableForVariable) * 100)
+    : 0;
+
+  const remainingStatus =
+    monthlyRemaining < 0 ? "Over budget" :
+    variablePercentage >= 75 ? "Over limit" :
+    variablePercentage >= 50 ? "Near limit" :
+    variablePercentage >= 30 ? "Warning" :
+    null;
+
+  const remainingStatusClass =
+    monthlyRemaining < 0 ? "bg-red-600 text-white" :
+    variablePercentage >= 75 ? "bg-red-600 text-white" :
+    variablePercentage >= 50 ? "bg-amber-400 text-slate-900" :
+    variablePercentage >= 30 ? "bg-orange-500 text-white" :
+    "";
 
   const categoryTotals = useMemo(() => {
     const incomeMap = new Map<string, number>();
@@ -54,18 +90,13 @@ export default function CategoryBudgetList({
     return Array.from(set).sort((a, b) => a.localeCompare(b));
   }, [monthItems]);
 
-  function percentOfRemaining(spent: number) {
-    if (totalRemaining <= 0) return 0;
-    return Math.round((spent / totalRemaining) * 100);
-  }
-
   const monthName = MONTH_NAMES[month - 1];
 
   return (
     <Card className="mt-6 p-4 sm:p-6">
       <h2 className="text-base font-semibold text-white">Spending Overview ({monthName} {year})</h2>
       <p className="mt-2 text-sm text-slate-400">
-        Income and expenses per category. Status shows if a category uses too much of your remaining budget.
+        Income and expenses per category. Status shows how much of your variable budget (after fixed costs) is being used.
       </p>
 
       <div className="mt-4 grid grid-cols-1 gap-4 rounded-lg border border-slate-600 bg-slate-700 p-4 sm:grid-cols-3">
@@ -82,6 +113,18 @@ export default function CategoryBudgetList({
           <div className={`mt-1 text-lg font-semibold ${monthlyRemaining >= 0 ? "text-emerald-400" : "text-red-500"}`}>
             {formatCurrency(monthlyRemaining)}
           </div>
+          {remainingStatus && (
+            <div className="mt-1">
+              <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${remainingStatusClass}`}>
+                {remainingStatus}
+              </span>
+            </div>
+          )}
+          {variableExpenses > 0 && availableForVariable > 0 && (
+            <div className="mt-1 text-xs text-slate-400">
+              {variablePercentage}% of variable budget used
+            </div>
+          )}
         </div>
       </div>
 
@@ -93,34 +136,11 @@ export default function CategoryBudgetList({
               const income = categoryTotals.incomeMap.get(category) ?? 0;
               const expense = categoryTotals.expenseMap.get(category) ?? 0;
 
-              const p = percentOfRemaining(expense);
-
-              // Status thresholds are based on share of remaining budget.
-              const status =
-                expense === 0 ? null :
-                totalRemaining < 0 ? "Over budget" :
-                p >= 50 ? "Over limit" :
-                p >= 30 ? "Near limit" :
-                p >= 20 ? "Warning" :
-                null;
-
-              const statusClass =
-                totalRemaining < 0 ? "bg-red-600 text-white" :
-                p >= 50 ? "bg-red-600 text-white" :
-                p >= 30 ? "bg-amber-400 text-slate-900" :
-                p >= 20 ? "bg-orange-500 text-white" :
-                "bg-emerald-500 text-white";
-
               return (
                 <div key={category} className="rounded-lg border border-slate-700 bg-slate-800/50 p-3">
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-center gap-2">
                       <div className="break-words text-sm font-medium text-white">{category}</div>
-                      {status && (
-                        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusClass}`}>
-                          {status}
-                        </span>
-                      )}
                     </div>
                     <div className="text-left sm:text-right">
                       {income > 0 && (
@@ -135,13 +155,6 @@ export default function CategoryBudgetList({
                       )}
                     </div>
                   </div>
-                  {expense > 0 && (
-                    <div className="mt-2 text-xs text-slate-400">
-                      {totalRemaining < 0
-                        ? "Budget exceeded"
-                        : `${p}% of remaining budget`}
-                    </div>
-                  )}
                 </div>
               );
             })}
