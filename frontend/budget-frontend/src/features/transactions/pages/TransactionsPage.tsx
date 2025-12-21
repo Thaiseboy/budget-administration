@@ -305,8 +305,8 @@ export default function TransactionsPage() {
               key={v}
               onClick={() => setTypeFilter(v)}
               className={`flex-1 rounded-md px-3 py-1 text-sm transition-colors sm:flex-none ${typeFilter === v
-                  ? "bg-slate-700 text-white"
-                  : "text-slate-300 hover:text-white"
+                ? "bg-slate-700 text-white"
+                : "text-slate-300 hover:text-white"
                 }`}
             >
               {v === "all" ? "All" : v === "income" ? "Income" : "Expense"}
@@ -360,7 +360,7 @@ export default function TransactionsPage() {
           Export CSV
         </button>
 
-                <button
+        <button
           onClick={() => {
             setTypeFilter("all");
             setCategoryFilter("all");
@@ -375,9 +375,22 @@ export default function TransactionsPage() {
 
       <div className="mt-4">
         <FinancialSummary
-          title={monthFilter === "all"
-            ? `Total Overview (${selectedYear})`
-            : `Total Overview (${MONTH_OPTIONS[parseInt(monthFilter) - 1]?.label} ${selectedYear})`}
+          title={(() => {
+            let title = monthFilter === "all"
+              ? `Total Overview (${selectedYear})`
+              : `Total Overview (${MONTH_OPTIONS[parseInt(monthFilter) - 1]?.label} ${selectedYear})`;
+
+            if (typeFilter !== "all") {
+              title += ` - ${typeFilter === "income" ? "Income" : "Expense"}`;
+            }
+
+            if (categoryFilter !== "all") {
+              title += ` - ${categoryFilter}`;
+            }
+
+
+            return title;
+          })()}
           fixedIncome={fixedIncome}
           fixedExpense={fixedExpense}
           variableIncome={variableIncome}
