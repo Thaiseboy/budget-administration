@@ -1,6 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
 import AppLayout from "../../../layouts/AppLayout";
-import TransactionSummary from "../../../components/transactions/TransactionSummary";
 import { Link, useNavigate } from "react-router-dom";
 import { deleteTransaction, createTransaction } from "../../../api/transactions";
 import { useToast } from "../../../components/feedback/ToastContext";
@@ -11,7 +10,9 @@ import { useAppContext } from "../../../hooks/useAppContext";
 import type { FixedMonthlyItem } from "../../../types/fixedItem";
 import { getFixedItems } from "../../../api/fixedItems";
 import { normalizeCategory } from "../../../utils/categories";
+import { isFixedCategory } from "../../../utils/budgetCategories";
 import { downloadCsv } from "../../../utils/csv";
+import FinancialSummary from "../../../components/financial/FinancialSummary";
 import PageHeader from "../../../components/ui/PageHeader";
 import Card from "../../../components/ui/Card";
 import { MONTH_OPTIONS, MONTH_OPTIONS_PADDED } from "../../../utils/months";
@@ -211,6 +212,30 @@ export default function TransactionsPage() {
     return openMonthKeys.flatMap((key) => monthMap.get(key) ?? []);
   }, [monthFilter, openMonthKeys, monthMap, filteredSortedItems]);
 
+  const fixedIncome = useMemo(() => {
+    return selectedItems
+      .filter((t) => t.type === "income" && isFixedCategory(normalizeCategory(t.category)))
+      .reduce((sum, t) => sum + t.amount, 0);
+  }, [selectedItems]);
+
+  const fixedExpense = useMemo(() => {
+    return selectedItems
+      .filter((t) => t.type === "expense" && isFixedCategory(normalizeCategory(t.category)))
+      .reduce((sum, t) => sum + t.amount, 0);
+  }, [selectedItems]);
+
+  const variableIncome = useMemo(() => {
+    return selectedItems
+      .filter((t) => t.type === "income" && !isFixedCategory(normalizeCategory(t.category)))
+      .reduce((sum, t) => sum + t.amount, 0);
+  }, [selectedItems]);
+
+  const variableExpense = useMemo(() => {
+    return selectedItems
+      .filter((t) => t.type === "expense" && !isFixedCategory(normalizeCategory(t.category)))
+      .reduce((sum, t) => sum + t.amount, 0);
+  }, [selectedItems]);
+
   // When a month filter is set, open that month or fall back to the first available one.
   useEffect(() => {
     if (monthFilter === "all") return;
@@ -348,12 +373,15 @@ export default function TransactionsPage() {
       </div>
 
       <div className="mt-4">
-        <h2 className="mb-3 text-base font-semibold text-white">
-          {monthFilter === "all"
+        <FinancialSummary
+          title={monthFilter === "all"
             ? `Total Overview (${selectedYear})`
             : `Total Overview (${MONTH_OPTIONS[parseInt(monthFilter) - 1]?.label} ${selectedYear})`}
-        </h2>
-        <TransactionSummary items={selectedItems} />
+          fixedIncome={fixedIncome}
+          fixedExpense={fixedExpense}
+          variableIncome={variableIncome}
+          variableExpense={variableExpense}
+        />
       </div>
 
       {fixedItems.length > 0 && (
