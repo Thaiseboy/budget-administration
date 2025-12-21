@@ -8,18 +8,13 @@ import { buildMonthlyTotals, withCumulativeBalance } from "../../../utils/monthl
 import BalanceTrendChart from "../components/charts/BalanceTrendChart";
 import { buildCategoryTotals } from "../../../utils/categoryTotals";
 import CategoryBreakdownChart from "../components/charts/CategoryBreakdownChart";
-import CategoryBudgetList from "../components/CategoryBudgetList";
-import { formatCurrency } from "../../../utils/formatCurrency";
-import type { MonthPlan } from "../../../types/monthPlan";
-import { getMonthPlan, upsertMonthPlan } from "../../../api/monthPlan";
 import type { FixedMonthlyItem } from "../../../types/fixedItem";
 import { getFixedItems } from "../../../api/fixedItems";
 import { FixedItemsList } from "../components/FixedItemsList";
 import { getCategories, normalizeCategory } from "../../../utils/categories";
-import { isFixedCategory } from "../../../utils/budgetCategories";
+import { formatCurrency } from "../../../utils/formatCurrency";
 import PageHeader from "../../../components/ui/PageHeader";
 import Card from "../../../components/ui/Card";
-import { MONTH_NAMES, MONTH_OPTIONS } from "../../../utils/months";
 
 function getYear(date: string) {
     return Number(date.slice(0, 4));
@@ -28,16 +23,9 @@ function getYear(date: string) {
 export default function DashboardPage() {
     const { items } = useAppContext();
     const currentYear = new Date().getFullYear();
-    const currentMonth = new Date().getMonth() + 1;
     const [selectedYear, setSelectedYear] = useState<number>(currentYear);
-    const [selectedMonth, setSelectedMonth] = useState<number>(currentMonth);
     const [categoryType, setCategoryType] = useState<"expense" | "income">("expense");
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-    const [monthPlan, setMonthPlan] = useState<MonthPlan>({
-        year: selectedYear,
-        month: selectedMonth,
-        expected_income: 0,
-    });
     const [fixedItems, setFixedItems] = useState<FixedMonthlyItem[]>([]);
 
 
@@ -51,22 +39,6 @@ export default function DashboardPage() {
         return items.filter((t) => getYear(t.date) === selectedYear);
     }, [items, selectedYear]);
 
-    const monthItems = useMemo(() => {
-        const monthStr = String(selectedMonth).padStart(2, '0');
-        const prefix = `${selectedYear}-${monthStr}`;
-        return items.filter((t) => t.date.startsWith(prefix));
-    }, [items, selectedYear, selectedMonth]);
-
-    useEffect(() => {
-        getMonthPlan(selectedYear, selectedMonth)
-            .then((data) => setMonthPlan(data))
-            .catch(() => setMonthPlan({
-                year: selectedYear,
-                month: selectedMonth,
-                expected_income: 0,
-            }));
-    }, [selectedYear, selectedMonth]);
-
     const loadFixedItems = () => {
         getFixedItems()
             .then((data) => setFixedItems(data))
@@ -76,19 +48,6 @@ export default function DashboardPage() {
     useEffect(() => {
         loadFixedItems();
     }, []);
-
-    // Auto-save month plan (debounced).
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            if (monthPlan.expected_income >= 0) {
-                upsertMonthPlan(monthPlan).catch(() => {
-                    console.error("Failed to save month plan");
-                });
-            }
-        }, 600);
-
-        return () => clearTimeout(timer);
-    }, [monthPlan]);
 
     const monthlyTotals = useMemo(() => {
         return buildMonthlyTotals(yearItems, selectedYear, "nl-NL");
@@ -103,33 +62,6 @@ export default function DashboardPage() {
     }, [yearItems, categoryType]);
 
     const hasYearData = yearItems.length > 0;
-
-    const fixedIncome = useMemo(() => {
-        return monthItems
-            .filter((t) => t.type === "income" && isFixedCategory(normalizeCategory(t.category)))
-            .reduce((sum, t) => sum + t.amount, 0);
-    }, [monthItems]);
-
-    const fixedExpense = useMemo(() => {
-        return monthItems
-            .filter((t) => t.type === "expense" && isFixedCategory(normalizeCategory(t.category)))
-            .reduce((sum, t) => sum + t.amount, 0);
-    }, [monthItems]);
-
-    const variableIncome = useMemo(() => {
-        return monthItems
-            .filter((t) => t.type === "income" && !isFixedCategory(normalizeCategory(t.category)))
-            .reduce((sum, t) => sum + t.amount, 0);
-    }, [monthItems]);
-
-    const variableExpense = useMemo(() => {
-        return monthItems
-            .filter((t) => t.type === "expense" && !isFixedCategory(normalizeCategory(t.category)))
-            .reduce((sum, t) => sum + t.amount, 0);
-    }, [monthItems]);
-
-    const monthIncome = fixedIncome + variableIncome;
-    const monthExpense = fixedExpense + variableExpense;
 
     const categories = useMemo(() => {
         return getCategories(items);
@@ -168,7 +100,7 @@ export default function DashboardPage() {
                 }
             />
 
-            <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6">
+            <div className="mt-4">
                 <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
                     <span className="text-sm text-slate-300">Year:</span>
                     <select
@@ -179,21 +111,6 @@ export default function DashboardPage() {
                         {years.map((y) => (
                             <option key={y} value={y}>
                                 {y}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
-                    <span className="text-sm text-slate-300">Month:</span>
-                    <select
-                        value={selectedMonth}
-                        onChange={(e) => setSelectedMonth(Number(e.target.value))}
-                        className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-sm text-white focus:border-slate-500 focus:outline-none sm:w-auto"
-                    >
-                        {MONTH_OPTIONS.map((option) => (
-                            <option key={option.value} value={option.value}>
-                                {option.label}
                             </option>
                         ))}
                     </select>
@@ -316,13 +233,6 @@ export default function DashboardPage() {
                             </div>
                         )}
                     </Card>
-
-                    <CategoryBudgetList
-                        year={selectedYear}
-                        month={selectedMonth}
-                        monthItems={monthItems}
-                        totalRemaining={monthIncome - monthExpense}
-                    />
 
                     <div className="mt-6">
                         <FixedItemsList
