@@ -1,6 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
 import AppLayout from "../../../layouts/AppLayout";
-import TransactionSummary from "../../../components/transactions/TransactionSummary";
 import { Link, useNavigate } from "react-router-dom";
 import { deleteTransaction, createTransaction } from "../../../api/transactions";
 import { useToast } from "../../../components/feedback/ToastContext";
@@ -11,10 +10,14 @@ import { useAppContext } from "../../../hooks/useAppContext";
 import type { FixedMonthlyItem } from "../../../types/fixedItem";
 import { getFixedItems } from "../../../api/fixedItems";
 import { normalizeCategory } from "../../../utils/categories";
+import { isFixedCategory } from "../../../utils/budgetCategories";
 import { downloadCsv } from "../../../utils/csv";
+import FinancialSummary from "../../../components/financial/FinancialSummary";
+import ApplyFixedItems from "../../../components/fixed-items/ApplyFixedItems";
 import PageHeader from "../../../components/ui/PageHeader";
 import Card from "../../../components/ui/Card";
 import { MONTH_OPTIONS, MONTH_OPTIONS_PADDED } from "../../../utils/months";
+import { GoSync } from "react-icons/go";
 
 export default function TransactionsPage() {
   const navigate = useNavigate();
@@ -26,15 +29,11 @@ export default function TransactionsPage() {
   const [selectedYear, setSelectedYear] = useState<number>(currentYear);
   const [openMonthKeys, setOpenMonthKeys] = useState<MonthKey[]>([]);
   const [fixedItems, setFixedItems] = useState<FixedMonthlyItem[]>([]);
-  const [applyYear, setApplyYear] = useState<number>(currentYear);
-  const [applyMonth, setApplyMonth] = useState<number>(currentMonth);
 
   type TypeFilter = "all" | "income" | "expense";
-  type SortKey = "date_desc" | "date_asc" | "amount_desc" | "amount_asc";
 
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
-  const [sortKey, setSortKey] = useState<SortKey>("date_desc");
   const [monthFilter, setMonthFilter] = useState<string>("all");
 
   function handleEdit(id: number) {
@@ -61,11 +60,14 @@ export default function TransactionsPage() {
     }
   }
 
-  async function handleApplyFixedItems(monthKey: string) {
+  async function handleApplyFixedItems(year: number, month: number) {
     if (fixedItems.length === 0) {
       toast.error("No fixed items to apply");
       return;
     }
+
+    const monthStr = String(month).padStart(2, '0');
+    const monthKey = `${year}-${monthStr}`;
 
     const ok = await confirm({
       title: "Apply fixed items?",
@@ -78,8 +80,7 @@ export default function TransactionsPage() {
     if (!ok) return;
 
     try {
-      const [year, month] = monthKey.split("-");
-      const dateStr = `${year}-${month}-01`;
+      const dateStr = `${year}-${monthStr}-01`;
 
       const promises = fixedItems.map((fixedItem) => {
         return createTransaction({
@@ -87,7 +88,7 @@ export default function TransactionsPage() {
           description: fixedItem.description,
           amount: fixedItem.amount,
           type: fixedItem.type,
-          category: fixedItem.category || undefined,
+          category: normalizeCategory(fixedItem.category),
         });
       });
 
@@ -141,16 +142,10 @@ export default function TransactionsPage() {
       list = list.filter((t) => t.date.slice(5, 7) === monthFilter);
     }
 
-    list.sort((a, b) => {
-      if (sortKey === "date_desc") return b.date.localeCompare(a.date);
-      if (sortKey === "date_asc") return a.date.localeCompare(b.date);
-      if (sortKey === "amount_desc") return b.amount - a.amount;
-      if (sortKey === "amount_asc") return a.amount - b.amount;
-      return 0;
-    });
+
 
     return list;
-  }, [yearItems, typeFilter, categoryFilter, monthFilter, sortKey]);
+  }, [yearItems, typeFilter, categoryFilter, monthFilter]);
 
   const exportRows = useMemo(() => {
     return filteredSortedItems.map((item) => ({
@@ -195,14 +190,17 @@ export default function TransactionsPage() {
 
   // Keep visible month sections aligned with available data.
   useEffect(() => {
-    setOpenMonthKeys((prev) => prev.filter((k) => monthKeys.includes(k)));
+    setOpenMonthKeys((prev) => {
+      const next = prev.filter((k) => monthKeys.includes(k));
+      const cmk = getCurrentMonthKey();
 
-    const cmk = getCurrentMonthKey();
-    if (openMonthKeys.length === 0 && monthKeys.includes(cmk)) {
-      setOpenMonthKeys([cmk]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [monthKeys.join("|")]);
+      if (next.length === 0 && monthKeys.includes(cmk)) {
+        return [cmk];
+      }
+
+      return next;
+    });
+  }, [monthKeys]);
 
   const selectedItems = useMemo(() => {
     if (monthFilter === "all") return filteredSortedItems;
@@ -210,6 +208,30 @@ export default function TransactionsPage() {
 
     return openMonthKeys.flatMap((key) => monthMap.get(key) ?? []);
   }, [monthFilter, openMonthKeys, monthMap, filteredSortedItems]);
+
+  const fixedIncome = useMemo(() => {
+    return selectedItems
+      .filter((t) => t.type === "income" && isFixedCategory(normalizeCategory(t.category)))
+      .reduce((sum, t) => sum + t.amount, 0);
+  }, [selectedItems]);
+
+  const fixedExpense = useMemo(() => {
+    return selectedItems
+      .filter((t) => t.type === "expense" && isFixedCategory(normalizeCategory(t.category)))
+      .reduce((sum, t) => sum + t.amount, 0);
+  }, [selectedItems]);
+
+  const variableIncome = useMemo(() => {
+    return selectedItems
+      .filter((t) => t.type === "income" && !isFixedCategory(normalizeCategory(t.category)))
+      .reduce((sum, t) => sum + t.amount, 0);
+  }, [selectedItems]);
+
+  const variableExpense = useMemo(() => {
+    return selectedItems
+      .filter((t) => t.type === "expense" && !isFixedCategory(normalizeCategory(t.category)))
+      .reduce((sum, t) => sum + t.amount, 0);
+  }, [selectedItems]);
 
   // When a month filter is set, open that month or fall back to the first available one.
   useEffect(() => {
@@ -279,8 +301,8 @@ export default function TransactionsPage() {
               key={v}
               onClick={() => setTypeFilter(v)}
               className={`flex-1 rounded-md px-3 py-1 text-sm transition-colors sm:flex-none ${typeFilter === v
-                  ? "bg-slate-700 text-white"
-                  : "text-slate-300 hover:text-white"
+                ? "bg-slate-700 text-white"
+                : "text-slate-300 hover:text-white"
                 }`}
             >
               {v === "all" ? "All" : v === "income" ? "Income" : "Expense"}
@@ -313,29 +335,6 @@ export default function TransactionsPage() {
           ))}
         </select>
 
-        <select
-          value={sortKey}
-          onChange={(e) => setSortKey(e.target.value as SortKey)}
-          className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-sm text-white focus:border-slate-500 focus:outline-none sm:w-auto"
-        >
-          <option value="date_desc">Date: new → old</option>
-          <option value="date_asc">Date: old → new</option>
-          <option value="amount_desc">Amount: high → low</option>
-          <option value="amount_asc">Amount: low → high</option>
-        </select>
-
-        <button
-          onClick={() => {
-            setTypeFilter("all");
-            setCategoryFilter("all");
-            setMonthFilter("all");
-            setSortKey("date_desc");
-          }}
-          className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-center text-sm text-slate-300 hover:text-white sm:w-auto"
-        >
-          Reset
-        </button>
-
         <button
           onClick={() => {
             const filename = `transactions-${selectedYear}-${monthFilter}.csv`;
@@ -345,76 +344,74 @@ export default function TransactionsPage() {
         >
           Export CSV
         </button>
+
+        <button
+          onClick={() => {
+            setTypeFilter("all");
+            setCategoryFilter("all");
+            setMonthFilter("all");
+          }}
+          className="w-full rounded-lg border border-slate-600 bg-red-800 px-3 py-2 text-center text-xl text-slate-300 hover:text-white sm:w-auto"
+        >
+          <GoSync />
+        </button>
       </div>
 
       <div className="mt-4">
-        <TransactionSummary items={selectedItems} />
+        <FinancialSummary
+          title={(() => {
+            let title = monthFilter === "all"
+              ? `Total Overview (${selectedYear})`
+              : `Total Overview (${MONTH_OPTIONS[parseInt(monthFilter) - 1]?.label} ${selectedYear})`;
+
+            if (typeFilter !== "all") {
+              title += ` - ${typeFilter === "income" ? "Income" : "Expense"}`;
+            }
+
+            if (categoryFilter !== "all") {
+              title += ` - ${categoryFilter}`;
+            }
+
+
+            return title;
+          })()}
+          fixedIncome={fixedIncome}
+          fixedExpense={fixedExpense}
+          variableIncome={variableIncome}
+          variableExpense={variableExpense}
+          typeFilter={typeFilter}
+        />
       </div>
 
-      {fixedItems.length > 0 && (
-        <Card className="mt-6 p-4 sm:p-6">
-          <h2 className="mb-4 text-base font-semibold text-white">Apply Fixed Items to Month</h2>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
-            <div className="w-full sm:flex-1">
-              <label className="block text-sm font-medium text-slate-300 mb-2">Year</label>
-              <select
-                value={applyYear}
-                onChange={(e) => setApplyYear(Number(e.target.value))}
-                className="w-full rounded-lg border border-slate-600 bg-slate-700 text-white px-3 py-2 focus:border-slate-500 focus:outline-none"
-              >
-                {[currentYear - 1, currentYear, currentYear + 1].map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="w-full sm:flex-1">
-              <label className="block text-sm font-medium text-slate-300 mb-2">Month</label>
-              <select
-                value={applyMonth}
-                onChange={(e) => setApplyMonth(Number(e.target.value))}
-                className="w-full rounded-lg border border-slate-600 bg-slate-700 text-white px-3 py-2 focus:border-slate-500 focus:outline-none"
-              >
-                {MONTH_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="w-full sm:flex-1">
-              <button
-                onClick={() => {
-                  const monthStr = String(applyMonth).padStart(2, '0');
-                  const monthKey = `${applyYear}-${monthStr}`;
-                  handleApplyFixedItems(monthKey);
-                }}
-                className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
-              >
-                Apply Fixed Items
-              </button>
-            </div>
-          </div>
-          <p className="mt-3 text-xs text-slate-400">
-            Apply your {fixedItems.length} fixed item(s) to the selected month. They will be created as regular transactions that you can edit or delete.
-          </p>
-        </Card>
-      )}
-
-      {monthEntries.map(([monthKey, monthItems]) => (
-        <MonthlyTransactionSection
-          key={monthKey}
-          monthKey={monthKey}
-          items={monthItems}
-          isOpen={openMonthKeys.includes(monthKey)}
-          onToggle={() => toggleMonth(monthKey)}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onApplyFixedItems={() => handleApplyFixedItems(monthKey)}
-          hasFixedItems={fixedItems.length > 0}
+      <div className="mt-6">
+        <ApplyFixedItems
+          fixedItems={fixedItems}
+          onApply={handleApplyFixedItems}
+          currentYear={currentYear}
+          currentMonth={currentMonth}
         />
-      ))}
+      </div>
+
+      {monthEntries.map(([monthKey, monthItems]) => {
+        const [yearStr, monthStr] = monthKey.split('-');
+        const year = parseInt(yearStr, 10);
+        const month = parseInt(monthStr, 10);
+
+        return (
+          <MonthlyTransactionSection
+            key={monthKey}
+            monthKey={monthKey}
+            items={monthItems}
+            isOpen={openMonthKeys.includes(monthKey)}
+            onToggle={() => toggleMonth(monthKey)}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onApplyFixedItems={() => handleApplyFixedItems(year, month)}
+            hasFixedItems={fixedItems.length > 0}
+            typeFilter={typeFilter}
+          />
+        );
+      })}
 
       {filteredSortedItems.length === 0 && (
         <Card className="mt-6 p-4 text-center text-sm text-slate-400 sm:p-6">

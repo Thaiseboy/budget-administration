@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import AppLayout from "../../../layouts/AppLayout";
 import TransactionSummary from "../../../components/transactions/TransactionSummary";
 import { useAppContext } from "../../../hooks/useAppContext";
@@ -8,17 +8,10 @@ import { buildMonthlyTotals, withCumulativeBalance } from "../../../utils/monthl
 import BalanceTrendChart from "../components/charts/BalanceTrendChart";
 import { buildCategoryTotals } from "../../../utils/categoryTotals";
 import CategoryBreakdownChart from "../components/charts/CategoryBreakdownChart";
-import CategoryBudgetList from "../components/CategoryBudgetList";
+import { normalizeCategory } from "../../../utils/categories";
 import { formatCurrency } from "../../../utils/formatCurrency";
-import type { MonthPlan } from "../../../types/monthPlan";
-import { getMonthPlan, upsertMonthPlan } from "../../../api/monthPlan";
-import type { FixedMonthlyItem } from "../../../types/fixedItem";
-import { getFixedItems } from "../../../api/fixedItems";
-import { FixedItemsList } from "../components/FixedItemsList";
-import { getCategories, normalizeCategory } from "../../../utils/categories";
 import PageHeader from "../../../components/ui/PageHeader";
 import Card from "../../../components/ui/Card";
-import { MONTH_NAMES, MONTH_OPTIONS } from "../../../utils/months";
 
 function getYear(date: string) {
     return Number(date.slice(0, 4));
@@ -27,17 +20,9 @@ function getYear(date: string) {
 export default function DashboardPage() {
     const { items } = useAppContext();
     const currentYear = new Date().getFullYear();
-    const currentMonth = new Date().getMonth() + 1;
     const [selectedYear, setSelectedYear] = useState<number>(currentYear);
-    const [selectedMonth, setSelectedMonth] = useState<number>(currentMonth);
     const [categoryType, setCategoryType] = useState<"expense" | "income">("expense");
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-    const [monthPlan, setMonthPlan] = useState<MonthPlan>({
-        year: selectedYear,
-        month: selectedMonth,
-        expected_income: 0,
-    });
-    const [fixedItems, setFixedItems] = useState<FixedMonthlyItem[]>([]);
 
 
     const years = useMemo(() => {
@@ -49,45 +34,6 @@ export default function DashboardPage() {
     const yearItems = useMemo(() => {
         return items.filter((t) => getYear(t.date) === selectedYear);
     }, [items, selectedYear]);
-
-    const monthItems = useMemo(() => {
-        const monthStr = String(selectedMonth).padStart(2, '0');
-        const prefix = `${selectedYear}-${monthStr}`;
-        return items.filter((t) => t.date.startsWith(prefix));
-    }, [items, selectedYear, selectedMonth]);
-
-    useEffect(() => {
-        getMonthPlan(selectedYear, selectedMonth)
-            .then((data) => setMonthPlan(data))
-            .catch(() => setMonthPlan({
-                year: selectedYear,
-                month: selectedMonth,
-                expected_income: 0,
-            }));
-    }, [selectedYear, selectedMonth]);
-
-    const loadFixedItems = () => {
-        getFixedItems()
-            .then((data) => setFixedItems(data))
-            .catch(() => setFixedItems([]));
-    };
-
-    useEffect(() => {
-        loadFixedItems();
-    }, []);
-
-    // Auto-save month plan (debounced).
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            if (monthPlan.expected_income >= 0) {
-                upsertMonthPlan(monthPlan).catch(() => {
-                    console.error("Failed to save month plan");
-                });
-            }
-        }, 600);
-
-        return () => clearTimeout(timer);
-    }, [monthPlan]);
 
     const monthlyTotals = useMemo(() => {
         return buildMonthlyTotals(yearItems, selectedYear, "nl-NL");
@@ -102,29 +48,6 @@ export default function DashboardPage() {
     }, [yearItems, categoryType]);
 
     const hasYearData = yearItems.length > 0;
-
-    const fixedIncome = useMemo(() => {
-        return fixedItems.filter((item) => item.type === "income").reduce((sum, item) => sum + item.amount, 0);
-    }, [fixedItems]);
-
-    const fixedExpense = useMemo(() => {
-        return fixedItems.filter((item) => item.type === "expense").reduce((sum, item) => sum + item.amount, 0);
-    }, [fixedItems]);
-
-    const variableIncome = useMemo(() => {
-        return monthItems.filter((t) => t.type === "income").reduce((sum, t) => sum + t.amount, 0);
-    }, [monthItems]);
-
-    const variableExpense = useMemo(() => {
-        return monthItems.filter((t) => t.type === "expense").reduce((sum, t) => sum + t.amount, 0);
-    }, [monthItems]);
-
-    const monthIncome = fixedIncome + variableIncome;
-    const monthExpense = fixedExpense + variableExpense;
-
-    const categories = useMemo(() => {
-        return getCategories(items);
-    }, [items]);
 
     const filteredTransactions = useMemo(() => {
         if (!selectedCategory) return [];
@@ -159,7 +82,7 @@ export default function DashboardPage() {
                 }
             />
 
-            <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6">
+            <div className="mt-4">
                 <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
                     <span className="text-sm text-slate-300">Year:</span>
                     <select
@@ -170,21 +93,6 @@ export default function DashboardPage() {
                         {years.map((y) => (
                             <option key={y} value={y}>
                                 {y}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
-                    <span className="text-sm text-slate-300">Month:</span>
-                    <select
-                        value={selectedMonth}
-                        onChange={(e) => setSelectedMonth(Number(e.target.value))}
-                        className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-sm text-white focus:border-slate-500 focus:outline-none sm:w-auto"
-                    >
-                        {MONTH_OPTIONS.map((option) => (
-                            <option key={option.value} value={option.value}>
-                                {option.label}
                             </option>
                         ))}
                     </select>
@@ -307,88 +215,6 @@ export default function DashboardPage() {
                             </div>
                         )}
                     </Card>
-
-                    <Card className="mt-6 p-4 sm:p-6">
-                        <h2 className="text-base font-semibold text-white">
-                            Monthly plan ({MONTH_NAMES[selectedMonth - 1]} {selectedYear})
-                        </h2>
-
-                        <div className="mt-4 grid gap-4 md:grid-cols-3">
-                            <div>
-                                <div className="text-xs text-slate-400 mb-2">Income</div>
-                                <div className="space-y-2 text-xs">
-                                    <div className="flex justify-between">
-                                        <span className="text-slate-400">Fixed income:</span>
-                                        <span className="text-green-400 font-semibold">{formatCurrency(fixedIncome)}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-slate-400">Variable income:</span>
-                                        <span className="text-green-400 font-semibold">{formatCurrency(variableIncome)}</span>
-                                    </div>
-                                    <div className="flex justify-between border-t border-slate-600 pt-2">
-                                        <span className="text-white font-semibold">Total income:</span>
-                                        <span className="text-green-300 font-bold">{formatCurrency(monthIncome)}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div>
-                                <div className="text-xs text-slate-400 mb-2">Expenses</div>
-                                <div className="space-y-2 text-xs">
-                                    <div className="flex justify-between">
-                                        <span className="text-slate-400">Fixed expenses:</span>
-                                        <span className="text-red-400 font-semibold">{formatCurrency(fixedExpense)}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-slate-400">Variable expenses:</span>
-                                        <span className="text-red-400 font-semibold">{formatCurrency(variableExpense)}</span>
-                                    </div>
-                                    <div className="flex justify-between border-t border-slate-600 pt-2">
-                                        <span className="text-white font-semibold">Total expenses:</span>
-                                        <span className="text-red-300 font-bold">{formatCurrency(monthExpense)}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div>
-                                <div className="text-xs text-slate-400 mb-2">Summary</div>
-                                <div className="space-y-2 text-xs">
-                                    <div className="flex justify-between">
-                                        <span className="text-slate-400">Total income:</span>
-                                        <span className="text-green-400 font-semibold">{formatCurrency(monthIncome)}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-slate-400">Total expenses:</span>
-                                        <span className="text-red-400 font-semibold">{formatCurrency(monthExpense)}</span>
-                                    </div>
-                                    <div className="flex justify-between border-t border-slate-600 pt-2">
-                                        <span className="text-white font-semibold">Remaining:</span>
-                                        <span
-                                            className={`font-bold ${(monthIncome - monthExpense) >= 0 ? "text-emerald-300" : "text-red-300"
-                                                }`}
-                                        >
-                                            {formatCurrency(monthIncome - monthExpense)}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </Card>
-
-                    <CategoryBudgetList
-                        year={selectedYear}
-                        month={selectedMonth}
-                        monthItems={monthItems}
-                        totalRemaining={monthIncome - monthExpense}
-                    />
-
-                    <div className="mt-6">
-                        <FixedItemsList
-                            items={fixedItems}
-                            onUpdate={loadFixedItems}
-                            categories={categories}
-                        />
-                    </div>
                 </>
             )}
         </AppLayout>

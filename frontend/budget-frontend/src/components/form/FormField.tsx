@@ -22,6 +22,8 @@ interface TextInputProps extends BaseFormFieldProps {
   max?: string | number;
   children?: never;
   rows?: never;
+  prefix?: ReactNode;
+  suffix?: ReactNode;
 }
 
 interface TextareaProps extends BaseFormFieldProps {
@@ -155,7 +157,38 @@ export default function FormField(props: FormFieldProps) {
       );
     }
 
-    const { value, onChange, step, placeholder, min, max } = props as TextInputProps;
+    const { value, onChange, step, placeholder, min, max, prefix, suffix } = props as TextInputProps;
+
+    if (prefix || suffix) {
+      return (
+        <div className="relative">
+          {prefix && (
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+              {prefix}
+            </div>
+          )}
+          <input
+            id={id}
+            name={name}
+            type={type}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            required={required}
+            step={step}
+            placeholder={placeholder}
+            min={min}
+            max={max}
+            className={`${finalInputClassName} ${prefix ? 'pl-8' : ''} ${suffix ? 'pr-8' : ''}`}
+          />
+          {suffix && (
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+              {suffix}
+            </div>
+          )}
+        </div>
+      );
+    }
+
     return (
       <input
         id={id}

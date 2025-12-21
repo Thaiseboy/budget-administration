@@ -3,6 +3,7 @@ import type { FixedMonthlyItem } from "../../../types/fixedItem";
 import { createFixedItem, updateFixedItem, deleteFixedItem } from "../../../api/fixedItems";
 import { normalizeCategory } from "../../../utils/categories";
 import FormFieldGroup from "../../../components/form/FormFieldGroup";
+import Button from "../../../components/ui/Button";
 
 type Props = {
   items: FixedMonthlyItem[];
@@ -184,12 +185,15 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
           Fixed Monthly Items
         </h2>
         {!isAdding && (
-          <button
+          <Button
+            type="button"
+            variant="primary"
+            size="md"
             onClick={() => setIsAdding(true)}
-            className="w-full rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 sm:w-auto"
+            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700"
           >
             + Add Fixed Item
-          </button>
+          </Button>
         )}
       </div>
 
@@ -218,42 +222,53 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
             />
             <div className="flex flex-col gap-2 sm:col-span-2 sm:flex-row sm:items-center sm:justify-between">
               {formData.category && (
-                <button
+                <Button
                   type="button"
+                  variant="link"
+                  size="sm"
                   onClick={() => {
                     setFormData((prev) => ({ ...prev, category: null }));
                     setUseCustomCategory(false);
                   }}
-                  className="text-xs text-red-400 hover:text-red-300 underline"
+                  className="text-red-400 hover:text-red-300"
                 >
                   ✕ Clear category
-                </button>
+                </Button>
               )}
               <div className={formData.category ? "" : "sm:ml-auto"}>
-                <button
+                <Button
                   type="button"
-                  onClick={() => setUseCustomCategory((prev) => !prev)}
-                  className="text-xs text-slate-400 hover:text-slate-300 underline"
+                  variant="link"
+                  size="sm"
+                  onClick={() => {
+                    setUseCustomCategory((prev) => !prev);
+                    setFormData((prev) => ({ ...prev, category: null }));
+                  }}
+                  className="text-slate-400 hover:text-slate-300"
                 >
                   {useCustomCategory ? "← Use existing category" : "+ Add custom category"}
-                </button>
+                </Button>
               </div>
             </div>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row">
-            <button
+            <Button
               type="submit"
-              className="w-full rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700 sm:w-auto"
+              variant="success"
+              size="md"
+              className="w-full sm:w-auto"
             >
               {editingId ? "Update" : "Save"}
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant="secondary"
+              size="md"
               onClick={handleCancel}
-              className="w-full rounded bg-slate-300 px-4 py-2 text-slate-900 hover:bg-slate-400 dark:bg-slate-600 dark:text-white dark:hover:bg-slate-500 sm:w-auto"
+              className="w-full sm:w-auto"
             >
               Cancel
-            </button>
+            </Button>
           </div>
         </form>
       )}
@@ -284,18 +299,23 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
                     <span className="text-lg font-semibold text-green-900 dark:text-green-300">
                       €{item.amount.toFixed(2)}
                     </span>
-                    <button
+                    <Button
+                      type="button"
+                      variant="primary"
+                      size="sm"
                       onClick={() => handleEdit(item)}
-                      className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                      className="bg-blue-600 hover:bg-blue-700"
                     >
                       Edit
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="danger"
+                      size="sm"
                       onClick={() => item.id && handleDelete(item.id)}
-                      className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700"
                     >
                       Delete
-                    </button>
+                    </Button>
                   </div>
                 </div>
               ))}
@@ -328,18 +348,23 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
                     <span className="text-lg font-semibold text-red-900 dark:text-red-300">
                       €{item.amount.toFixed(2)}
                     </span>
-                    <button
+                    <Button
+                      type="button"
+                      variant="primary"
+                      size="sm"
                       onClick={() => handleEdit(item)}
-                      className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                      className="bg-blue-600 hover:bg-blue-700"
                     >
                       Edit
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="danger"
+                      size="sm"
                       onClick={() => item.id && handleDelete(item.id)}
-                      className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700"
                     >
                       Delete
-                    </button>
+                    </Button>
                   </div>
                 </div>
               ))}

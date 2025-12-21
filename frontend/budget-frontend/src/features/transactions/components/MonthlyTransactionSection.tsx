@@ -10,6 +10,8 @@ function formatMonthTitle(monthKey: string) {
     return new Intl.DateTimeFormat("nl-NL", { month: "long", year: "numeric" }).format(date);
 }
 
+type TypeFilter = "all" | "income" | "expense";
+
 type Props = {
     monthKey: string;
     items: Transaction[];
@@ -19,6 +21,7 @@ type Props = {
     onDelete?: (id: number) => void;
     onApplyFixedItems?: () => void;
     hasFixedItems?: boolean;
+    typeFilter?: TypeFilter;
 };
 
 export default function MonthlyTransactionSection({
@@ -30,6 +33,7 @@ export default function MonthlyTransactionSection({
     onDelete,
     onApplyFixedItems,
     hasFixedItems = false,
+    typeFilter = "all",
 }: Props) {
     return (
         <section className="mt-6 rounded-xl border border-slate-700 bg-slate-800">
@@ -45,7 +49,7 @@ export default function MonthlyTransactionSection({
                 </div>
 
                 <div className="mt-3">
-                    <TransactionSummary items={items} />
+                    <TransactionSummary items={items} typeFilter={typeFilter} />
                 </div>
             </button>
 

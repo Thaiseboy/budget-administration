@@ -1,6 +1,8 @@
-import { useState } from "react";
-import FormFieldGroup from "../../../components/form/FormFieldGroup";
+import { useState, useMemo } from "react";
 import { normalizeCategory } from "../../../utils/categories";
+import Card from "../../../components/ui/Card";
+import Button from "../../../components/ui/Button";
+import FormFieldGroup from "../../../components/form/FormFieldGroup";
 
 type FormData = {
     type: "income" | "expense";
@@ -51,60 +53,78 @@ export default function TransactionForm({
         return current.length > 0 && !categories.includes(current);
     });
 
-    const fields = [
-        {
-            id: "type",
-            name: "type",
-            label: "Type",
-            type: "select" as const,
-            required: true,
-            options: [
-                { label: "Expense", value: "expense" },
-                { label: "Income", value: "income" },
-            ],
-        },
-        {
-            id: "amount",
-            name: "amount",
-            label: "Amount",
-            type: "number" as const,
-            required: true,
-            placeholder: "0.00",
-        },
-        {
-            id: "date",
-            name: "date",
-            label: "Date",
-            type: "date" as const,
-            required: false,
-        },
-        {
-            id: "description",
-            name: "description",
-            label: "Description",
-            type: "text" as const,
-            placeholder: "Optional",
-        },
-        useCustomCategory
-            ? {
+    function handleFieldChange(name: string, value: string | boolean) {
+        setFormData((prev) => ({ ...prev, [name]: value as string }));
+    }
+
+    const commonInputClass = "border-2 bg-slate-700 px-4 py-3 text-white focus:outline-none transition-colors";
+    const labelClass = "block text-sm font-semibold text-slate-200 mb-2";
+
+    const amountField = useMemo(() => ({
+        id: "amount",
+        name: "amount",
+        label: "Amount (€)",
+        type: "number" as const,
+        required: true,
+        placeholder: "0.00",
+        step: "0.01",
+        min: 0.01,
+        prefix: <span className="text-slate-400 text-lg">€</span>,
+        labelClass,
+        inputClass: `${commonInputClass} text-lg font-semibold placeholder:text-slate-500 ${
+            formData.type === "expense"
+                ? "border-slate-600 focus:border-red-500"
+                : "border-slate-600 focus:border-green-500"
+        }`,
+    }), [formData.type]);
+
+    const dateField = {
+        id: "date",
+        name: "date",
+        label: "Date",
+        type: "date" as const,
+        required: true,
+        labelClass,
+        inputClass: `${commonInputClass} border-slate-600 focus:border-slate-500`,
+    };
+
+    const descriptionField = {
+        id: "description",
+        name: "description",
+        label: "Description",
+        type: "text" as const,
+        placeholder: "e.g., Grocery shopping, Salary, etc.",
+        labelClass,
+        inputClass: `${commonInputClass} border-slate-600 focus:border-slate-500 placeholder:text-slate-500`,
+    };
+
+    const categoryField = useMemo(() => {
+        if (useCustomCategory) {
+            return {
                 id: "category",
                 name: "category",
                 label: "Category (Custom)",
                 type: "text" as const,
-                placeholder: "Enter custom category",
-            }
-            : {
-                id: "category",
-                name: "category",
-                label: "Category",
-                type: "select" as const,
-                required: false,
-                options: [
-                    { label: "-- Select Category --", value: "" },
-                    ...categories.map((cat) => ({ label: cat, value: cat })),
-                ],
-            },
-    ];
+                placeholder: "Enter custom category name",
+                labelClass,
+                inputClass: `${commonInputClass} border-slate-600 focus:border-blue-500 placeholder:text-slate-500`,
+            };
+        }
+
+        return {
+            id: "category",
+            name: "category",
+            label: "Category",
+            type: "select" as const,
+            required: false,
+            labelClass,
+            inputClass: `${commonInputClass} border-slate-600 focus:border-slate-500`,
+            options: [
+                { label: "-- Select a category --", value: "" },
+                ...categories.map((cat) => ({ label: cat, value: cat })),
+            ],
+        };
+    }, [useCustomCategory, categories]);
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -113,8 +133,8 @@ export default function TransactionForm({
 
         try {
             const amountNumber = Number(formData.amount);
-            if (!Number.isFinite(amountNumber)) {
-                throw new Error("Amount must be a number");
+            if (!Number.isFinite(amountNumber) || amountNumber <= 0) {
+                throw new Error("Amount must be a valid positive number");
             }
 
             await onSubmit({
@@ -131,58 +151,116 @@ export default function TransactionForm({
         }
     }
 
-    function handleFieldChange(name: string, value: string | boolean) {
-        setFormData((prev) => ({ ...prev, [name]: value as any }));
-    }
-
     return (
-        <form onSubmit={handleSubmit} className="mt-6 w-full max-w-md space-y-4">
-            <FormFieldGroup fields={fields} formData={formData} onFieldChange={handleFieldChange} />
-
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                {formData.category && (
-                    <button
-                        type="button"
-                        onClick={() => {
-                            setFormData((prev) => ({ ...prev, category: "" }));
-                            setUseCustomCategory(false);
-                        }}
-                        className="text-xs text-red-400 hover:text-red-300 underline"
-                    >
-                        ✕ Clear category
-                    </button>
-                )}
-                <div className={formData.category ? "" : "sm:ml-auto"}>
-                    <button
-                        type="button"
-                        onClick={() => setUseCustomCategory((prev) => !prev)}
-                        className="text-xs text-slate-400 hover:text-slate-300 underline"
-                    >
-                        {useCustomCategory ? "← Use existing category" : "+ Add custom category"}
-                    </button>
+        <Card className="p-6 max-w-2xl mx-auto">
+            <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                    <label className="block text-sm font-semibold text-slate-200 mb-3">
+                        Transaction Type <span className="text-red-400">*</span>
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={() => setFormData((prev) => ({ ...prev, type: "expense" }))}
+                            active={formData.type === "expense"}
+                            className="px-6 py-4 text-center"
+                            activeClassName="!border-red-500 !bg-red-500/20 !text-red-400"
+                        >
+                            <div className="text-2xl mb-1">-</div>
+                            <div className="text-sm font-medium">Expense</div>
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={() => setFormData((prev) => ({ ...prev, type: "income" }))}
+                            active={formData.type === "income"}
+                            className="px-6 py-4 text-center"
+                            activeClassName="!border-green-500 !bg-green-500/20 !text-green-400"
+                        >
+                            <div className="text-2xl mb-1">+</div>
+                            <div className="text-sm font-medium">Income</div>
+                        </Button>
+                    </div>
                 </div>
-            </div>
 
-            {error && <div className="text-sm text-red-400">{error}</div>}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormFieldGroup
+                        fields={[amountField, dateField]}
+                        formData={formData}
+                        onFieldChange={handleFieldChange}
+                    />
+                </div>
 
-            <div className="flex flex-col gap-2 sm:flex-row">
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-slate-600 disabled:opacity-50 sm:w-auto"
-                >
-                    {loading ? "Saving..." : submitLabel}
-                </button>
+                <FormFieldGroup
+                    fields={[descriptionField]}
+                    formData={formData}
+                    onFieldChange={handleFieldChange}
+                />
 
-                {onCancel && (
-                    <button
+                <FormFieldGroup
+                    fields={[categoryField]}
+                    formData={formData}
+                    onFieldChange={handleFieldChange}
+                />
+
+                <div className="flex items-center gap-3 -mt-4">
+                    {formData.category && (
+                        <Button
+                            type="button"
+                            variant="link"
+                            size="sm"
+                            onClick={() => setFormData((prev) => ({ ...prev, category: "" }))}
+                            className="text-red-400 hover:text-red-300"
+                        >
+                            ✕ Clear category
+                        </Button>
+                    )}
+                    <Button
                         type="button"
-                        onClick={onCancel}
-                        className="w-full rounded-lg border border-slate-600 bg-red-600 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 sm:w-auto">
-                        Cancel
-                    </button>
+                        variant="link"
+                        size="sm"
+                        onClick={() => {
+                            setUseCustomCategory((prev) => !prev);
+                            setFormData((prev) => ({ ...prev, category: "" }));
+                        }}
+                        className="ml-auto"
+                    >
+                        {useCustomCategory ? "← Use existing" : "+ New category"}
+                    </Button>
+                </div>
+
+                {error && (
+                    <div className="rounded-lg border border-red-500/50 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+                        {error}
+                    </div>
                 )}
-            </div>
-        </form>
+
+                <div className="flex flex-col-reverse sm:flex-row gap-3 pt-2">
+                    {onCancel && (
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            size="lg"
+                            onClick={onCancel}
+                            disabled={loading}
+                            className="w-full sm:w-auto"
+                        >
+                            Cancel
+                        </Button>
+                    )}
+                    <Button
+                        type="submit"
+                        variant={formData.type === "expense" ? "danger" : "success"}
+                        size="lg"
+                        disabled={loading}
+                        isLoading={loading}
+                        className="w-full sm:flex-1"
+                    >
+                        {submitLabel}
+                    </Button>
+                </div>
+            </form>
+        </Card>
     );
 }
