@@ -12,6 +12,7 @@ import { getFixedItems } from "../../../api/fixedItems";
 import { normalizeCategory } from "../../../utils/categories";
 import { isFixedCategory } from "../../../utils/budgetCategories";
 import { downloadCsv } from "../../../utils/csv";
+import { formatCurrency } from "../../../utils/formatCurrency";
 import FinancialSummary from "../../../components/financial/FinancialSummary";
 import PageHeader from "../../../components/ui/PageHeader";
 import Card from "../../../components/ui/Card";
@@ -432,6 +433,32 @@ export default function TransactionsPage() {
           <p className="mt-3 text-xs text-slate-400">
             Apply your {fixedItems.length} fixed item(s) to the selected month. They will be created as regular transactions that you can edit or delete.
           </p>
+
+          <div className="mt-4">
+            <h3 className="text-sm font-semibold text-white mb-3">Fixed Items Preview</h3>
+            <div className="space-y-2">
+              {fixedItems.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between rounded-lg border border-slate-700 bg-slate-800/50 p-3"
+                >
+                  <div className="flex-1">
+                    <div className="text-sm font-medium text-white">
+                      {item.description || "Unnamed"}
+                    </div>
+                    {item.category && (
+                      <div className="text-xs text-slate-400 mt-1">
+                        {normalizeCategory(item.category)}
+                      </div>
+                    )}
+                  </div>
+                  <div className={`text-sm font-semibold ${item.type === "expense" ? "text-red-400" : "text-green-400"}`}>
+                    {item.type === "expense" ? "-" : "+"}{formatCurrency(item.amount)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </Card>
       )}
 
