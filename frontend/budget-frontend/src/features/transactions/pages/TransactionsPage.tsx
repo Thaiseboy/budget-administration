@@ -352,24 +352,24 @@ export default function TransactionsPage() {
 
         <button
           onClick={() => {
-            setTypeFilter("all");
-            setCategoryFilter("all");
-            setMonthFilter("all");
-            setSortKey("date_desc");
-          }}
-          className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-center text-sm text-slate-300 hover:text-white sm:w-auto"
-        >
-          Reset
-        </button>
-
-        <button
-          onClick={() => {
             const filename = `transactions-${selectedYear}-${monthFilter}.csv`;
             downloadCsv(filename, exportRows);
           }}
           className="w-full rounded-lg bg-slate-700 px-3 py-2 text-center text-sm text-white hover:bg-slate-600 sm:w-auto"
         >
           Export CSV
+        </button>
+
+                <button
+          onClick={() => {
+            setTypeFilter("all");
+            setCategoryFilter("all");
+            setMonthFilter("all");
+            setSortKey("date_desc");
+          }}
+          className="w-full rounded-lg border border-slate-600 bg-red-800 px-3 py-2 text-center text-sm text-slate-300 hover:text-white sm:w-auto"
+        >
+          Reset
         </button>
       </div>
 
