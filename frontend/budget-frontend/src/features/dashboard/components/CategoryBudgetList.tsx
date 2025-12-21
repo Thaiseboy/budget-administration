@@ -56,16 +56,16 @@ export default function CategoryBudgetList({
 
   const remainingStatus =
     monthlyRemaining < 0 ? "Over budget" :
-    variablePercentage >= 75 ? "Over limit" :
-    variablePercentage >= 50 ? "Near limit" :
-    variablePercentage >= 30 ? "Warning" :
+    variablePercentage >= 100 ? "Over limit" :
+    variablePercentage >= 80 ? "Near limit" :
+    variablePercentage >= 60 ? "Warning" :
     null;
 
   const remainingStatusClass =
     monthlyRemaining < 0 ? "bg-red-600 text-white" :
-    variablePercentage >= 75 ? "bg-red-600 text-white" :
-    variablePercentage >= 50 ? "bg-amber-400 text-slate-900" :
-    variablePercentage >= 30 ? "bg-orange-500 text-white" :
+    variablePercentage >= 100 ? "bg-red-600 text-white" :
+    variablePercentage >= 80 ? "bg-amber-400 text-slate-900" :
+    variablePercentage >= 60 ? "bg-orange-500 text-white" :
     "";
 
   const categoryTotals = useMemo(() => {
