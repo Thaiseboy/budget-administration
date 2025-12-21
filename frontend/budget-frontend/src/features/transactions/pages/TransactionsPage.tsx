@@ -382,6 +382,7 @@ export default function TransactionsPage() {
           fixedExpense={fixedExpense}
           variableIncome={variableIncome}
           variableExpense={variableExpense}
+          typeFilter={typeFilter}
         />
       </div>
 
@@ -410,6 +411,7 @@ export default function TransactionsPage() {
             onDelete={handleDelete}
             onApplyFixedItems={() => handleApplyFixedItems(year, month)}
             hasFixedItems={fixedItems.length > 0}
+            typeFilter={typeFilter}
           />
         );
       })}
