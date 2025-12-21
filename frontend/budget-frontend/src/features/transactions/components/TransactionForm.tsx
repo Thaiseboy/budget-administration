@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { normalizeCategory } from "../../../utils/categories";
 import Card from "../../../components/ui/Card";
+import Button from "../../../components/ui/Button";
 import FormFieldGroup from "../../../components/form/FormFieldGroup";
 
 type FormData = {
@@ -158,30 +159,28 @@ export default function TransactionForm({
                         Transaction Type <span className="text-red-400">*</span>
                     </label>
                     <div className="grid grid-cols-2 gap-3">
-                        <button
+                        <Button
                             type="button"
+                            variant="ghost"
                             onClick={() => setFormData((prev) => ({ ...prev, type: "expense" }))}
-                            className={`rounded-lg border-2 px-6 py-4 text-center transition-all ${
-                                formData.type === "expense"
-                                    ? "border-red-500 bg-red-500/20 text-red-400"
-                                    : "border-slate-600 bg-slate-700/50 text-slate-300 hover:border-slate-500"
-                            }`}
+                            active={formData.type === "expense"}
+                            className="px-6 py-4 text-center"
+                            activeClassName="!border-red-500 !bg-red-500/20 !text-red-400"
                         >
                             <div className="text-2xl mb-1">-</div>
                             <div className="text-sm font-medium">Expense</div>
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                             type="button"
+                            variant="ghost"
                             onClick={() => setFormData((prev) => ({ ...prev, type: "income" }))}
-                            className={`rounded-lg border-2 px-6 py-4 text-center transition-all ${
-                                formData.type === "income"
-                                    ? "border-green-500 bg-green-500/20 text-green-400"
-                                    : "border-slate-600 bg-slate-700/50 text-slate-300 hover:border-slate-500"
-                            }`}
+                            active={formData.type === "income"}
+                            className="px-6 py-4 text-center"
+                            activeClassName="!border-green-500 !bg-green-500/20 !text-green-400"
                         >
                             <div className="text-2xl mb-1">+</div>
                             <div className="text-sm font-medium">Income</div>
-                        </button>
+                        </Button>
                     </div>
                 </div>
 
@@ -207,26 +206,30 @@ export default function TransactionForm({
 
                 <div className="flex items-center gap-3 -mt-4">
                     {formData.category && (
-                        <button
+                        <Button
                             type="button"
+                            variant="link"
+                            size="sm"
                             onClick={() => setFormData((prev) => ({ ...prev, category: "" }))}
-                            className="text-xs text-red-400 hover:text-red-300 underline"
+                            className="text-red-400 hover:text-red-300"
                         >
                             ✕ Clear category
-                        </button>
+                        </Button>
                     )}
-                    <button
+                    <Button
                         type="button"
+                        variant="link"
+                        size="sm"
                         onClick={() => {
                             setUseCustomCategory((prev) => !prev);
                             if (!useCustomCategory) {
                                 setFormData((prev) => ({ ...prev, category: "" }));
                             }
                         }}
-                        className="text-xs text-blue-400 hover:text-blue-300 underline ml-auto"
+                        className="ml-auto"
                     >
                         {useCustomCategory ? "← Use existing" : "+ New category"}
-                    </button>
+                    </Button>
                 </div>
 
                 {error && (
@@ -237,26 +240,27 @@ export default function TransactionForm({
 
                 <div className="flex flex-col-reverse sm:flex-row gap-3 pt-2">
                     {onCancel && (
-                        <button
+                        <Button
                             type="button"
+                            variant="secondary"
+                            size="lg"
                             onClick={onCancel}
                             disabled={loading}
-                            className="w-full sm:w-auto rounded-lg border-2 border-slate-600 bg-slate-700 px-6 py-3 text-sm font-medium text-slate-300 hover:bg-slate-600 disabled:opacity-50 transition-colors"
+                            className="w-full sm:w-auto"
                         >
                             Cancel
-                        </button>
+                        </Button>
                     )}
-                    <button
+                    <Button
                         type="submit"
+                        variant={formData.type === "expense" ? "danger" : "success"}
+                        size="lg"
                         disabled={loading}
-                        className={`w-full sm:flex-1 rounded-lg px-6 py-3 text-sm font-semibold text-white transition-colors disabled:opacity-50 ${
-                            formData.type === "expense"
-                                ? "bg-red-600 hover:bg-red-700"
-                                : "bg-green-600 hover:bg-green-700"
-                        }`}
+                        isLoading={loading}
+                        className="w-full sm:flex-1"
                     >
-                        {loading ? "Saving..." : submitLabel}
-                    </button>
+                        {submitLabel}
+                    </Button>
                 </div>
             </form>
         </Card>
