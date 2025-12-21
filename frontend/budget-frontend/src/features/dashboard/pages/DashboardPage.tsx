@@ -8,7 +8,7 @@ import { buildMonthlyTotals, withCumulativeBalance } from "../../../utils/monthl
 import BalanceTrendChart from "../components/charts/BalanceTrendChart";
 import { buildCategoryTotals } from "../../../utils/categoryTotals";
 import CategoryBreakdownChart from "../components/charts/CategoryBreakdownChart";
-import { getCategories, normalizeCategory } from "../../../utils/categories";
+import { normalizeCategory } from "../../../utils/categories";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import PageHeader from "../../../components/ui/PageHeader";
 import Card from "../../../components/ui/Card";
@@ -48,10 +48,6 @@ export default function DashboardPage() {
     }, [yearItems, categoryType]);
 
     const hasYearData = yearItems.length > 0;
-
-    const categories = useMemo(() => {
-        return getCategories(items);
-    }, [items]);
 
     const filteredTransactions = useMemo(() => {
         if (!selectedCategory) return [];
