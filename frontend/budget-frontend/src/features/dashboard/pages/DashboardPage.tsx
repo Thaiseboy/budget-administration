@@ -16,6 +16,7 @@ import type { FixedMonthlyItem } from "../../../types/fixedItem";
 import { getFixedItems } from "../../../api/fixedItems";
 import { FixedItemsList } from "../components/FixedItemsList";
 import { getCategories, normalizeCategory } from "../../../utils/categories";
+import { isFixedCategory } from "../../../utils/budgetCategories";
 import PageHeader from "../../../components/ui/PageHeader";
 import Card from "../../../components/ui/Card";
 import { MONTH_NAMES, MONTH_OPTIONS } from "../../../utils/months";
@@ -104,19 +105,27 @@ export default function DashboardPage() {
     const hasYearData = yearItems.length > 0;
 
     const fixedIncome = useMemo(() => {
-        return fixedItems.filter((item) => item.type === "income").reduce((sum, item) => sum + item.amount, 0);
-    }, [fixedItems]);
+        return monthItems
+            .filter((t) => t.type === "income" && isFixedCategory(normalizeCategory(t.category)))
+            .reduce((sum, t) => sum + t.amount, 0);
+    }, [monthItems]);
 
     const fixedExpense = useMemo(() => {
-        return fixedItems.filter((item) => item.type === "expense").reduce((sum, item) => sum + item.amount, 0);
-    }, [fixedItems]);
+        return monthItems
+            .filter((t) => t.type === "expense" && isFixedCategory(normalizeCategory(t.category)))
+            .reduce((sum, t) => sum + t.amount, 0);
+    }, [monthItems]);
 
     const variableIncome = useMemo(() => {
-        return monthItems.filter((t) => t.type === "income").reduce((sum, t) => sum + t.amount, 0);
+        return monthItems
+            .filter((t) => t.type === "income" && !isFixedCategory(normalizeCategory(t.category)))
+            .reduce((sum, t) => sum + t.amount, 0);
     }, [monthItems]);
 
     const variableExpense = useMemo(() => {
-        return monthItems.filter((t) => t.type === "expense").reduce((sum, t) => sum + t.amount, 0);
+        return monthItems
+            .filter((t) => t.type === "expense" && !isFixedCategory(normalizeCategory(t.category)))
+            .reduce((sum, t) => sum + t.amount, 0);
     }, [monthItems]);
 
     const monthIncome = fixedIncome + variableIncome;
