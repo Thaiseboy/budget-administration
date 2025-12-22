@@ -12,6 +12,7 @@ import { normalizeCategory } from "../../../utils/categories";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import PageHeader from "../../../components/ui/PageHeader";
 import Card from "../../../components/ui/Card";
+import Button from "../../../components/ui/Button";
 
 function getYear(date: string) {
     return Number(date.slice(0, 4));
@@ -143,31 +144,31 @@ export default function DashboardPage() {
                             <h2 className="text-base font-semibold text-white">Category breakdown</h2>
 
                             <div className="flex w-full gap-2 sm:w-auto">
-                                <button
+                                <Button
+                                    type="button"
+                                    variant={categoryType === "expense" ? "danger" : "secondary"}
+                                    size="sm"
                                     onClick={() => {
                                         setCategoryType("expense");
                                         setSelectedCategory(null);
                                     }}
-                                    className={`flex-1 rounded-lg px-3 py-1 text-sm sm:flex-none ${categoryType === "expense"
-                                        ? "bg-red-500 text-white"
-                                        : "bg-slate-700 text-slate-300"
-                                        }`}
+                                    className="flex-1 border-0 px-3 py-1 text-sm sm:flex-none"
                                 >
                                     Expense
-                                </button>
+                                </Button>
 
-                                <button
+                                <Button
+                                    type="button"
+                                    variant={categoryType === "income" ? "success" : "secondary"}
+                                    size="sm"
                                     onClick={() => {
                                         setCategoryType("income");
                                         setSelectedCategory(null);
                                     }}
-                                    className={`flex-1 rounded-lg px-3 py-1 text-sm sm:flex-none ${categoryType === "income"
-                                        ? "bg-green-500 text-white"
-                                        : "bg-slate-700 text-slate-300"
-                                        }`}
+                                    className="flex-1 border-0 px-3 py-1 text-sm sm:flex-none"
                                 >
                                     Income
-                                </button>
+                                </Button>
                             </div>
                         </div>
 
@@ -189,12 +190,15 @@ export default function DashboardPage() {
                                     <h3 className="text-sm font-semibold text-white">
                                         {selectedCategory} - {categoryType === "expense" ? "Expenses" : "Income"}
                                     </h3>
-                                    <button
+                                    <Button
+                                        type="button"
+                                        variant="link"
+                                        size="sm"
                                         onClick={() => setSelectedCategory(null)}
                                         className="text-xs text-slate-400 hover:text-slate-300 underline"
                                     >
                                         Clear filter
-                                    </button>
+                                    </Button>
                                 </div>
                                 <div className="space-y-2">
                                     {filteredTransactions.map((t) => (

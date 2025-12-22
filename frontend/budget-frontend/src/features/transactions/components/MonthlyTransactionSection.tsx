@@ -1,6 +1,7 @@
 import type { Transaction } from "../../../types/transaction";
 import TransactionSummary from "../../../components/transactions/TransactionSummary";
 import TransactionList from "./TransactionList";
+import Button from "../../../components/ui/Button";
 import { VscEye } from "react-icons/vsc";
 import { VscEyeClosed } from "react-icons/vsc";
 
@@ -57,12 +58,16 @@ export default function MonthlyTransactionSection({
                 <div className="border-t border-slate-700 px-4 py-4">
                     {hasFixedItems && onApplyFixedItems && (
                         <div className="mb-4">
-                            <button
+                            <Button
+                                type="button"
+                                variant="primary"
+                                size="md"
+                                fullWidth
                                 onClick={onApplyFixedItems}
-                                className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+                                className="bg-blue-600 hover:bg-blue-700"
                             >
                                 + Apply Fixed Items to This Month
-                            </button>
+                            </Button>
                         </div>
                     )}
                     <TransactionList items={items} onEdit={onEdit} onDelete={onDelete} />

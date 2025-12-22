@@ -295,27 +295,30 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
                       </div>
                     )}
                   </div>
-                  <div className="flex w-full items-center justify-between gap-3 sm:w-auto sm:justify-end">
-                    <span className="text-lg font-semibold text-green-900 dark:text-green-300">
+                  <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:justify-end">
+                    <span className="text-lg font-semibold text-green-900 dark:text-green-300 sm:mr-4">
                       €{item.amount.toFixed(2)}
                     </span>
-                    <Button
-                      type="button"
-                      variant="primary"
-                      size="sm"
-                      onClick={() => handleEdit(item)}
-                      className="bg-blue-600 hover:bg-blue-700"
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="danger"
-                      size="sm"
-                      onClick={() => item.id && handleDelete(item.id)}
-                    >
-                      Delete
-                    </Button>
+                    <div className="flex w-full gap-2 sm:w-auto">
+                      <Button
+                        type="button"
+                        variant="primary"
+                        size="sm"
+                        onClick={() => handleEdit(item)}
+                        className="w-full bg-blue-600 hover:bg-blue-700 sm:w-auto"
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="danger"
+                        size="sm"
+                        onClick={() => item.id && handleDelete(item.id)}
+                        className="w-full sm:w-auto"
+                      >
+                        Delete
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -344,27 +347,30 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
                       </div>
                     )}
                   </div>
-                  <div className="flex w-full items-center justify-between gap-3 sm:w-auto sm:justify-end">
-                    <span className="text-lg font-semibold text-red-900 dark:text-red-300">
+                  <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:justify-end">
+                    <span className="text-lg font-semibold text-red-900 dark:text-red-300 sm:mr-4">
                       €{item.amount.toFixed(2)}
                     </span>
-                    <Button
-                      type="button"
-                      variant="primary"
-                      size="sm"
-                      onClick={() => handleEdit(item)}
-                      className="bg-blue-600 hover:bg-blue-700"
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="danger"
-                      size="sm"
-                      onClick={() => item.id && handleDelete(item.id)}
-                    >
-                      Delete
-                    </Button>
+                    <div className="flex w-full gap-2 sm:w-auto">
+                      <Button
+                        type="button"
+                        variant="primary"
+                        size="sm"
+                        onClick={() => handleEdit(item)}
+                        className="w-full bg-blue-600 hover:bg-blue-700 sm:w-auto"
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="danger"
+                        size="sm"
+                        onClick={() => item.id && handleDelete(item.id)}
+                        className="w-full sm:w-auto"
+                      >
+                        Delete
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}

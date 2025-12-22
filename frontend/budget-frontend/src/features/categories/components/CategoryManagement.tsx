@@ -160,7 +160,7 @@ export default function CategoryManagement({ categories, onCategoriesUpdated }: 
                 </select>
                 <Button
                   type="button"
-                  variant="primary"
+                  variant="success"
                   size="sm"
                   onClick={() => applyMerge(category.name, mergeValue, "Merge")}
                   disabled={!mergeValue || isBusy}

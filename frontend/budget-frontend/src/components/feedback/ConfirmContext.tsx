@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import type { ReactNode } from "react";
+import Button from "../ui/Button";
 
 type ConfirmOptions = {
     title?: string;
@@ -71,22 +72,27 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
                             </p>
 
                             <div className="mt-5 flex justify-end gap-2">
-                                <button
+                                <Button
                                     type="button"
+                                    variant="secondary"
+                                    size="sm"
                                     onClick={() => close(false)}
-                                    className="rounded-lg border border-slate-600 px-4 py-2 text-sm text-slate-300 hover:bg-slate-700">
+                                    className="border border-slate-600 text-slate-300 hover:bg-slate-700">
                                     {state.options.cancelText}
-                                </button>
+                                </Button>
 
-                                <button
+                                <Button
                                     type="button"
+                                    variant={state.options.variant === "danger" ? "danger" : "secondary"}
+                                    size="sm"
                                     onClick={() => close(true)}
-                                    className={`rounded-lg px-4 py-2 text-sm font-medium text-white ${state.options.variant === "danger"
-                                            ? "bg-red-600 hover:bg-red-700"
-                                            : "bg-slate-700 hover:bg-slate-600"
-                                        }`}>
+                                    className={
+                                        state.options.variant === "danger"
+                                            ? ""
+                                            : "border-0 bg-slate-700 text-white hover:bg-slate-600"
+                                    }>
                                     {state.options.confirmText}
-                                </button>
+                                </Button>
                             </div>
                         </div>
                     </div>
