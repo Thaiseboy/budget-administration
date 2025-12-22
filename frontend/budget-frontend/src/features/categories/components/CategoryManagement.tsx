@@ -1,11 +1,9 @@
 import { useState } from "react";
-import type { Transaction } from "../../../types";
-import { normalizeCategory } from "../../../utils/categories";
-import { mergeCategories } from "../../../api/categories";
-import { useToast } from "../../../components/feedback/ToastContext";
-import { useConfirm } from "../../../components/feedback/ConfirmContext";
-import Card from "../../../components/ui/Card";
-import Button from "../../../components/ui/Button";
+import type { Transaction } from "@/types";
+import { normalizeCategory } from "@/utils";
+import { mergeCategories } from "@/api";
+import { useToast, useConfirm } from "@/contexts";
+import { Card, Button } from "@/components/ui";
 
 type Category = {
   name: string;

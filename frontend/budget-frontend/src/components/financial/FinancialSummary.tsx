@@ -1,5 +1,5 @@
-import Card from "../ui/Card";
-import { formatCurrency } from "../../utils/formatCurrency";
+import { Card } from "@/components/ui";
+import { formatCurrency } from "@/utils";
 
 type TypeFilter = "all" | "income" | "expense";
 

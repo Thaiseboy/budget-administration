@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { normalizeCategory } from "../../../utils/categories";
+import { normalizeCategory } from "@/utils";
 import type { TypeFilter } from "../types";
 
 type FilterParams = {

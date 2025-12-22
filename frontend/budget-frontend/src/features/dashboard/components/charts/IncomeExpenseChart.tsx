@@ -9,7 +9,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import type { MonthlyTotal } from "../../../../utils/monthlyTotals";
-import { formatCurrency } from "../../../../utils/formatCurrency";
+import { formatCurrency } from "@/utils";
 
 type Props = {
   data: MonthlyTotal[];

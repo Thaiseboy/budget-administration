@@ -1,12 +1,12 @@
 import { useMemo, useState, useEffect } from "react";
-import AppLayout from "../../../layouts/AppLayout";
-import { useAppContext } from "../../../hooks/useAppContext";
-import { normalizeCategory } from "../../../utils/categories";
-import type { FixedMonthlyItem } from "../../../types";
-import { getFixedItems } from "../../../api/fixedItems";
+import AppLayout from "@/layouts/AppLayout";
+import { useAppContext } from "@/hooks/useAppContext";
+import { normalizeCategory } from "@/utils";
+import type { FixedMonthlyItem } from "@/types";
+import { getFixedItems } from "@/api";
 import { FixedItemsList } from "../../dashboard/components/FixedItemsList";
 import CategoryManagement from "../components/CategoryManagement";
-import PageHeader from "../../../components/ui/PageHeader";
+import { PageHeader } from "@/components/ui";
 import { Link } from "react-router-dom";
 
 export default function CategoriesPage() {

@@ -1,6 +1,6 @@
 import type { RefObject } from "react";
-import Button from "../../../components/ui/Button";
-import { MONTH_OPTIONS_PADDED } from "../../../utils/months";
+import { Button } from "@/components/ui";
+import { MONTH_OPTIONS_PADDED } from "@/utils";
 import { GoSync } from "react-icons/go";
 import type { TypeFilter } from "../types";
 

@@ -1,6 +1,6 @@
-import type { Transaction } from "../../../types";
-import { formatCurrency } from "../../../utils/formatCurrency";
-import Button from "../../../components/ui/Button";
+import type { Transaction } from "@/types";
+import { formatCurrency } from "@/utils";
+import { Button } from "@/components/ui";
 
 type Props = {
   item: Transaction;
