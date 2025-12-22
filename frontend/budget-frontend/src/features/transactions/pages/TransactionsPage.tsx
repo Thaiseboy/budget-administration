@@ -425,9 +425,9 @@ export default function TransactionsPage() {
               variant="ghost"
               size="sm"
               active={typeFilter === v}
-              activeClassName="bg-slate-700 text-white hover:bg-slate-700"
+              activeClassName="bg-slate-700 !text-yellow-300 hover:bg-slate-700"
               onClick={() => setTypeFilter(v)}
-              className="flex-1 rounded-md border border-transparent bg-transparent px-3 py-1 text-sm text-slate-300 hover:border-transparent hover:bg-slate-700/40 hover:text-white sm:flex-none"
+              className="flex-1 rounded-md border border-transparent bg-transparent text-slate-300 hover:border-transparent hover:bg-slate-700/40 hover:text-white sm:flex-none"
             >
               {v === "all" ? "All" : v === "income" ? "Income" : "Expense"}
             </Button>
@@ -509,7 +509,7 @@ export default function TransactionsPage() {
             setCategoryFilter("all");
             setMonthFilter("all");
           }}
-          className="border-0 bg-red-800 px-3 text-xl text-slate-300 hover:bg-red-700 hover:text-white sm:w-auto"
+          className="flex items-center justify-center border-0 bg-red-800 px-3 text-xl text-slate-300 hover:bg-red-700 hover:text-white sm:w-auto"
         >
           <GoSync />
         </Button>
