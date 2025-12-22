@@ -16,7 +16,7 @@ type Props = {
   onImportFile: (file: File) => void;
   isImporting: boolean;
   onResetFilters: () => void;
-  fileInputRef: RefObject<HTMLInputElement>;
+  fileInputRef: RefObject<HTMLInputElement | null>;
 };
 
 export default function TransactionFiltersBar({
