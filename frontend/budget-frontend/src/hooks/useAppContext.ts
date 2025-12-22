@@ -1,6 +1,6 @@
 import { useOutletContext } from "react-router-dom";
-import type { Transaction } from "../types/transaction";
-import type { CategoryBudget } from "../types/budget";
+import type { Transaction } from "../types";
+import type { CategoryBudget } from "../types";
 
 type AppContextType = {
   items: Transaction[];

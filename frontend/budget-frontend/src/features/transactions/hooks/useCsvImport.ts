@@ -3,7 +3,7 @@ import { createTransaction } from "../../../api/transactions";
 import { useToast } from "../../../components/feedback/ToastContext";
 import { normalizeCategory } from "../../../utils/categories";
 import { parseCsv } from "../../../utils/csv";
-import type { Transaction } from "../../../types/transaction";
+import type { Transaction } from "../../../types";
 import type { ImportPreview } from "../types";
 
 type UseCsvImportArgs = {

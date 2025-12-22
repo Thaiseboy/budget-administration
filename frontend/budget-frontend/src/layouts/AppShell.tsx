@@ -1,13 +1,13 @@
 import { useEffect, useState, useRef } from "react";
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { getTransactions } from "../api/transactions";
-import type { Transaction } from "../types/transaction";
+import type { Transaction } from "../types";
 import TransactionsPage from "../features/transactions/pages/TransactionsPage";
 import NewTransactionPage from "../features/transactions/pages/NewTransactionPage";
 import EditTransactionPage from "../features/transactions/pages/EditTransactionPage";
 import DashboardPage from "../features/dashboard/pages/DashboardPage";
 import CategoriesPage from "../features/categories/pages/CategoriesPage";
-import type { CategoryBudget } from "../types/budget";
+import type { CategoryBudget } from "../types";
 import { getBudgets } from "../api/budgets";
 import Card from "../components/ui/Card";
 

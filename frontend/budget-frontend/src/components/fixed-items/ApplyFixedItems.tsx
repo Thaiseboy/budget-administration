@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { FixedMonthlyItem } from "../../types/fixedItem";
+import type { FixedMonthlyItem } from "../../types";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { normalizeCategory } from "../../utils/categories";
 import Card from "../ui/Card";

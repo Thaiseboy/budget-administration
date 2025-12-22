@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { FixedMonthlyItem } from "../../../types/fixedItem";
+import type { FixedMonthlyItem } from "../../../types";
 import { createFixedItem, updateFixedItem, deleteFixedItem } from "../../../api/fixedItems";
 import { normalizeCategory } from "../../../utils/categories";
 import FormFieldGroup from "../../../components/form/FormFieldGroup";

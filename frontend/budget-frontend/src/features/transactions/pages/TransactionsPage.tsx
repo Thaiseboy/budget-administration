@@ -7,7 +7,7 @@ import { useConfirm } from "../../../components/feedback/ConfirmContext";
 import { groupByMonth, type MonthKey } from "../../../utils/groupTransactions";
 import MonthlyTransactionSection from "../components/MonthlyTransactionSection";
 import { useAppContext } from "../../../hooks/useAppContext";
-import type { FixedMonthlyItem } from "../../../types/fixedItem";
+import type { FixedMonthlyItem } from "../../../types";
 import { getFixedItems } from "../../../api/fixedItems";
 import { normalizeCategory } from "../../../utils/categories";
 import { isFixedCategory } from "../../../utils/budgetCategories";

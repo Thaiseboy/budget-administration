@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Transaction } from "../../../types/transaction";
+import type { Transaction } from "../../../types";
 import { normalizeCategory } from "../../../utils/categories";
 import { mergeCategories } from "../../../api/categories";
 import { useToast } from "../../../components/feedback/ToastContext";

@@ -1,4 +1,4 @@
-import type { Transaction } from "../../types/transaction";
+import type { Transaction } from "../../types";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { normalizeCategory } from "../../utils/categories";
 import { isFixedCategory } from "../../utils/budgetCategories";

@@ -2,7 +2,7 @@ import { useMemo, useState, useEffect } from "react";
 import AppLayout from "../../../layouts/AppLayout";
 import { useAppContext } from "../../../hooks/useAppContext";
 import { normalizeCategory } from "../../../utils/categories";
-import type { FixedMonthlyItem } from "../../../types/fixedItem";
+import type { FixedMonthlyItem } from "../../../types";
 import { getFixedItems } from "../../../api/fixedItems";
 import { FixedItemsList } from "../../dashboard/components/FixedItemsList";
 import CategoryManagement from "../components/CategoryManagement";

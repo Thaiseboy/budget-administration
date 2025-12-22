@@ -1,5 +1,5 @@
 import { http } from "./http";
-import type { FixedMonthlyItem } from "../types/fixedItem";
+import type { FixedMonthlyItem } from "../types";
 
 export function getFixedItems() {
   return http<FixedMonthlyItem[]>(`/fixed-items`);

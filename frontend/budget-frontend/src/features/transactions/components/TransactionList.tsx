@@ -1,4 +1,4 @@
-import type { Transaction } from "../../../types/transaction";
+import type { Transaction } from "../../../types";
 import TransactionItem from "./TransactionItem";
 import Card from "../../../components/ui/Card";
 

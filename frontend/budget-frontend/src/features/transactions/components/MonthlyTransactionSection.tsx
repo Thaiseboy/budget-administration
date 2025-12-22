@@ -1,4 +1,4 @@
-import type { Transaction } from "../../../types/transaction";
+import type { Transaction } from "../../../types";
 import TransactionSummary from "../../../components/transactions/TransactionSummary";
 import TransactionList from "./TransactionList";
 import Button from "../../../components/ui/Button";

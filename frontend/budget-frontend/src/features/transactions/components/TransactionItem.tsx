@@ -1,4 +1,4 @@
-import type { Transaction } from "../../../types/transaction";
+import type { Transaction } from "../../../types";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import Button from "../../../components/ui/Button";
 

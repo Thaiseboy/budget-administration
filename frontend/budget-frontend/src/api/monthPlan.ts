@@ -1,5 +1,5 @@
 import { http } from "./http";
-import type { MonthPlan } from "../types/monthPlan";
+import type { MonthPlan } from "../types";
 
 export function getMonthPlan(year: number, month: number) {
   return http<MonthPlan>(`/month-plan?year=${year}&month=${month}`);
