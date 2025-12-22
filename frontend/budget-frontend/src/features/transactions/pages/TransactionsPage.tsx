@@ -16,6 +16,7 @@ import FinancialSummary from "../../../components/financial/FinancialSummary";
 import ApplyFixedItems from "../../../components/fixed-items/ApplyFixedItems";
 import PageHeader from "../../../components/ui/PageHeader";
 import Card from "../../../components/ui/Card";
+import Button from "../../../components/ui/Button";
 import { MONTH_OPTIONS, MONTH_OPTIONS_PADDED } from "../../../utils/months";
 import { GoSync } from "react-icons/go";
 import ImportCsvPreviewModal, {
@@ -411,16 +412,18 @@ export default function TransactionsPage() {
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
         <div className="flex w-full rounded-lg border border-slate-600 bg-slate-800 p-1 sm:w-auto">
           {(["all", "income", "expense"] as const).map((v) => (
-            <button
+            <Button
               key={v}
+              type="button"
+              variant="ghost"
+              size="sm"
+              active={typeFilter === v}
+              activeClassName="bg-slate-700 text-white hover:bg-slate-700"
               onClick={() => setTypeFilter(v)}
-              className={`flex-1 rounded-md px-3 py-1 text-sm transition-colors sm:flex-none ${typeFilter === v
-                ? "bg-slate-700 text-white"
-                : "text-slate-300 hover:text-white"
-                }`}
+              className="flex-1 rounded-md border border-transparent bg-transparent px-3 py-1 text-sm text-slate-300 hover:border-transparent hover:bg-slate-700/40 hover:text-white sm:flex-none"
             >
               {v === "all" ? "All" : v === "income" ? "Income" : "Expense"}
-            </button>
+            </Button>
           ))}
         </div>
 
@@ -449,23 +452,31 @@ export default function TransactionsPage() {
           ))}
         </select>
 
-        <button
+        <Button
+          type="button"
+          variant="secondary"
+          size="md"
+          fullWidth
           onClick={() => {
             const filename = `transactions-${selectedYear}-${monthFilter}.csv`;
             downloadCsv(filename, exportRows);
           }}
-          className="w-full rounded-lg bg-slate-700 px-3 py-2 text-center text-sm text-white hover:bg-slate-600 sm:w-auto"
+          className="border-0 px-3 text-white sm:w-auto"
         >
           Export CSV
-        </button>
+        </Button>
 
-        <button
+        <Button
+          type="button"
+          variant="secondary"
+          size="md"
+          fullWidth
           onClick={() => fileInputRef.current?.click()}
           disabled={isImporting}
-          className="w-full rounded-lg bg-slate-700 px-3 py-2 text-center text-sm text-white hover:bg-slate-600 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+          className="border-0 px-3 text-white sm:w-auto"
         >
           {isImporting ? "Importing..." : "Import CSV"}
-        </button>
+        </Button>
 
         <input
           ref={fileInputRef}
@@ -481,16 +492,20 @@ export default function TransactionsPage() {
           }}
         />
 
-        <button
+        <Button
+          type="button"
+          variant="danger"
+          size="md"
+          fullWidth
           onClick={() => {
             setTypeFilter("all");
             setCategoryFilter("all");
             setMonthFilter("all");
           }}
-          className="w-full rounded-lg border border-slate-600 bg-red-800 px-3 py-2 text-center text-xl text-slate-300 hover:text-white sm:w-auto"
+          className="border-0 bg-red-800 px-3 text-xl text-slate-300 hover:bg-red-700 hover:text-white sm:w-auto"
         >
           <GoSync />
-        </button>
+        </Button>
       </div>
 
       <div className="mt-4">
