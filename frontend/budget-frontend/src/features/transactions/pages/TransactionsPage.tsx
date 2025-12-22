@@ -4,14 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { deleteTransaction, createTransaction, getFixedItems } from "@/api";
 import { useToast, useConfirm } from "@/contexts";
 import { groupByMonth, type MonthKey, normalizeCategory, isFixedCategory, downloadCsv, MONTH_OPTIONS } from "@/utils";
-import MonthlyTransactionSection from "../components/MonthlyTransactionSection";
+import { MonthlyTransactionSection, ImportCsvPreviewModal, TransactionFiltersBar } from "../components";
 import { useAppContext } from "@/hooks/useAppContext";
 import type { FixedMonthlyItem } from "@/types";
 import FinancialSummary from "@/components/financial/FinancialSummary";
 import ApplyFixedItems from "@/components/fixed-items/ApplyFixedItems";
 import { PageHeader, Card } from "@/components/ui";
-import ImportCsvPreviewModal from "../components/ImportCsvPreviewModal";
-import TransactionFiltersBar from "../components/TransactionFiltersBar";
 import { useCsvImport } from "../hooks/useCsvImport";
 import { useTransactionFilters } from "../hooks/useTransactionFilters";
 

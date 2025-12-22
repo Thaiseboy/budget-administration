@@ -6,7 +6,7 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-import type { CategoryTotal } from "../../../../utils/categoryTotals";
+import type { CategoryTotal } from "@/utils/categoryTotals";
 import { formatCurrency } from "@/utils";
 
 type Props = {

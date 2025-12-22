@@ -3,16 +3,9 @@ import AppLayout from "@/layouts/AppLayout";
 import TransactionSummary from "@/components/transactions/TransactionSummary";
 import { useAppContext } from "@/hooks/useAppContext";
 import { Link } from "react-router-dom";
-import IncomeExpenseChart from "../components/charts/IncomeExpenseChart";
-import { buildMonthlyTotals, withCumulativeBalance } from "@/utils";
-import BalanceTrendChart from "../components/charts/BalanceTrendChart";
-import { buildCategoryTotals } from "@/utils";
-import CategoryBreakdownChart from "../components/charts/CategoryBreakdownChart";
-import { normalizeCategory } from "@/utils";
-import { formatCurrency } from "@/utils";
-import { PageHeader } from "@/components/ui";
-import { Card } from "@/components/ui";
-import { Button } from "@/components/ui";
+import { IncomeExpenseChart, BalanceTrendChart, CategoryBreakdownChart } from "../components";
+import { buildMonthlyTotals, withCumulativeBalance, buildCategoryTotals, normalizeCategory, formatCurrency } from "@/utils";
+import { PageHeader, Card, Button } from "@/components/ui";
 
 function getYear(date: string) {
     return Number(date.slice(0, 4));

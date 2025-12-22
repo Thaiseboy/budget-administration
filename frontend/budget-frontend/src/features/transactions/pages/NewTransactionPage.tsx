@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import AppLayout from "@/layouts/AppLayout";
 import { createTransaction } from "@/api";
-import TransactionForm from "../components/TransactionForm";
+import { TransactionForm } from "../components";
 import { useToast } from "@/contexts";
 import { useAppContext } from "@/hooks/useAppContext";
 import { getCategories } from "@/utils";
