@@ -380,6 +380,13 @@ export default function TransactionsPage() {
             </Link>
 
             <Link
+              to="/categories"
+              className="w-full rounded-lg border border-slate-600 px-4 py-2 text-center text-sm text-slate-300 hover:bg-slate-800 sm:w-auto"
+            >
+              Categories
+            </Link>
+
+            <Link
               to="/transactions/new"
               className="w-full rounded-lg bg-emerald-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-slate-800 sm:ml-4 sm:w-auto"
             >
