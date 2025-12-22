@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo, useRef } from "react";
 import AppLayout from "../../../layouts/AppLayout";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { deleteTransaction, createTransaction } from "../../../api/transactions";
 import { useToast } from "../../../components/feedback/ToastContext";
 import { useConfirm } from "../../../components/feedback/ConfirmContext";
@@ -23,25 +23,107 @@ import ImportCsvPreviewModal, {
   type ImportPreview,
 } from "../components/ImportCsvPreviewModal";
 
+type TypeFilter = "all" | "income" | "expense";
+
+type FilterParams = {
+  year: number;
+  month: string;
+  type: TypeFilter;
+  category: string;
+};
+
+function parseYearParam(value: string | null, fallback: number): number {
+  if (!value) return fallback;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function parseTypeParam(value: string | null): TypeFilter {
+  const v = (value ?? "").toLowerCase();
+  if (v === "income" || v === "expense") return v;
+  return "all";
+}
+
+function parseMonthParam(value: string | null): string {
+  const v = (value ?? "").trim().toLowerCase();
+  if (!v || v === "all") return "all";
+  const asNumber = Number(v);
+  if (Number.isFinite(asNumber) && asNumber >= 1 && asNumber <= 12) {
+    return String(asNumber).padStart(2, "0");
+  }
+  if (/^(0[1-9]|1[0-2])$/.test(v)) return v;
+  return "all";
+}
+
+function parseCategoryParam(value: string | null): string {
+  if (!value) return "all";
+  if (value.trim().toLowerCase() === "all") return "all";
+  return normalizeCategory(value);
+}
+
+function getFilterParams(params: URLSearchParams, fallbackYear: number): FilterParams {
+  return {
+    year: parseYearParam(params.get("year"), fallbackYear),
+    month: parseMonthParam(params.get("month")),
+    type: parseTypeParam(params.get("type")),
+    category: parseCategoryParam(params.get("cat")),
+  };
+}
+
 export default function TransactionsPage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchParamsString = searchParams.toString();
   const toast = useToast();
   const confirm = useConfirm();
   const { items, onDeleted, onCreated } = useAppContext();
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
-  const [selectedYear, setSelectedYear] = useState<number>(currentYear);
+  const initialFilters = getFilterParams(searchParams, currentYear);
+  const [selectedYear, setSelectedYear] = useState<number>(initialFilters.year);
   const [openMonthKeys, setOpenMonthKeys] = useState<MonthKey[]>([]);
   const [fixedItems, setFixedItems] = useState<FixedMonthlyItem[]>([]);
 
-  type TypeFilter = "all" | "income" | "expense";
-
-  const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
-  const [categoryFilter, setCategoryFilter] = useState<string>("all");
-  const [monthFilter, setMonthFilter] = useState<string>("all");
+  const [typeFilter, setTypeFilter] = useState<TypeFilter>(initialFilters.type);
+  const [categoryFilter, setCategoryFilter] = useState<string>(initialFilters.category);
+  const [monthFilter, setMonthFilter] = useState<string>(initialFilters.month);
   const [isImporting, setIsImporting] = useState(false);
   const [importPreview, setImportPreview] = useState<ImportPreview | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const skipUrlSyncRef = useRef(false);
+  const didMountRef = useRef(false);
+
+  useEffect(() => {
+    const nextFilters = getFilterParams(searchParams, currentYear);
+    skipUrlSyncRef.current = true;
+    setSelectedYear(nextFilters.year);
+    setTypeFilter(nextFilters.type);
+    setCategoryFilter(nextFilters.category);
+    setMonthFilter(nextFilters.month);
+  }, [searchParamsString, currentYear]);
+
+  useEffect(() => {
+    if (skipUrlSyncRef.current) {
+      skipUrlSyncRef.current = false;
+      didMountRef.current = true;
+      return;
+    }
+
+    const nextParams = new URLSearchParams(searchParamsString);
+    nextParams.set("year", String(selectedYear));
+    nextParams.set("month", monthFilter);
+    nextParams.set("type", typeFilter);
+    nextParams.set("cat", categoryFilter);
+
+    const nextString = nextParams.toString();
+    const currentString = searchParamsString;
+
+    if (nextString !== currentString) {
+      setSearchParams(nextParams, { replace: !didMountRef.current });
+    }
+
+    didMountRef.current = true;
+  }, [selectedYear, monthFilter, typeFilter, categoryFilter, searchParamsString, setSearchParams]);
 
   function handleEdit(id: number) {
     navigate(`/transactions/${id}/edit`);
@@ -224,8 +306,9 @@ export default function TransactionsPage() {
       const year = parseInt(t.date.slice(0, 4), 10);
       yearSet.add(year);
     });
+    yearSet.add(selectedYear);
     return Array.from(yearSet).sort((a, b) => b - a);
-  }, [items]);
+  }, [items, selectedYear]);
 
   const yearItems = useMemo(() => {
     return items.filter((t) => t.date.startsWith(String(selectedYear)));
@@ -236,8 +319,11 @@ export default function TransactionsPage() {
     yearItems.forEach((t) => {
       set.add(normalizeCategory(t.category));
     });
+    if (categoryFilter !== "all") {
+      set.add(categoryFilter);
+    }
     return ["all", ...Array.from(set).sort((a, b) => a.localeCompare(b))];
-  }, [yearItems]);
+  }, [yearItems, categoryFilter]);
 
   const filteredSortedItems = useMemo(() => {
     let list = [...yearItems];
