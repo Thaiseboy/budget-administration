@@ -3,6 +3,7 @@ import type { FixedMonthlyItem } from "../../types/fixedItem";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { normalizeCategory } from "../../utils/categories";
 import Card from "../ui/Card";
+import Button from "../ui/Button";
 import { MONTH_OPTIONS } from "../../utils/months";
 
 type Props = {
@@ -56,12 +57,16 @@ export default function ApplyFixedItems({
           </select>
         </div>
         <div className="w-full sm:flex-1">
-          <button
+          <Button
+            type="button"
+            variant="primary"
+            size="md"
+            fullWidth
             onClick={() => onApply(applyYear, applyMonth)}
-            className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+            className="bg-blue-600 hover:bg-blue-700"
           >
             Apply Fixed Items
-          </button>
+          </Button>
         </div>
       </div>
       <p className="mt-3 text-xs text-slate-400">

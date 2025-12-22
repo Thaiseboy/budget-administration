@@ -7,6 +7,7 @@ import { getFixedItems } from "../../../api/fixedItems";
 import { FixedItemsList } from "../../dashboard/components/FixedItemsList";
 import CategoryManagement from "../components/CategoryManagement";
 import PageHeader from "../../../components/ui/PageHeader";
+import { Link } from "react-router-dom";
 
 export default function CategoriesPage() {
   const { items, setItems } = useAppContext();
@@ -46,6 +47,23 @@ export default function CategoriesPage() {
       <PageHeader
         title="Categories & Settings"
         description="Manage your categories and fixed items."
+        actions={
+          <>
+            <Link
+              to="/dashboard"
+              className="w-full rounded-lg border border-slate-600 px-4 py-2 text-center text-sm text-slate-300 hover:bg-slate-800 sm:w-auto"
+            >
+              Dashboard
+            </Link>
+
+            <Link
+              to="/transactions"
+              className="w-full rounded-lg border border-slate-600 px-4 py-2 text-center text-sm text-slate-300 hover:bg-slate-800 sm:w-auto"
+            >
+              View Transactions
+            </Link>
+          </>
+        }
       />
 
       <div className="mt-6">
