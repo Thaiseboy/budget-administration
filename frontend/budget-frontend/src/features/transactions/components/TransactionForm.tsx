@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
-import { normalizeCategory } from "../../../utils/categories";
-import Card from "../../../components/ui/Card";
-import Button from "../../../components/ui/Button";
-import FormFieldGroup from "../../../components/form/FormFieldGroup";
+import { normalizeCategory } from "@/utils";
+import { Card } from "@/components/ui";
+import { Button } from "@/components/ui";
+import { FormFieldGroup } from "@/components/form";
 
 type FormData = {
     type: "income" | "expense";

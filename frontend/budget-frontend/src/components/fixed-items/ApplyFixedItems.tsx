@@ -1,10 +1,7 @@
 import { useState } from "react";
-import type { FixedMonthlyItem } from "../../types";
-import { formatCurrency } from "../../utils/formatCurrency";
-import { normalizeCategory } from "../../utils/categories";
-import Card from "../ui/Card";
-import Button from "../ui/Button";
-import { MONTH_OPTIONS } from "../../utils/months";
+import type { FixedMonthlyItem } from "@/types";
+import { formatCurrency, normalizeCategory, MONTH_OPTIONS } from "@/utils";
+import { Card, Button } from "@/components/ui";
 
 type Props = {
   fixedItems: FixedMonthlyItem[];

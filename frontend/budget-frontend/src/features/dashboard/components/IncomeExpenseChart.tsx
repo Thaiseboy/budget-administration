@@ -8,8 +8,8 @@ import {
   Legend,
   CartesianGrid,
 } from "recharts";
-import type { MonthlyTotal } from "../../../../utils/monthlyTotals";
-import { formatCurrency } from "../../../../utils/formatCurrency";
+import type { MonthlyTotal } from "@/utils/monthlyTotals";
+import { formatCurrency } from "@/utils";
 
 type Props = {
   data: MonthlyTotal[];

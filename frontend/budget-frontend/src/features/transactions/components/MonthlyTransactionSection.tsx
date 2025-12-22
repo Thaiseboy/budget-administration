@@ -1,7 +1,7 @@
-import type { Transaction } from "../../../types";
-import TransactionSummary from "../../../components/transactions/TransactionSummary";
+import type { Transaction } from "@/types";
+import TransactionSummary from "@/components/transactions/TransactionSummary";
 import TransactionList from "./TransactionList";
-import Button from "../../../components/ui/Button";
+import { Button } from "@/components/ui";
 import { VscEye } from "react-icons/vsc";
 import { VscEyeClosed } from "react-icons/vsc";
 

@@ -1,12 +1,12 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import AppLayout from "../../../layouts/AppLayout";
-import { createTransaction } from "../../../api/transactions";
-import TransactionForm from "../components/TransactionForm";
-import { useToast } from "../../../components/feedback/ToastContext";
-import { useAppContext } from "../../../hooks/useAppContext";
-import { getCategories } from "../../../utils/categories";
-import PageHeader from "../../../components/ui/PageHeader";
+import AppLayout from "@/layouts/AppLayout";
+import { createTransaction } from "@/api";
+import { TransactionForm } from "../components";
+import { useToast } from "@/contexts";
+import { useAppContext } from "@/hooks/useAppContext";
+import { getCategories } from "@/utils";
+import { PageHeader } from "@/components/ui";
 
 export default function NewTransactionPage() {
   const navigate = useNavigate();

@@ -1,9 +1,9 @@
 import { useState } from "react";
-import type { FixedMonthlyItem } from "../../../types";
-import { createFixedItem, updateFixedItem, deleteFixedItem } from "../../../api/fixedItems";
-import { normalizeCategory } from "../../../utils/categories";
-import FormFieldGroup from "../../../components/form/FormFieldGroup";
-import Button from "../../../components/ui/Button";
+import type { FixedMonthlyItem } from "@/types";
+import { createFixedItem, updateFixedItem, deleteFixedItem } from "@/api";
+import { normalizeCategory } from "@/utils";
+import { FormFieldGroup } from "@/components/form";
+import { Button } from "@/components/ui";
 
 type Props = {
   items: FixedMonthlyItem[];

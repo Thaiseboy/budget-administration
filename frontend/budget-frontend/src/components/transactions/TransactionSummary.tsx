@@ -1,8 +1,8 @@
-import type { Transaction } from "../../types";
-import { formatCurrency } from "../../utils/formatCurrency";
-import { normalizeCategory } from "../../utils/categories";
-import { isFixedCategory } from "../../utils/budgetCategories";
-import Card from "../ui/Card";
+import type { Transaction } from "@/types";
+import { formatCurrency } from "@/utils";
+import { normalizeCategory } from "@/utils";
+import { isFixedCategory } from "@/utils";
+import { Card } from "@/components/ui";
 import BudgetStatusBadge from "../budget/BudgetStatusBadge";
 
 type TypeFilter = "all" | "income" | "expense";

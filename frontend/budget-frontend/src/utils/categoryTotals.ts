@@ -1,4 +1,4 @@
-import type { Transaction } from "../types";
+import type { Transaction } from "@/types";
 import { normalizeCategory } from "./categories";
 
 export type CategoryTotal = {

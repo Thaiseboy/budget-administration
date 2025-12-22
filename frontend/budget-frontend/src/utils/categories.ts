@@ -1,4 +1,4 @@
-import type { Transaction } from "../types";
+import type { Transaction } from "@/types";
 
 export function normalizeCategory(raw?: string | null): string {
   const s = (raw ?? "").trim();

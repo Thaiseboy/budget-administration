@@ -1,13 +1,12 @@
 import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import AppLayout from "../../../layouts/AppLayout";
-import { updateTransaction } from "../../../api/transactions";
-import TransactionForm from "../components/TransactionForm";
-import { useToast } from "../../../components/feedback/ToastContext";
-import { useAppContext } from "../../../hooks/useAppContext";
-import { getCategories } from "../../../utils/categories";
-import PageHeader from "../../../components/ui/PageHeader";
-import Card from "../../../components/ui/Card";
+import AppLayout from "@/layouts/AppLayout";
+import { updateTransaction } from "@/api";
+import { TransactionForm } from "../components";
+import { useToast } from "@/contexts";
+import { useAppContext } from "@/hooks/useAppContext";
+import { getCategories } from "@/utils";
+import { PageHeader, Card } from "@/components/ui";
 
 export default function EditTransactionPage() {
   const navigate = useNavigate();

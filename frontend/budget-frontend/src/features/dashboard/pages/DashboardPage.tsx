@@ -1,18 +1,11 @@
 import { useMemo, useState } from "react";
-import AppLayout from "../../../layouts/AppLayout";
-import TransactionSummary from "../../../components/transactions/TransactionSummary";
-import { useAppContext } from "../../../hooks/useAppContext";
+import AppLayout from "@/layouts/AppLayout";
+import TransactionSummary from "@/components/transactions/TransactionSummary";
+import { useAppContext } from "@/hooks/useAppContext";
 import { Link } from "react-router-dom";
-import IncomeExpenseChart from "../components/charts/IncomeExpenseChart";
-import { buildMonthlyTotals, withCumulativeBalance } from "../../../utils/monthlyTotals";
-import BalanceTrendChart from "../components/charts/BalanceTrendChart";
-import { buildCategoryTotals } from "../../../utils/categoryTotals";
-import CategoryBreakdownChart from "../components/charts/CategoryBreakdownChart";
-import { normalizeCategory } from "../../../utils/categories";
-import { formatCurrency } from "../../../utils/formatCurrency";
-import PageHeader from "../../../components/ui/PageHeader";
-import Card from "../../../components/ui/Card";
-import Button from "../../../components/ui/Button";
+import { IncomeExpenseChart, BalanceTrendChart, CategoryBreakdownChart } from "../components";
+import { buildMonthlyTotals, withCumulativeBalance, buildCategoryTotals, normalizeCategory, formatCurrency } from "@/utils";
+import { PageHeader, Card, Button } from "@/components/ui";
 
 function getYear(date: string) {
     return Number(date.slice(0, 4));
