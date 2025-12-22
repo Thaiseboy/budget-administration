@@ -1,6 +1,6 @@
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo } from "react";
 import AppLayout from "../../../layouts/AppLayout";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { deleteTransaction, createTransaction } from "../../../api/transactions";
 import { useToast } from "../../../components/feedback/ToastContext";
 import { useConfirm } from "../../../components/feedback/ConfirmContext";
@@ -11,119 +11,47 @@ import type { FixedMonthlyItem } from "../../../types/fixedItem";
 import { getFixedItems } from "../../../api/fixedItems";
 import { normalizeCategory } from "../../../utils/categories";
 import { isFixedCategory } from "../../../utils/budgetCategories";
-import { downloadCsv, parseCsv } from "../../../utils/csv";
+import { downloadCsv } from "../../../utils/csv";
 import FinancialSummary from "../../../components/financial/FinancialSummary";
 import ApplyFixedItems from "../../../components/fixed-items/ApplyFixedItems";
 import PageHeader from "../../../components/ui/PageHeader";
 import Card from "../../../components/ui/Card";
-import Button from "../../../components/ui/Button";
-import { MONTH_OPTIONS, MONTH_OPTIONS_PADDED } from "../../../utils/months";
-import { GoSync } from "react-icons/go";
-import ImportCsvPreviewModal, {
-  type ImportPreview,
-} from "../components/ImportCsvPreviewModal";
-
-type TypeFilter = "all" | "income" | "expense";
-
-type FilterParams = {
-  year: number;
-  month: string;
-  type: TypeFilter;
-  category: string;
-};
-
-function parseYearParam(value: string | null, fallback: number): number {
-  if (!value) return fallback;
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : fallback;
-}
-
-function parseTypeParam(value: string | null): TypeFilter {
-  const v = (value ?? "").toLowerCase();
-  if (v === "income" || v === "expense") return v;
-  return "all";
-}
-
-function parseMonthParam(value: string | null): string {
-  const v = (value ?? "").trim().toLowerCase();
-  if (!v || v === "all") return "all";
-  const asNumber = Number(v);
-  if (Number.isFinite(asNumber) && asNumber >= 1 && asNumber <= 12) {
-    return String(asNumber).padStart(2, "0");
-  }
-  if (/^(0[1-9]|1[0-2])$/.test(v)) return v;
-  return "all";
-}
-
-function parseCategoryParam(value: string | null): string {
-  if (!value) return "all";
-  if (value.trim().toLowerCase() === "all") return "all";
-  return normalizeCategory(value);
-}
-
-function getFilterParams(params: URLSearchParams, fallbackYear: number): FilterParams {
-  return {
-    year: parseYearParam(params.get("year"), fallbackYear),
-    month: parseMonthParam(params.get("month")),
-    type: parseTypeParam(params.get("type")),
-    category: parseCategoryParam(params.get("cat")),
-  };
-}
+import { MONTH_OPTIONS } from "../../../utils/months";
+import ImportCsvPreviewModal from "../components/ImportCsvPreviewModal";
+import TransactionFiltersBar from "../components/TransactionFiltersBar";
+import { useCsvImport } from "../hooks/useCsvImport";
+import { useTransactionFilters } from "../hooks/useTransactionFilters";
 
 export default function TransactionsPage() {
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const searchParamsString = searchParams.toString();
   const toast = useToast();
   const confirm = useConfirm();
   const { items, onDeleted, onCreated } = useAppContext();
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
-  const initialFilters = getFilterParams(searchParams, currentYear);
-  const [selectedYear, setSelectedYear] = useState<number>(initialFilters.year);
   const [openMonthKeys, setOpenMonthKeys] = useState<MonthKey[]>([]);
   const [fixedItems, setFixedItems] = useState<FixedMonthlyItem[]>([]);
 
-  const [typeFilter, setTypeFilter] = useState<TypeFilter>(initialFilters.type);
-  const [categoryFilter, setCategoryFilter] = useState<string>(initialFilters.category);
-  const [monthFilter, setMonthFilter] = useState<string>(initialFilters.month);
-  const [isImporting, setIsImporting] = useState(false);
-  const [importPreview, setImportPreview] = useState<ImportPreview | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const skipUrlSyncRef = useRef(false);
-  const didMountRef = useRef(false);
+  const {
+    selectedYear,
+    setSelectedYear,
+    typeFilter,
+    setTypeFilter,
+    categoryFilter,
+    setCategoryFilter,
+    monthFilter,
+    setMonthFilter,
+    resetFilters,
+  } = useTransactionFilters({ fallbackYear: currentYear });
 
-  useEffect(() => {
-    const nextFilters = getFilterParams(searchParams, currentYear);
-    skipUrlSyncRef.current = true;
-    setSelectedYear(nextFilters.year);
-    setTypeFilter(nextFilters.type);
-    setCategoryFilter(nextFilters.category);
-    setMonthFilter(nextFilters.month);
-  }, [searchParamsString, currentYear]);
-
-  useEffect(() => {
-    if (skipUrlSyncRef.current) {
-      skipUrlSyncRef.current = false;
-      didMountRef.current = true;
-      return;
-    }
-
-    const nextParams = new URLSearchParams(searchParamsString);
-    nextParams.set("year", String(selectedYear));
-    nextParams.set("month", monthFilter);
-    nextParams.set("type", typeFilter);
-    nextParams.set("cat", categoryFilter);
-
-    const nextString = nextParams.toString();
-    const currentString = searchParamsString;
-
-    if (nextString !== currentString) {
-      setSearchParams(nextParams, { replace: !didMountRef.current });
-    }
-
-    didMountRef.current = true;
-  }, [selectedYear, monthFilter, typeFilter, categoryFilter, searchParamsString, setSearchParams]);
+  const {
+    fileInputRef,
+    importPreview,
+    isImporting,
+    handleImportCsv,
+    handleConfirmImport,
+    clearImportPreview,
+  } = useCsvImport({ onCreated });
 
   function handleEdit(id: number) {
     navigate(`/transactions/${id}/edit`);
@@ -189,114 +117,6 @@ export default function TransactionsPage() {
     } catch (err) {
       toast.error("Failed to apply fixed items");
       console.error(err);
-    }
-  }
-
-  function parseAmount(raw: string): number {
-    const trimmed = raw.trim();
-    if (!trimmed) return Number.NaN;
-    const normalized =
-      trimmed.includes(",") && !trimmed.includes(".")
-        ? trimmed.replace(",", ".")
-        : trimmed;
-    return Number(normalized);
-  }
-
-  async function handleImportCsv(file: File) {
-    setIsImporting(true);
-    try {
-      const text = await file.text();
-      const rows = parseCsv(text);
-
-      if (rows.length === 0) {
-        toast.error("CSV is empty");
-        return;
-      }
-
-      const [header, ...dataRows] = rows;
-      const headerMap = header.map((h) => h.trim().toLowerCase());
-      const dateIdx = headerMap.indexOf("date");
-      const typeIdx = headerMap.indexOf("type");
-      const categoryIdx = headerMap.indexOf("category");
-      const amountIdx = headerMap.indexOf("amount");
-      const descriptionIdx = headerMap.indexOf("description");
-
-      if ([dateIdx, typeIdx, categoryIdx, amountIdx, descriptionIdx].some((i) => i < 0)) {
-        toast.error("CSV header is missing required columns");
-        return;
-      }
-
-      const rowsWithData = dataRows
-        .map((row, i) => ({ row, rowNumber: i + 2 }))
-        .filter(({ row }) => row.some((cell) => (cell ?? "").trim() !== ""));
-
-      if (rowsWithData.length === 0) {
-        toast.error("CSV has no data rows");
-        return;
-      }
-
-      const parsed = rowsWithData.map(({ row, rowNumber }) => {
-        const date = (row[dateIdx] ?? "").trim();
-        const typeRaw = (row[typeIdx] ?? "").trim().toLowerCase();
-        const amount = parseAmount(String(row[amountIdx] ?? ""));
-        const category = normalizeCategory(row[categoryIdx]);
-        const description = (row[descriptionIdx] ?? "").trim();
-
-        return {
-          rowNumber,
-          date,
-          type: typeRaw as "income" | "expense",
-          amount,
-          category,
-          description,
-        };
-      });
-
-      const invalidRows = parsed.filter(
-        (t) =>
-          !t.date ||
-          (t.type !== "income" && t.type !== "expense") ||
-          !Number.isFinite(t.amount)
-      );
-
-      if (invalidRows.length > 0) {
-        const rowList = invalidRows
-          .slice(0, 5)
-          .map((t) => t.rowNumber)
-          .join(", ");
-        const suffix = invalidRows.length > 5 ? "..." : "";
-        toast.error(`Invalid CSV rows: ${rowList}${suffix}`);
-        return;
-      }
-
-      setImportPreview({
-        fileName: file.name,
-        rows: parsed,
-      });
-    } catch (err) {
-      toast.error("Failed to import CSV");
-      console.error(err);
-    } finally {
-      setIsImporting(false);
-    }
-  }
-
-  async function handleConfirmImport() {
-    if (!importPreview) return;
-    setIsImporting(true);
-    try {
-      const created = await Promise.all(
-        importPreview.rows.map(({ rowNumber, ...payload }) => createTransaction(payload))
-      );
-
-      created.forEach((t) => onCreated(t));
-      toast.success(`Imported ${created.length} transaction(s)`);
-      setImportPreview(null);
-    } catch (err) {
-      toast.error("Failed to import CSV");
-      console.error(err);
-    } finally {
-      setIsImporting(false);
     }
   }
 
@@ -502,104 +322,23 @@ export default function TransactionsPage() {
         </div>
       )}
 
-      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-        <div className="flex w-full rounded-lg border border-slate-600 bg-slate-800 p-1 sm:w-auto">
-          {(["all", "income", "expense"] as const).map((v) => (
-            <Button
-              key={v}
-              type="button"
-              variant="ghost"
-              size="sm"
-              active={typeFilter === v}
-              activeClassName="bg-slate-700 !text-yellow-300 hover:bg-slate-700"
-              onClick={() => setTypeFilter(v)}
-              className="flex-1 rounded-md border border-transparent bg-transparent text-slate-300 hover:border-transparent hover:bg-slate-700/40 hover:text-white sm:flex-none"
-            >
-              {v === "all" ? "All" : v === "income" ? "Income" : "Expense"}
-            </Button>
-          ))}
-        </div>
-
-        <select
-          value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
-          className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-sm text-white focus:border-slate-500 focus:outline-none sm:w-auto"
-        >
-          {categories.map((c) => (
-            <option key={c} value={c}>
-              {c === "all" ? "All categories" : c}
-            </option>
-          ))}
-        </select>
-
-        <select
-          value={monthFilter}
-          onChange={(e) => setMonthFilter(e.target.value)}
-          className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-sm text-white focus:border-slate-500 focus:outline-none sm:w-auto"
-        >
-          <option value="all">All months</option>
-          {MONTH_OPTIONS_PADDED.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-
-        <Button
-          type="button"
-          variant="secondary"
-          size="md"
-          fullWidth
-          onClick={() => {
-            const filename = `transactions-${selectedYear}-${monthFilter}.csv`;
-            downloadCsv(filename, exportRows);
-          }}
-          className="border-0 px-3 text-white sm:w-auto"
-        >
-          Export CSV
-        </Button>
-
-        <Button
-          type="button"
-          variant="secondary"
-          size="md"
-          fullWidth
-          onClick={() => fileInputRef.current?.click()}
-          disabled={isImporting}
-          className="border-0 px-3 text-white sm:w-auto"
-        >
-          {isImporting ? "Importing..." : "Import CSV"}
-        </Button>
-
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".csv,text/csv"
-          className="hidden"
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file) {
-              handleImportCsv(file);
-            }
-            e.currentTarget.value = "";
-          }}
-        />
-
-        <Button
-          type="button"
-          variant="danger"
-          size="md"
-          fullWidth
-          onClick={() => {
-            setTypeFilter("all");
-            setCategoryFilter("all");
-            setMonthFilter("all");
-          }}
-          className="flex items-center justify-center border-0 bg-red-800 px-3 text-xl text-slate-300 hover:bg-red-700 hover:text-white sm:w-auto"
-        >
-          <GoSync />
-        </Button>
-      </div>
+      <TransactionFiltersBar
+        typeFilter={typeFilter}
+        onTypeChange={setTypeFilter}
+        categoryFilter={categoryFilter}
+        onCategoryChange={setCategoryFilter}
+        categories={categories}
+        monthFilter={monthFilter}
+        onMonthChange={setMonthFilter}
+        onExportCsv={() => {
+          const filename = `transactions-${selectedYear}-${monthFilter}.csv`;
+          downloadCsv(filename, exportRows);
+        }}
+        onImportFile={handleImportCsv}
+        isImporting={isImporting}
+        onResetFilters={resetFilters}
+        fileInputRef={fileInputRef}
+      />
 
       <div className="mt-4">
         <FinancialSummary
@@ -667,7 +406,7 @@ export default function TransactionsPage() {
         <ImportCsvPreviewModal
           preview={importPreview}
           isImporting={isImporting}
-          onCancel={() => setImportPreview(null)}
+          onCancel={clearImportPreview}
           onConfirm={handleConfirmImport}
         />
       )}

@@ -1,18 +1,5 @@
 import Button from "../../../components/ui/Button";
-
-type ImportPreviewRow = {
-  rowNumber: number;
-  date: string;
-  type: "income" | "expense";
-  amount: number;
-  category: string;
-  description: string;
-};
-
-export type ImportPreview = {
-  fileName: string;
-  rows: ImportPreviewRow[];
-};
+import type { ImportPreview } from "../types";
 
 type ImportCsvPreviewModalProps = {
   preview: ImportPreview;
