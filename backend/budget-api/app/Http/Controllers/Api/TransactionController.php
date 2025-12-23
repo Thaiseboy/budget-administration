@@ -39,6 +39,9 @@ class TransactionController extends Controller
             $data['date'] = now()->format('Y-m-d');
         }
 
+        // Auto-set user_id to current authenticated user
+        $data['user_id'] = auth()->id();
+
         $transaction = Transaction::create($data);
 
         return response()->json([

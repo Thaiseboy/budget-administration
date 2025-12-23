@@ -23,6 +23,9 @@ class FixedMonthlyItemController extends Controller
             'type' => ['required', 'in:income,expense'],
         ]);
 
+        // Auto-set user_id to current authenticated user
+        $data['user_id'] = auth()->id();
+
         $item = FixedMonthlyItem::create($data);
 
         return response()->json($item, 201);
