@@ -52,4 +52,30 @@ class ProfileController extends Controller
             'message' => 'Password updated successfully.',
         ]);
     }
+
+    public function delete(Request $request)
+    {
+        $user = $request->user();
+
+        // Verify password before deletion
+        $request->validate([
+            'password' => ['required', 'string'],
+        ]);
+
+        if (!Hash::check($request->password, $user->password)) {
+            throw ValidationException::withMessages([
+                'password' => ['The provided password is incorrect.'],
+            ]);
+        }
+
+        // Delete all user's tokens
+        $user->tokens()->delete();
+
+        // Delete the user (cascade will delete all related data)
+        $user->delete();
+
+        return response()->json([
+            'message' => 'Account deleted successfully.',
+        ]);
+    }
 }

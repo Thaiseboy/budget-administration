@@ -1,16 +1,21 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth, useToast } from '@/contexts'
-import { Card, Button } from '@/components/ui'
+import { Card, Button, ConfirmDialog } from '@/components/ui'
 import { FormField } from '@/components/form'
-import { updateProfile, updatePassword } from '@/api'
+import { updateProfile, updatePassword, deleteAccount } from '@/api'
 import AppLayout from '@/layouts/AppLayout'
 
 export default function SettingsPage() {
-  const { user, refreshUser } = useAuth()
+  const navigate = useNavigate()
+  const { user, refreshUser, logout } = useAuth()
   const toast = useToast()
 
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false)
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false)
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [deletePassword, setDeletePassword] = useState('')
 
   const [profileData, setProfileData] = useState({
     name: user?.name || '',
@@ -63,11 +68,34 @@ export default function SettingsPage() {
     }
   }
 
+  async function handleDeleteAccount() {
+    if (!deletePassword) {
+      toast.error('Please enter your password')
+      return
+    }
+
+    setIsDeletingAccount(true)
+
+    try {
+      await deleteAccount({ password: deletePassword })
+      toast.success('Account deleted successfully')
+      await logout()
+      navigate('/login')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to delete account')
+    } finally {
+      setIsDeletingAccount(false)
+      setShowDeleteDialog(false)
+      setDeletePassword('')
+    }
+  }
+
   return (
     <AppLayout>
       <div className="space-y-6">
         <h1 className="text-2xl font-bold text-slate-100">Settings</h1>
 
+        {/* Profile Settings */}
         <Card>
           <div className="p-6">
             <h2 className="mb-4 text-xl font-semibold text-slate-100">Profile Information</h2>
@@ -107,6 +135,7 @@ export default function SettingsPage() {
           </div>
         </Card>
 
+        {/* Password Settings */}
         <Card>
           <div className="p-6">
             <h2 className="mb-4 text-xl font-semibold text-slate-100">Change Password</h2>
@@ -157,7 +186,53 @@ export default function SettingsPage() {
             </form>
           </div>
         </Card>
+
+        {/* Delete Account */}
+        <Card>
+          <div className="p-6">
+            <h2 className="mb-4 text-xl font-semibold text-red-400">Danger Zone</h2>
+            <p className="mb-4 text-sm text-slate-400">
+              Once you delete your account, there is no going back. All your data including transactions, budgets, and settings will be permanently deleted.
+            </p>
+            <button
+              onClick={() => setShowDeleteDialog(true)}
+              className="rounded-lg border border-red-600 bg-red-600/10 px-4 py-2 font-medium text-red-400 transition-colors hover:bg-red-600/20"
+            >
+              Delete Account
+            </button>
+          </div>
+        </Card>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        onClose={() => {
+          setShowDeleteDialog(false)
+          setDeletePassword('')
+        }}
+        onConfirm={handleDeleteAccount}
+        title="Delete Account"
+        message={
+          <div className="space-y-4">
+            <p>
+              Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently deleted.
+            </p>
+            <FormField
+              label="Enter your password to confirm"
+              type="password"
+              id="delete_password"
+              value={deletePassword}
+              onChange={(value) => setDeletePassword(value)}
+              required
+            />
+          </div>
+        }
+        confirmText="Delete Account"
+        cancelText="Cancel"
+        variant="danger"
+        isLoading={isDeletingAccount}
+      />
     </AppLayout>
   )
 }
