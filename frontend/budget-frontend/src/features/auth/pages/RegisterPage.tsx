@@ -3,11 +3,13 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth, useToast } from '@/contexts'
 import { Card } from '@/components/ui'
 import { FormField } from '@/components/form'
+import { useTranslation } from '@/i18n'
 
 export default function RegisterPage() {
   const navigate = useNavigate()
   const { register } = useAuth()
   const toast = useToast()
+  const { t } = useTranslation()
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
@@ -20,7 +22,7 @@ export default function RegisterPage() {
     e.preventDefault()
 
     if (formData.password !== formData.password_confirmation) {
-      toast.error('Passwords do not match')
+      toast.error(t('passwordsDoNotMatch'))
       return
     }
 
@@ -28,10 +30,10 @@ export default function RegisterPage() {
 
     try {
       await register(formData)
-      toast.success('Account created successfully!')
+      toast.success(t('accountCreatedSuccessfully'))
       navigate('/transactions')
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Registration failed')
+      toast.error(error instanceof Error ? error.message : t('registrationFailed'))
     } finally {
       setIsLoading(false)
     }
@@ -42,12 +44,12 @@ export default function RegisterPage() {
       <Card className="w-full max-w-md">
         <div className="p-6 sm:p-8">
           <h1 className="mb-6 text-2xl font-bold text-slate-100">
-            Create your account
+            {t('createYourAccount')}
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <FormField
-              label="Name"
+              label={t('name')}
               type="text"
               id="name"
               value={formData.name}
@@ -58,7 +60,7 @@ export default function RegisterPage() {
             />
 
             <FormField
-              label="Email"
+              label={t('email')}
               type="email"
               id="email"
               value={formData.email}
@@ -69,7 +71,7 @@ export default function RegisterPage() {
             />
 
             <FormField
-              label="Password"
+              label={t('password')}
               type="password"
               id="password"
               value={formData.password}
@@ -80,7 +82,7 @@ export default function RegisterPage() {
             />
 
             <FormField
-              label="Confirm Password"
+              label={t('confirmPassword')}
               type="password"
               id="password_confirmation"
               value={formData.password_confirmation}
@@ -98,17 +100,17 @@ export default function RegisterPage() {
               disabled={isLoading}
               className="w-full rounded-lg bg-blue-600 px-4 py-2.5 font-medium text-slate-100 transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {isLoading ? 'Creating account...' : 'Create account'}
+              {isLoading ? t('creatingAccount') : t('createAccount')}
             </button>
           </form>
 
           <p className="mt-6 text-center text-sm text-slate-400">
-            Already have an account?{' '}
+            {t('alreadyHaveAccount')}{' '}
             <Link
               to="/login"
               className="font-medium text-blue-400 hover:text-blue-300"
             >
-              Sign in
+              {t('signIn')}
             </Link>
           </p>
         </div>

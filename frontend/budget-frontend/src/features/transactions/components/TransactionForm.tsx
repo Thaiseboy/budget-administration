@@ -3,6 +3,7 @@ import { normalizeCategory } from "@/utils";
 import { Card } from "@/components/ui";
 import { Button } from "@/components/ui";
 import { FormFieldGroup } from "@/components/form";
+import { useTranslation } from "@/i18n";
 
 type FormData = {
     type: "income" | "expense";
@@ -28,11 +29,12 @@ type Props = {
 
 export default function TransactionForm({
     initialValues,
-    submitLabel = "Save",
+    submitLabel,
     categories,
     onSubmit,
     onCancel,
 }: Props) {
+    const { t } = useTranslation();
     const initialCategoryRaw = (initialValues?.category ?? "").trim();
     const initialCategory = initialCategoryRaw
         ? normalizeCategory(initialCategoryRaw)
@@ -47,6 +49,7 @@ export default function TransactionForm({
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const resolvedSubmitLabel = submitLabel ?? t("save");
 
     const [useCustomCategory, setUseCustomCategory] = useState<boolean>(() => {
         const current = (formData.category ?? "").trim();
@@ -63,7 +66,7 @@ export default function TransactionForm({
     const amountField = useMemo(() => ({
         id: "amount",
         name: "amount",
-        label: "Amount (€)",
+        label: `${t("amount")} (€)`,
         type: "number" as const,
         required: true,
         placeholder: "0.00",
@@ -76,12 +79,12 @@ export default function TransactionForm({
                 ? "border-slate-600 focus:border-red-500"
                 : "border-slate-600 focus:border-green-500"
         }`,
-    }), [formData.type]);
+    }), [formData.type, t]);
 
     const dateField = {
         id: "date",
         name: "date",
-        label: "Date",
+        label: t("date"),
         type: "date" as const,
         required: true,
         labelClass,
@@ -91,9 +94,9 @@ export default function TransactionForm({
     const descriptionField = {
         id: "description",
         name: "description",
-        label: "Description",
+        label: t("description"),
         type: "text" as const,
-        placeholder: "e.g., Grocery shopping, Salary, etc.",
+        placeholder: t("transactionDescriptionPlaceholder"),
         labelClass,
         inputClass: `${commonInputClass} border-slate-600 focus:border-slate-500 placeholder:text-slate-500`,
     };
@@ -103,9 +106,9 @@ export default function TransactionForm({
             return {
                 id: "category",
                 name: "category",
-                label: "Category (Custom)",
+                label: t("categoryCustom"),
                 type: "text" as const,
-                placeholder: "Enter custom category name",
+                placeholder: t("categoryCustomPlaceholder"),
                 labelClass,
                 inputClass: `${commonInputClass} border-slate-600 focus:border-blue-500 placeholder:text-slate-500`,
             };
@@ -114,17 +117,17 @@ export default function TransactionForm({
         return {
             id: "category",
             name: "category",
-            label: "Category",
+            label: t("category"),
             type: "select" as const,
             required: false,
             labelClass,
             inputClass: `${commonInputClass} border-slate-600 focus:border-slate-500`,
             options: [
-                { label: "-- Select a category --", value: "" },
+                { label: t("selectCategoryPlaceholder"), value: "" },
                 ...categories.map((cat) => ({ label: cat, value: cat })),
             ],
         };
-    }, [useCustomCategory, categories]);
+    }, [useCustomCategory, categories, t, commonInputClass, labelClass]);
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -134,7 +137,7 @@ export default function TransactionForm({
         try {
             const amountNumber = Number(formData.amount);
             if (!Number.isFinite(amountNumber) || amountNumber <= 0) {
-                throw new Error("Amount must be a valid positive number");
+                throw new Error(t("amountMustBePositive"));
             }
 
             await onSubmit({
@@ -145,7 +148,7 @@ export default function TransactionForm({
                 category: normalizeCategory(formData.category),
             });
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Failed to save transaction");
+            setError(err instanceof Error ? err.message : t("failedToSaveTransaction"));
         } finally {
             setLoading(false);
         }
@@ -156,7 +159,7 @@ export default function TransactionForm({
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                     <label className="block text-sm font-semibold text-slate-200 mb-3">
-                        Transaction Type <span className="text-red-400">*</span>
+                        {t("transactionType")} <span className="text-red-400">*</span>
                     </label>
                     <div className="grid grid-cols-2 gap-3">
                         <Button
@@ -168,7 +171,7 @@ export default function TransactionForm({
                             activeClassName="!border-red-500 !bg-red-500/20 !text-red-400"
                         >
                             <div className="text-2xl mb-1">-</div>
-                            <div className="text-sm font-medium">Expense</div>
+                            <div className="text-sm font-medium">{t("expense")}</div>
                         </Button>
                         <Button
                             type="button"
@@ -179,7 +182,7 @@ export default function TransactionForm({
                             activeClassName="!border-green-500 !bg-green-500/20 !text-green-400"
                         >
                             <div className="text-2xl mb-1">+</div>
-                            <div className="text-sm font-medium">Income</div>
+                            <div className="text-sm font-medium">{t("income")}</div>
                         </Button>
                     </div>
                 </div>
@@ -213,7 +216,7 @@ export default function TransactionForm({
                             onClick={() => setFormData((prev) => ({ ...prev, category: "" }))}
                             className="text-red-400 hover:text-red-300"
                         >
-                            ✕ Clear category
+                            ✕ {t("clearCategory")}
                         </Button>
                     )}
                     <Button
@@ -226,7 +229,7 @@ export default function TransactionForm({
                         }}
                         className="ml-auto"
                     >
-                        {useCustomCategory ? "← Use existing" : "+ New category"}
+                        {useCustomCategory ? t("useExistingCategory") : t("newCategory")}
                     </Button>
                 </div>
 
@@ -246,7 +249,7 @@ export default function TransactionForm({
                             disabled={loading}
                             className="w-full sm:w-auto"
                         >
-                            Cancel
+                            {t("cancel")}
                         </Button>
                     )}
                     <Button
@@ -257,7 +260,7 @@ export default function TransactionForm({
                         isLoading={loading}
                         className="w-full sm:flex-1"
                     >
-                        {submitLabel}
+                        {resolvedSubmitLabel}
                     </Button>
                 </div>
             </form>

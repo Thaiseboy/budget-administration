@@ -1,6 +1,7 @@
 import { createContext, useContext, useState } from "react";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui";
+import { useTranslation } from "@/i18n";
 
 type ConfirmOptions = {
     title?: string;
@@ -20,25 +21,32 @@ type ConfirmContextValue = (options?: ConfirmOptions) => Promise<boolean>;
 
 const ConfirmContext = createContext<ConfirmContextValue | null>(null);
 
-const DEFAULT_OPTIONS: Required<ConfirmOptions> = {
-    title: "Are you sure?",
-    message: "Please confirm your action.",
-    confirmText: "Confirm",
-    cancelText: "Cancel",
-    variant: "default",
-};
-
 export function ConfirmProvider({ children }: { children: ReactNode }) {
+    const { t } = useTranslation();
     const [state, setState] = useState<ConfirmState>({
         open: false,
-        options: DEFAULT_OPTIONS,
+        options: {
+            title: t("areYouSure"),
+            message: t("confirmActionMessage"),
+            confirmText: t("confirm"),
+            cancelText: t("cancel"),
+            variant: "default",
+        },
     });
 
     const confirm: ConfirmContextValue = (options) => {
+        const defaultOptions: Required<ConfirmOptions> = {
+            title: t("areYouSure"),
+            message: t("confirmActionMessage"),
+            confirmText: t("confirm"),
+            cancelText: t("cancel"),
+            variant: "default",
+        };
+
         return new Promise<boolean>((resolve) => {
             setState({
                 open: true,
-                options: { ...DEFAULT_OPTIONS, ...(options ?? {}) },
+                options: { ...defaultOptions, ...(options ?? {}) },
                 resolve,
             });
         });
@@ -61,7 +69,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
                     <button
                         type="button"
                         className="absolute inset-0 bg-black/40"
-                        aria-label="Close dialog"
+                        aria-label={t("closeDialog")}
                         onClick={() => close(false)}/>
 
                     <div className="relative z-10 w-full max-w-md rounded-2xl bg-slate-800 shadow-xl border border-slate-700">

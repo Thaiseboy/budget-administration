@@ -1,3 +1,5 @@
+import { useTranslation } from "@/i18n";
+
 type Props = {
   variableExpenses: number;
   availableForVariable: number;
@@ -9,15 +11,16 @@ export default function BudgetStatusBadge({
   availableForVariable,
   monthlyRemaining,
 }: Props) {
+  const { t } = useTranslation();
   const variablePercentage = availableForVariable > 0
     ? Math.round((variableExpenses / availableForVariable) * 100)
     : 0;
 
   const status =
-    monthlyRemaining < 0 ? "Over budget" :
-    variablePercentage >= 100 ? "Over limit" :
-    variablePercentage >= 80 ? "Near limit" :
-    variablePercentage >= 60 ? "Warning" :
+    monthlyRemaining < 0 ? t("overBudget") :
+    variablePercentage >= 100 ? t("overLimit") :
+    variablePercentage >= 80 ? t("nearLimit") :
+    variablePercentage >= 60 ? t("warning") :
     null;
 
   const statusClass =
@@ -38,7 +41,7 @@ export default function BudgetStatusBadge({
       </div>
       {variableExpenses > 0 && availableForVariable > 0 && (
         <div className="mt-1 text-xs text-slate-400">
-          {variablePercentage}% of variable budget used
+          {t("variableBudgetUsed", { percentage: variablePercentage })}
         </div>
       )}
     </>

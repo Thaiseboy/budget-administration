@@ -4,9 +4,11 @@ import { useToast } from '@/contexts'
 import { Card, Button } from '@/components/ui'
 import { FormField } from '@/components/form'
 import { sendPasswordResetLink } from '@/api'
+import { useTranslation } from '@/i18n'
 
 export default function ForgotPasswordPage() {
   const toast = useToast()
+  const { t } = useTranslation()
   const [isLoading, setIsLoading] = useState(false)
   const [emailSent, setEmailSent] = useState(false)
   const [email, setEmail] = useState('')
@@ -18,9 +20,9 @@ export default function ForgotPasswordPage() {
     try {
       await sendPasswordResetLink({ email })
       setEmailSent(true)
-      toast.success('Password reset link sent to your email!')
+      toast.success(t('resetLinkSent'))
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to send reset link')
+      toast.error(error instanceof Error ? error.message : t('resetLinkFailed'))
     } finally {
       setIsLoading(false)
     }
@@ -48,16 +50,16 @@ export default function ForgotPasswordPage() {
                 </svg>
               </div>
               <h1 className="mb-2 text-2xl font-bold text-slate-100">
-                Check your email
+                {t('checkYourEmail')}
               </h1>
               <p className="text-slate-400">
-                We've sent a password reset link to <strong className="text-slate-300">{email}</strong>
+                {t('resetLinkSentToEmail', { email })}
               </p>
             </div>
 
             <div className="space-y-4">
               <p className="text-sm text-slate-400">
-                Didn't receive the email? Check your spam folder or try again.
+                {t('didntReceiveEmail')}
               </p>
 
               <div className="flex flex-col gap-3">
@@ -66,13 +68,13 @@ export default function ForgotPasswordPage() {
                   variant="secondary"
                   className="w-full"
                 >
-                  Send again
+                  {t('sendAgain')}
                 </Button>
                 <Link
                   to="/login"
                   className="block text-center text-sm text-slate-400 hover:text-slate-300"
                 >
-                  Back to login
+                  {t('backToLogin')}
                 </Link>
               </div>
             </div>
@@ -87,21 +89,21 @@ export default function ForgotPasswordPage() {
       <Card className="w-full max-w-md">
         <div className="p-6 sm:p-8">
           <h1 className="mb-2 text-2xl font-bold text-slate-100">
-            Forgot your password?
+            {t('forgotPasswordTitle')}
           </h1>
           <p className="mb-6 text-sm text-slate-400">
-            Enter your email address and we'll send you a link to reset your password.
+            {t('forgotPasswordDescription')}
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <FormField
-              label="Email"
+              label={t('email')}
               type="email"
               id="email"
               value={email}
               onChange={(value) => setEmail(value)}
               required
-              placeholder="your@email.com"
+              placeholder={t('emailPlaceholder')}
             />
 
             <Button
@@ -109,7 +111,7 @@ export default function ForgotPasswordPage() {
               disabled={isLoading}
               className="w-full"
             >
-              {isLoading ? 'Sending...' : 'Send reset link'}
+              {isLoading ? t('sending') : t('sendResetLink')}
             </Button>
 
             <div className="text-center">
@@ -117,7 +119,7 @@ export default function ForgotPasswordPage() {
                 to="/login"
                 className="text-sm text-slate-400 hover:text-slate-300"
               >
-                Back to login
+                {t('backToLogin')}
               </Link>
             </div>
           </form>

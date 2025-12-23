@@ -1,6 +1,7 @@
 import type { Transaction } from "@/types";
 import TransactionItem from "./TransactionItem";
 import { Card } from "@/components/ui";
+import { useTranslation } from "@/i18n";
 
 type Props = {
   items: Transaction[];
@@ -9,10 +10,11 @@ type Props = {
 };
 
 export default function TransactionList({ items, onEdit, onDelete }: Props) {
+  const { t } = useTranslation();
   if (items.length === 0) {
     return (
       <Card className="p-4 text-sm text-slate-300 sm:p-6">
-        No transactions yet.
+        {t("noTransactionsYet")}
       </Card>
     );
   }

@@ -18,10 +18,10 @@ export default function AppHeader() {
   async function handleLogout() {
     try {
       await logout();
-      toast.success('Logged out successfully');
+      toast.success(t('loggedOutSuccessfully'));
       navigate('/login');
     } catch (error) {
-      toast.error('Failed to logout');
+      toast.error(t('failedToLogout'));
     }
   }
 

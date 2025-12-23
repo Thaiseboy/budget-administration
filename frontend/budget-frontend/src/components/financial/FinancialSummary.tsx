@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui";
 import { formatCurrency } from "@/utils";
+import { useTranslation } from "@/i18n";
 
 type TypeFilter = "all" | "income" | "expense";
 
@@ -20,6 +21,7 @@ export default function FinancialSummary({
   variableExpense,
   typeFilter = "all",
 }: Props) {
+  const { t } = useTranslation();
   const totalIncome = fixedIncome + variableIncome;
   const totalExpense = fixedExpense + variableExpense;
   const remaining = totalIncome - totalExpense;
@@ -37,18 +39,18 @@ export default function FinancialSummary({
       <div className={`mt-4 grid gap-4 ${gridCols}`}>
         {showIncome && (
           <div>
-            <div className="text-xs text-slate-400 mb-2">Income</div>
+            <div className="text-xs text-slate-400 mb-2">{t("income")}</div>
             <div className="space-y-2 text-xs">
               <div className="flex justify-between">
-                <span className="text-slate-400">Fixed income:</span>
+                <span className="text-slate-400">{t("fixedIncome")}:</span>
                 <span className="text-green-400 font-semibold">{formatCurrency(fixedIncome)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Variable income:</span>
+                <span className="text-slate-400">{t("variableIncome")}:</span>
                 <span className="text-green-400 font-semibold">{formatCurrency(variableIncome)}</span>
               </div>
               <div className="flex justify-between border-t border-slate-600 pt-2">
-                <span className="text-slate-100 font-semibold">Total income:</span>
+                <span className="text-slate-100 font-semibold">{t("totalIncome")}:</span>
                 <span className="text-green-300 font-bold">{formatCurrency(totalIncome)}</span>
               </div>
             </div>
@@ -57,18 +59,18 @@ export default function FinancialSummary({
 
         {showExpense && (
           <div>
-            <div className="text-xs text-slate-400 mb-2">Expenses</div>
+            <div className="text-xs text-slate-400 mb-2">{t("expenses")}</div>
             <div className="space-y-2 text-xs">
               <div className="flex justify-between">
-                <span className="text-slate-400">Fixed expenses:</span>
+                <span className="text-slate-400">{t("fixedExpenses")}:</span>
                 <span className="text-red-400 font-semibold">{formatCurrency(fixedExpense)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Variable expenses:</span>
+                <span className="text-slate-400">{t("variableExpenses")}:</span>
                 <span className="text-red-400 font-semibold">{formatCurrency(variableExpense)}</span>
               </div>
               <div className="flex justify-between border-t border-slate-600 pt-2">
-                <span className="text-slate-100 font-semibold">Total expenses:</span>
+                <span className="text-slate-100 font-semibold">{t("totalExpenses")}:</span>
                 <span className="text-red-300 font-bold">{formatCurrency(totalExpense)}</span>
               </div>
             </div>
@@ -77,18 +79,18 @@ export default function FinancialSummary({
 
         {showSummary && (
           <div>
-            <div className="text-xs text-slate-400 mb-2">Summary</div>
+            <div className="text-xs text-slate-400 mb-2">{t("summary")}</div>
             <div className="space-y-2 text-xs">
               <div className="flex justify-between">
-                <span className="text-slate-400">Total income:</span>
+                <span className="text-slate-400">{t("totalIncome")}:</span>
                 <span className="text-green-400 font-semibold">{formatCurrency(totalIncome)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Total expenses:</span>
+                <span className="text-slate-400">{t("totalExpenses")}:</span>
                 <span className="text-red-400 font-semibold">{formatCurrency(totalExpense)}</span>
               </div>
               <div className="flex justify-between border-t border-slate-600 pt-2">
-                <span className="text-slate-100 font-semibold">Remaining:</span>
+                <span className="text-slate-100 font-semibold">{t("remaining")}:</span>
                 <span
                   className={`font-bold ${remaining >= 0 ? "text-emerald-300" : "text-red-300"}`}
                 >

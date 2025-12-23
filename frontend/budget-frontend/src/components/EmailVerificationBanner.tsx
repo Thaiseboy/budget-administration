@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { useAuth, useToast } from '@/contexts'
 import { sendVerificationEmail } from '@/api'
+import { useTranslation } from '@/i18n'
 
 export default function EmailVerificationBanner() {
   const { user } = useAuth()
   const toast = useToast()
+  const { t } = useTranslation()
   const [isSending, setIsSending] = useState(false)
   const [isDismissed, setIsDismissed] = useState(false)
 
@@ -17,9 +19,9 @@ export default function EmailVerificationBanner() {
     setIsSending(true)
     try {
       await sendVerificationEmail()
-      toast.success('Verification email sent! Check your inbox.')
+      toast.success(t('verificationEmailSent'))
     } catch (error) {
-      toast.error('Failed to send verification email')
+      toast.error(t('verificationEmailFailed'))
     } finally {
       setIsSending(false)
     }
@@ -44,10 +46,10 @@ export default function EmailVerificationBanner() {
           </svg>
           <div>
             <p className="text-sm font-medium text-amber-200">
-              Please verify your email address
+              {t('verifyEmailTitle')}
             </p>
             <p className="text-xs text-amber-300/80">
-              We sent a verification link to <strong>{user.email}</strong>
+              {t('verifyEmailDescription', { email: user.email })}
             </p>
           </div>
         </div>
@@ -58,12 +60,12 @@ export default function EmailVerificationBanner() {
             disabled={isSending}
             className="whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium text-amber-200 transition-colors hover:bg-amber-500/20 disabled:opacity-50"
           >
-            {isSending ? 'Sending...' : 'Resend email'}
+            {isSending ? t('sending') : t('resendEmail')}
           </button>
           <button
             onClick={() => setIsDismissed(true)}
             className="rounded-md p-1 text-amber-300/60 transition-colors hover:bg-amber-500/20 hover:text-amber-200"
-            aria-label="Dismiss"
+            aria-label={t('dismiss')}
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

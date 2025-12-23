@@ -1,5 +1,6 @@
 import { type ReactNode } from 'react'
 import Button from './Button'
+import { useTranslation } from '@/i18n'
 
 type ConfirmDialogProps = {
   isOpen: boolean
@@ -19,12 +20,15 @@ export default function ConfirmDialog({
   onConfirm,
   title,
   message,
-  confirmText = 'Confirm',
-  cancelText = 'Cancel',
+  confirmText,
+  cancelText,
   variant = 'danger',
   isLoading = false,
 }: ConfirmDialogProps) {
+  const { t } = useTranslation()
   if (!isOpen) return null
+  const resolvedConfirmText = confirmText ?? t('confirm')
+  const resolvedCancelText = cancelText ?? t('cancel')
 
   const variantStyles = {
     danger: 'bg-red-600 hover:bg-red-700',
@@ -54,14 +58,14 @@ export default function ConfirmDialog({
             variant="secondary"
             disabled={isLoading}
           >
-            {cancelText}
+            {resolvedCancelText}
           </Button>
           <button
             onClick={onConfirm}
             disabled={isLoading}
             className={`rounded-lg px-4 py-2 font-medium text-slate-100 transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${variantStyles[variant]}`}
           >
-            {isLoading ? 'Processing...' : confirmText}
+            {isLoading ? t('processing') : resolvedConfirmText}
           </button>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import type { ReactNode, ButtonHTMLAttributes } from "react";
+import { useTranslation } from "@/i18n";
 
 type ButtonVariant = "primary" | "secondary" | "danger" | "success" | "ghost" | "link";
 type ButtonSize = "sm" | "md" | "lg";
@@ -26,6 +27,7 @@ export default function Button({
   activeClassName = "",
   ...props
 }: ButtonProps) {
+  const { t } = useTranslation();
   const baseClass = "rounded-lg font-medium transition-colors focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed";
 
   const variantClasses: Record<ButtonVariant, string> = {
@@ -54,7 +56,7 @@ export default function Button({
       className={combinedClassName}
       {...props}
     >
-      {isLoading ? "Loading..." : children}
+      {isLoading ? t("loading") : children}
     </button>
   );
 }

@@ -4,6 +4,7 @@ import { createFixedItem, updateFixedItem, deleteFixedItem } from "@/api";
 import { normalizeCategory } from "@/utils";
 import { FormFieldGroup } from "@/components/form";
 import { Button } from "@/components/ui";
+import { useTranslation } from "@/i18n";
 
 type Props = {
   items: FixedMonthlyItem[];
@@ -12,6 +13,7 @@ type Props = {
 };
 
 export function FixedItemsList({ items, onUpdate, categories }: Props) {
+  const { t } = useTranslation();
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [formData, setFormData] = useState<Omit<FixedMonthlyItem, "id">>({
@@ -41,28 +43,28 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
     {
       id: "description",
       name: "description",
-      label: "Description",
+      label: t("description"),
       type: "text" as const,
       required: true,
-      placeholder: "e.g., Salary, Rent, Internet",
+      placeholder: t("fixedItemDescriptionPlaceholder"),
       ...fieldUi,
     },
     useCustomCategory
       ? {
           id: "category",
           name: "category",
-          label: "Category (Custom)",
+          label: t("categoryCustom"),
           type: "text" as const,
-          placeholder: "Enter custom category",
+          placeholder: t("categoryCustomPlaceholder"),
           ...fieldUi,
         }
       : {
           id: "category",
           name: "category",
-          label: "Category",
+          label: t("category"),
           type: "select" as const,
           options: [
-            { label: "-- Select Category --", value: "" },
+            { label: t("selectCategoryPlaceholder"), value: "" },
             ...categories.map((cat) => ({ label: cat, value: cat })),
           ],
           ...fieldUi,
@@ -70,7 +72,7 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
     {
       id: "amount",
       name: "amount",
-      label: "Amount",
+      label: t("amount"),
       type: "number" as const,
       required: true,
       step: "0.01",
@@ -80,12 +82,12 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
     {
       id: "type",
       name: "type",
-      label: "Type",
+      label: t("type"),
       type: "select" as const,
       required: true,
       options: [
-        { label: "Income", value: "income" },
-        { label: "Expense", value: "expense" },
+        { label: t("income"), value: "income" },
+        { label: t("expense"), value: "expense" },
       ],
       ...fieldUi,
     },
@@ -155,7 +157,7 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
   };
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm("Are you sure you want to delete this fixed item?")) {
+    if (!window.confirm(t("deleteFixedItemConfirm"))) {
       return;
     }
     try {
@@ -182,7 +184,7 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
     <div className="rounded-lg bg-white p-4 shadow dark:bg-slate-800 sm:p-6">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 sm:text-xl">
-          Fixed Monthly Items
+          {t("fixedMonthlyItems")}
         </h2>
         {!isAdding && (
           <Button
@@ -192,20 +194,20 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
             onClick={() => setIsAdding(true)}
             className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700"
           >
-            + Add Fixed Item
+            {t("addFixedItem")}
           </Button>
         )}
       </div>
 
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded">
-          <div className="text-sm text-green-700 dark:text-green-400">Total Fixed Income</div>
+          <div className="text-sm text-green-700 dark:text-green-400">{t("totalFixedIncome")}</div>
           <div className="text-2xl font-bold text-green-900 dark:text-green-300">
             €{totalFixedIncome.toFixed(2)}
           </div>
         </div>
         <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded">
-          <div className="text-sm text-red-700 dark:text-red-400">Total Fixed Expense</div>
+          <div className="text-sm text-red-700 dark:text-red-400">{t("totalFixedExpense")}</div>
           <div className="text-2xl font-bold text-red-900 dark:text-red-300">
             €{totalFixedExpense.toFixed(2)}
           </div>
@@ -232,7 +234,7 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
                   }}
                   className="text-red-400 hover:text-red-300"
                 >
-                  ✕ Clear category
+                  ✕ {t("clearCategory")}
                 </Button>
               )}
               <div className={formData.category ? "" : "sm:ml-auto"}>
@@ -246,7 +248,7 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
                   }}
                   className="text-slate-400 hover:text-slate-300"
                 >
-                  {useCustomCategory ? "← Use existing category" : "+ Add custom category"}
+                  {useCustomCategory ? t("useExistingCategory") : t("addCustomCategory")}
                 </Button>
               </div>
             </div>
@@ -258,7 +260,7 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
               size="md"
               className="w-full sm:w-auto"
             >
-              {editingId ? "Update" : "Save"}
+              {editingId ? t("update") : t("save")}
             </Button>
             <Button
               type="button"
@@ -267,7 +269,7 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
               onClick={handleCancel}
               className="w-full sm:w-auto"
             >
-              Cancel
+              {t("cancel")}
             </Button>
           </div>
         </form>
@@ -277,7 +279,7 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
         {incomeItems.length > 0 && (
           <div>
             <h3 className="text-lg font-semibold text-green-700 dark:text-green-400 mb-2">
-              Fixed Income
+              {t("fixedIncome")}
             </h3>
             <div className="space-y-2">
               {incomeItems.map((item) => (
@@ -307,7 +309,7 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
                         onClick={() => handleEdit(item)}
                         className="w-full bg-blue-600 hover:bg-blue-700 sm:w-auto"
                       >
-                        Edit
+                        {t("edit")}
                       </Button>
                       <Button
                         type="button"
@@ -316,7 +318,7 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
                         onClick={() => item.id && handleDelete(item.id)}
                         className="w-full sm:w-auto"
                       >
-                        Delete
+                        {t("delete")}
                       </Button>
                     </div>
                   </div>
@@ -329,7 +331,7 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
         {expenseItems.length > 0 && (
           <div>
             <h3 className="text-lg font-semibold text-red-700 dark:text-red-400 mb-2">
-              Fixed Expenses
+              {t("fixedExpenses")}
             </h3>
             <div className="space-y-2">
               {expenseItems.map((item) => (
@@ -359,7 +361,7 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
                         onClick={() => handleEdit(item)}
                         className="w-full bg-blue-600 hover:bg-blue-700 sm:w-auto"
                       >
-                        Edit
+                        {t("edit")}
                       </Button>
                       <Button
                         type="button"
@@ -368,7 +370,7 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
                         onClick={() => item.id && handleDelete(item.id)}
                         className="w-full sm:w-auto"
                       >
-                        Delete
+                        {t("delete")}
                       </Button>
                     </div>
                   </div>
@@ -380,8 +382,7 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
 
         {items.length === 0 && !isAdding && (
           <div className="text-center py-8 text-slate-500 dark:text-slate-400">
-            No fixed monthly items yet. Add items like salary, rent, utilities that recur every
-            month.
+            {t("noFixedItemsYet")}
           </div>
         )}
       </div>

@@ -4,11 +4,12 @@ import TransactionList from "./TransactionList";
 import { Button } from "@/components/ui";
 import { VscEye } from "react-icons/vsc";
 import { VscEyeClosed } from "react-icons/vsc";
+import { useTranslation } from "@/i18n";
 
-function formatMonthTitle(monthKey: string) {
+function formatMonthTitle(monthKey: string, locale: string) {
     const [y, m] = monthKey.split("-").map(Number);
     const date = new Date(y, m - 1, 1);
-    return new Intl.DateTimeFormat("nl-NL", { month: "long", year: "numeric" }).format(date);
+    return new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" }).format(date);
 }
 
 type TypeFilter = "all" | "income" | "expense";
@@ -36,6 +37,8 @@ export default function MonthlyTransactionSection({
     hasFixedItems = false,
     typeFilter = "all",
 }: Props) {
+    const { t, locale } = useTranslation();
+
     return (
         <section className="mt-6 rounded-xl border border-slate-700 bg-slate-800">
             <button
@@ -45,7 +48,7 @@ export default function MonthlyTransactionSection({
                 aria-expanded={isOpen}>
 
                 <div className="flex items-center justify-between">
-                    <h2 className="text-base font-semibold capitalize text-slate-100">{formatMonthTitle(monthKey)}</h2>
+                    <h2 className="text-base font-semibold capitalize text-slate-100">{formatMonthTitle(monthKey, locale)}</h2>
                     <span className="text-2xl text-slate-400 sm:text-3xl">{isOpen ? <VscEye /> : <VscEyeClosed />}</span>
                 </div>
 
@@ -66,7 +69,7 @@ export default function MonthlyTransactionSection({
                                 onClick={onApplyFixedItems}
                                 className="bg-blue-600 hover:bg-blue-700"
                             >
-                                + Apply Fixed Items to This Month
+                                {t("applyFixedItemsThisMonth")}
                             </Button>
                         </div>
                     )}

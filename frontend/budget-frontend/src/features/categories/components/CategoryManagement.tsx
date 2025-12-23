@@ -4,6 +4,7 @@ import { normalizeCategory } from "@/utils";
 import { mergeCategories } from "@/api";
 import { useToast, useConfirm } from "@/contexts";
 import { Card, Button } from "@/components/ui";
+import { useTranslation } from "@/i18n";
 
 type Category = {
   name: string;
@@ -18,25 +19,27 @@ type Props = {
 export default function CategoryManagement({ categories, onCategoriesUpdated }: Props) {
   const toast = useToast();
   const confirm = useConfirm();
+  const { t } = useTranslation();
   const [renameValues, setRenameValues] = useState<Record<string, string>>({});
   const [mergeTargets, setMergeTargets] = useState<Record<string, string>>({});
   const [busyCategory, setBusyCategory] = useState<string | null>(null);
 
-  async function applyMerge(from: string, toRaw: string, actionLabel: string) {
+  async function applyMerge(from: string, toRaw: string, action: "rename" | "merge") {
     const to = toRaw.trim();
     if (!to) {
-      toast.error("Please enter a target category");
+      toast.error(t("categoryTargetRequired"));
       return;
     }
 
     const normalizedFrom = normalizeCategory(from);
     const normalizedTo = normalizeCategory(to);
+    const actionLabel = action === "rename" ? t("rename") : t("merge");
 
     const ok = await confirm({
-      title: `${actionLabel} category?`,
-      message: `This will update all transactions, budgets, and fixed items from "${normalizedFrom}" to "${normalizedTo}".`,
+      title: action === "rename" ? t("renameCategoryConfirmTitle") : t("mergeCategoryConfirmTitle"),
+      message: t("categoryUpdateWarning", { from: normalizedFrom, to: normalizedTo }),
       confirmText: actionLabel,
-      cancelText: "Cancel",
+      cancelText: t("cancel"),
       variant: "default",
     });
 
@@ -64,9 +67,9 @@ export default function CategoryManagement({ categories, onCategoriesUpdated }: 
         return rest;
       });
 
-      toast.success(`Category ${actionLabel.toLowerCase()}d successfully`);
+      toast.success(action === "rename" ? t("categoryRenamedSuccess") : t("categoryMergedSuccess"));
     } catch (err) {
-      toast.error(`Failed to ${actionLabel.toLowerCase()} category`);
+      toast.error(action === "rename" ? t("categoryRenameFailed") : t("categoryMergeFailed"));
       console.error(err);
     } finally {
       setBusyCategory(null);
@@ -75,21 +78,21 @@ export default function CategoryManagement({ categories, onCategoriesUpdated }: 
 
   return (
     <Card className="p-4 sm:p-6">
-      <h2 className="mb-4 text-base font-semibold text-slate-100">Manage Categories</h2>
+      <h2 className="mb-4 text-base font-semibold text-slate-100">{t("manageCategoriesTitle")}</h2>
       <p className="mb-4 text-sm text-slate-400">
-        Rename or merge categories to keep your data organized.
+        {t("manageCategoriesDescription")}
       </p>
 
       <div className="hidden grid-cols-12 gap-4 border-b border-slate-700 pb-3 text-xs font-semibold text-slate-400 sm:grid">
-        <div className="col-span-3">Category</div>
-        <div className="col-span-2">Transactions</div>
-        <div className="col-span-3">Rename</div>
-        <div className="col-span-4">Merge into</div>
+        <div className="col-span-3">{t("category")}</div>
+        <div className="col-span-2">{t("transactions")}</div>
+        <div className="col-span-3">{t("rename")}</div>
+        <div className="col-span-4">{t("mergeInto")}</div>
       </div>
 
       {categories.length === 0 && (
         <div className="py-8 text-center text-sm text-slate-400">
-          No categories yet. Add a transaction to get started.
+          {t("noCategoriesYet")}
         </div>
       )}
 
@@ -107,15 +110,15 @@ export default function CategoryManagement({ categories, onCategoriesUpdated }: 
             className="grid grid-cols-1 gap-3 border-b border-slate-700 py-3 last:border-b-0 sm:grid-cols-12 sm:items-center sm:gap-4"
           >
             <div className="sm:col-span-3">
-              <div className="text-xs font-semibold text-slate-400 sm:hidden">Category</div>
+              <div className="text-xs font-semibold text-slate-400 sm:hidden">{t("category")}</div>
               <div className="break-words text-sm font-medium text-slate-100">{category.name}</div>
             </div>
             <div className="sm:col-span-2">
-              <div className="text-xs font-semibold text-slate-400 sm:hidden">Transactions</div>
+              <div className="text-xs font-semibold text-slate-400 sm:hidden">{t("transactions")}</div>
               <div className="text-sm text-slate-300">{category.count}</div>
             </div>
             <div className="sm:col-span-3">
-              <div className="text-xs font-semibold text-slate-400 sm:hidden">Rename</div>
+              <div className="text-xs font-semibold text-slate-400 sm:hidden">{t("rename")}</div>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                 <input
                   type="text"
@@ -130,16 +133,16 @@ export default function CategoryManagement({ categories, onCategoriesUpdated }: 
                   type="button"
                   variant="primary"
                   size="sm"
-                  onClick={() => applyMerge(category.name, renameValue, "Rename")}
+                  onClick={() => applyMerge(category.name, renameValue, "rename")}
                   disabled={!renameValue.trim() || renameValue === category.name || isBusy}
                   className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700"
                 >
-                  Rename
+                  {t("rename")}
                 </Button>
               </div>
             </div>
             <div className="sm:col-span-4">
-              <div className="text-xs font-semibold text-slate-400 sm:hidden">Merge into</div>
+              <div className="text-xs font-semibold text-slate-400 sm:hidden">{t("mergeInto")}</div>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                 <select
                   value={mergeValue}
@@ -149,7 +152,7 @@ export default function CategoryManagement({ categories, onCategoriesUpdated }: 
                   disabled={isBusy}
                   className="w-full flex-1 rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-xs text-slate-100 focus:border-slate-500 focus:outline-none disabled:opacity-50"
                 >
-                  <option value="">Select category...</option>
+                  <option value="">{t("selectCategoryPlaceholder")}</option>
                   {mergeOptions.map((name) => (
                     <option key={name} value={name}>
                       {name}
@@ -160,11 +163,11 @@ export default function CategoryManagement({ categories, onCategoriesUpdated }: 
                   type="button"
                   variant="success"
                   size="sm"
-                  onClick={() => applyMerge(category.name, mergeValue, "Merge")}
+                  onClick={() => applyMerge(category.name, mergeValue, "merge")}
                   disabled={!mergeValue || isBusy}
                   className="w-full sm:w-auto"
                 >
-                  Merge
+                  {t("merge")}
                 </Button>
               </div>
             </div>

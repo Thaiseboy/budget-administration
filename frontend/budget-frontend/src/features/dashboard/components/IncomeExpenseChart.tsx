@@ -10,6 +10,7 @@ import {
 } from "recharts";
 import type { MonthlyTotal } from "@/utils/monthlyTotals";
 import { formatCurrency } from "@/utils";
+import { useTranslation } from "@/i18n";
 
 type Props = {
   data: MonthlyTotal[];
@@ -32,6 +33,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export default function IncomeExpenseChart({ data }: Props) {
+  const { t } = useTranslation();
+
   return (
     <div className="h-64 w-full sm:h-80">
       <ResponsiveContainer width="100%" height="100%">
@@ -59,13 +62,13 @@ export default function IncomeExpenseChart({ data }: Props) {
 
           <Bar
             dataKey="income"
-            name="Income"
+            name={t("income")}
             fill="#34d399"
             radius={[4, 4, 0, 0]}
           />
           <Bar
             dataKey="expense"
-            name="Expense"
+            name={t("expense")}
             fill="#f87171"
             radius={[4, 4, 0, 0]}
           />

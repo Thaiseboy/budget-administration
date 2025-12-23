@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth, useToast } from '@/contexts'
+import { useTranslation } from '@/i18n'
 import { Card } from '@/components/ui'
 import { FormField } from '@/components/form'
 
@@ -8,6 +9,7 @@ export default function LoginPage() {
   const navigate = useNavigate()
   const { login } = useAuth()
   const toast = useToast()
+  const { t } = useTranslation()
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
@@ -21,10 +23,10 @@ export default function LoginPage() {
 
     try {
       await login(formData)
-      toast.success('Welcome back!')
+      toast.success(t('welcomeBack'))
       navigate('/transactions')
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Login failed')
+      toast.error(error instanceof Error ? error.message : t('loginFailed'))
     } finally {
       setIsLoading(false)
     }
@@ -35,12 +37,12 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <div className="p-6 sm:p-8">
           <h1 className="mb-6 text-2xl font-bold text-slate-100">
-            Sign in to Budget App
+            {t('signInToBudgetApp')}
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <FormField
-              label="Email"
+              label={t('email')}
               type="email"
               id="email"
               value={formData.email}
@@ -51,7 +53,7 @@ export default function LoginPage() {
             />
 
             <FormField
-              label="Password"
+              label={t('password')}
               type="password"
               id="password"
               value={formData.password}
@@ -74,14 +76,14 @@ export default function LoginPage() {
                   className="h-4 w-4 rounded border-slate-600 bg-slate-700 text-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0"
                 />
                 <label htmlFor="remember" className="ml-2 text-sm text-slate-300">
-                  Remember me
+                  {t('rememberMe')}
                 </label>
               </div>
               <Link
                 to="/forgot-password"
                 className="text-sm text-blue-400 hover:text-blue-300"
               >
-                Forgot password?
+                {t('forgotPassword')}
               </Link>
             </div>
 
@@ -90,17 +92,17 @@ export default function LoginPage() {
               disabled={isLoading}
               className="w-full rounded-lg bg-blue-600 px-4 py-2.5 font-medium text-slate-100 transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {isLoading ? 'Signing in...' : 'Sign in'}
+              {isLoading ? t('signingIn') : t('signIn')}
             </button>
           </form>
 
           <p className="mt-6 text-center text-sm text-slate-400">
-            Don't have an account?{' '}
+            {t('dontHaveAccount')}{' '}
             <Link
               to="/register"
               className="font-medium text-blue-400 hover:text-blue-300"
             >
-              Create one
+              {t('createOne')}
             </Link>
           </p>
         </div>

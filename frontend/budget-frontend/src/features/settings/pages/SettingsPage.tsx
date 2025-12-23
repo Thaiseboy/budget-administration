@@ -4,12 +4,14 @@ import { useAuth, useToast } from '@/contexts'
 import { Card, Button, ConfirmDialog } from '@/components/ui'
 import { FormField } from '@/components/form'
 import { updateProfile, updatePassword, updatePreferences, deleteAccount } from '@/api'
+import { useTranslation } from '@/i18n'
 import AppLayout from '@/layouts/AppLayout'
 
 export default function SettingsPage() {
   const navigate = useNavigate()
   const { user, refreshUser, logout } = useAuth()
   const toast = useToast()
+  const { t } = useTranslation()
 
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false)
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false)
@@ -43,9 +45,9 @@ export default function SettingsPage() {
     try {
       await updateProfile(profileData)
       await refreshUser()
-      toast.success('Profile updated successfully')
+      toast.success(t('profileUpdatedSuccessfully'))
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to update profile')
+      toast.error(error instanceof Error ? error.message : t('failedToUpdateProfile'))
     } finally {
       setIsUpdatingProfile(false)
     }
@@ -55,7 +57,7 @@ export default function SettingsPage() {
     e.preventDefault()
 
     if (passwordData.password !== passwordData.password_confirmation) {
-      toast.error('Passwords do not match')
+      toast.error(t('passwordsDoNotMatch'))
       return
     }
 
@@ -63,14 +65,14 @@ export default function SettingsPage() {
 
     try {
       await updatePassword(passwordData)
-      toast.success('Password updated successfully')
+      toast.success(t('passwordUpdatedSuccessfully'))
       setPasswordData({
         current_password: '',
         password: '',
         password_confirmation: '',
       })
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to update password')
+      toast.error(error instanceof Error ? error.message : t('failedToUpdatePassword'))
     } finally {
       setIsUpdatingPassword(false)
     }
@@ -83,9 +85,9 @@ export default function SettingsPage() {
     try {
       await updatePreferences(preferencesData)
       await refreshUser()
-      toast.success('Preferences updated successfully')
+      toast.success(t('preferencesUpdatedSuccessfully'))
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to update preferences')
+      toast.error(error instanceof Error ? error.message : t('failedToUpdatePreferences'))
     } finally {
       setIsUpdatingPreferences(false)
     }
@@ -93,7 +95,7 @@ export default function SettingsPage() {
 
   async function handleDeleteAccount() {
     if (!deletePassword) {
-      toast.error('Please enter your password')
+      toast.error(t('password'))
       return
     }
 
@@ -101,11 +103,11 @@ export default function SettingsPage() {
 
     try {
       await deleteAccount({ password: deletePassword })
-      toast.success('Account deleted successfully')
+      toast.success(t('accountDeletedSuccessfully'))
       await logout()
       navigate('/login')
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to delete account')
+      toast.error(error instanceof Error ? error.message : t('failedToDeleteAccount'))
     } finally {
       setIsDeletingAccount(false)
       setShowDeleteDialog(false)
@@ -116,16 +118,16 @@ export default function SettingsPage() {
   return (
     <AppLayout>
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-slate-100">Settings</h1>
+        <h1 className="text-2xl font-bold text-slate-100">{t('settings')}</h1>
 
         {/* Profile Settings */}
         <Card>
           <div className="p-6">
-            <h2 className="mb-4 text-xl font-semibold text-slate-100">Profile Information</h2>
+            <h2 className="mb-4 text-xl font-semibold text-slate-100">{t('profileInformation')}</h2>
 
             <form onSubmit={handleProfileSubmit} className="space-y-4">
               <FormField
-                label="Name"
+                label={t('name')}
                 type="text"
                 id="name"
                 value={profileData.name}
@@ -136,7 +138,7 @@ export default function SettingsPage() {
               />
 
               <FormField
-                label="Email"
+                label={t('email')}
                 type="email"
                 id="email"
                 value={profileData.email}
@@ -151,7 +153,7 @@ export default function SettingsPage() {
                   type="submit"
                   disabled={isUpdatingProfile}
                 >
-                  {isUpdatingProfile ? 'Saving...' : 'Save Changes'}
+                  {isUpdatingProfile ? t('saving') : t('saveChanges')}
                 </Button>
               </div>
             </form>
@@ -161,12 +163,12 @@ export default function SettingsPage() {
         {/* Preferences */}
         <Card>
           <div className="p-6">
-            <h2 className="mb-4 text-xl font-semibold text-slate-100">Preferences</h2>
+            <h2 className="mb-4 text-xl font-semibold text-slate-100">{t('preferences')}</h2>
 
             <form onSubmit={handlePreferencesSubmit} className="space-y-4">
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-300">
-                  Theme
+                  {t('theme')}
                 </label>
                 <select
                   value={preferencesData.theme}
@@ -178,14 +180,14 @@ export default function SettingsPage() {
                   }
                   className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-slate-100 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                 >
-                  <option value="dark">Dark</option>
-                  <option value="light">Light</option>
+                  <option value="dark">{t('dark')}</option>
+                  <option value="light">{t('light')}</option>
                 </select>
               </div>
 
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-300">
-                  Currency
+                  {t('currency')}
                 </label>
                 <select
                   value={preferencesData.currency}
@@ -197,15 +199,15 @@ export default function SettingsPage() {
                   }
                   className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-slate-100 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                 >
-                  <option value="EUR">Euro (€)</option>
-                  <option value="USD">US Dollar ($)</option>
-                  <option value="GBP">British Pound (£)</option>
+                  <option value="EUR">{t('currencyEuro')}</option>
+                  <option value="USD">{t('currencyUsd')}</option>
+                  <option value="GBP">{t('currencyGbp')}</option>
                 </select>
               </div>
 
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-300">
-                  Date Format
+                  {t('dateFormat')}
                 </label>
                 <select
                   value={preferencesData.date_format}
@@ -225,7 +227,7 @@ export default function SettingsPage() {
 
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-300">
-                  Language
+                  {t('language')}
                 </label>
                 <select
                   value={preferencesData.language}
@@ -237,8 +239,8 @@ export default function SettingsPage() {
                   }
                   className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-slate-100 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                 >
-                  <option value="nl">Nederlands</option>
-                  <option value="en">English</option>
+                  <option value="nl">{t('nederlands')}</option>
+                  <option value="en">{t('english')}</option>
                 </select>
               </div>
 
@@ -247,7 +249,7 @@ export default function SettingsPage() {
                   type="submit"
                   disabled={isUpdatingPreferences}
                 >
-                  {isUpdatingPreferences ? 'Saving...' : 'Save Preferences'}
+                  {isUpdatingPreferences ? t('saving') : t('savePreferences')}
                 </Button>
               </div>
             </form>
@@ -257,11 +259,11 @@ export default function SettingsPage() {
         {/* Password Settings */}
         <Card>
           <div className="p-6">
-            <h2 className="mb-4 text-xl font-semibold text-slate-100">Change Password</h2>
+            <h2 className="mb-4 text-xl font-semibold text-slate-100">{t('changePassword')}</h2>
 
             <form onSubmit={handlePasswordSubmit} className="space-y-4">
               <FormField
-                label="Current Password"
+                label={t('currentPassword')}
                 type="password"
                 id="current_password"
                 value={passwordData.current_password}
@@ -272,7 +274,7 @@ export default function SettingsPage() {
               />
 
               <FormField
-                label="New Password"
+                label={t('newPassword')}
                 type="password"
                 id="password"
                 value={passwordData.password}
@@ -284,7 +286,7 @@ export default function SettingsPage() {
               />
 
               <FormField
-                label="Confirm New Password"
+                label={t('confirmPassword')}
                 type="password"
                 id="password_confirmation"
                 value={passwordData.password_confirmation}
@@ -299,7 +301,7 @@ export default function SettingsPage() {
                   type="submit"
                   disabled={isUpdatingPassword}
                 >
-                  {isUpdatingPassword ? 'Updating...' : 'Update Password'}
+                  {isUpdatingPassword ? t('updating') : t('updatePassword')}
                 </Button>
               </div>
             </form>
@@ -309,15 +311,15 @@ export default function SettingsPage() {
         {/* Delete Account */}
         <Card>
           <div className="p-6">
-            <h2 className="mb-4 text-xl font-semibold text-red-400">Danger Zone</h2>
+            <h2 className="mb-4 text-xl font-semibold text-red-400">{t('dangerZone')}</h2>
             <p className="mb-4 text-sm text-slate-400">
-              Once you delete your account, there is no going back. All your data including transactions, budgets, and settings will be permanently deleted.
+              {t('deleteAccountWarning')}
             </p>
             <button
               onClick={() => setShowDeleteDialog(true)}
               className="rounded-lg border border-red-600 bg-red-600/10 px-4 py-2 font-medium text-red-400 transition-colors hover:bg-red-600/20"
             >
-              Delete Account
+              {t('deleteAccount')}
             </button>
           </div>
         </Card>
@@ -331,14 +333,14 @@ export default function SettingsPage() {
           setDeletePassword('')
         }}
         onConfirm={handleDeleteAccount}
-        title="Delete Account"
+        title={t('deleteAccount')}
         message={
           <div className="space-y-4">
             <p>
-              Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently deleted.
+              {t('deleteAccountConfirm')}
             </p>
             <FormField
-              label="Enter your password to confirm"
+              label={t('enterPasswordToConfirm')}
               type="password"
               id="delete_password"
               value={deletePassword}
@@ -347,8 +349,8 @@ export default function SettingsPage() {
             />
           </div>
         }
-        confirmText="Delete Account"
-        cancelText="Cancel"
+        confirmText={t('deleteAccount')}
+        cancelText={t('cancel')}
         variant="danger"
         isLoading={isDeletingAccount}
       />

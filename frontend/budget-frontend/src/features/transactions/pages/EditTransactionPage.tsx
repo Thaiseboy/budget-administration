@@ -7,11 +7,13 @@ import { useToast } from "@/contexts";
 import { useAppContext } from "@/hooks/useAppContext";
 import { getCategories } from "@/utils";
 import { PageHeader, Card } from "@/components/ui";
+import { useTranslation } from "@/i18n";
 
 export default function EditTransactionPage() {
   const navigate = useNavigate();
   const { id } = useParams();
   const toast = useToast();
+  const { t } = useTranslation();
   const { items, onUpdated } = useAppContext();
 
   const categories = useMemo(() => getCategories(items), [items]);
@@ -23,7 +25,7 @@ export default function EditTransactionPage() {
     return (
       <AppLayout>
         <Card className="p-4 text-slate-400 sm:p-6">
-          Transaction not found
+          {t("transactionNotFound")}
         </Card>
       </AppLayout>
     );
@@ -31,10 +33,10 @@ export default function EditTransactionPage() {
 
   return (
     <AppLayout>
-      <PageHeader title="Edit transaction" />
+      <PageHeader title={t("editTransaction")} />
 
       <TransactionForm
-        submitLabel="Update"
+        submitLabel={t("update")}
         categories={categories}
         initialValues={{
           type: item.type,
@@ -46,7 +48,7 @@ export default function EditTransactionPage() {
         onSubmit={async (data) => {
           const updatedTransaction = await updateTransaction(item.id, data);
           onUpdated(updatedTransaction);
-          toast.success("Transaction updated");
+          toast.success(t("transactionUpdated"));
           navigate("/transactions");
         }}
         onCancel={() => navigate("/transactions")}

@@ -4,10 +4,12 @@ import { useToast } from '@/contexts'
 import { Card, Button } from '@/components/ui'
 import { FormField } from '@/components/form'
 import { resetPassword } from '@/api'
+import { useTranslation } from '@/i18n'
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate()
   const toast = useToast()
+  const { t } = useTranslation()
   const [searchParams] = useSearchParams()
   const [isLoading, setIsLoading] = useState(false)
 
@@ -24,12 +26,12 @@ export default function ResetPasswordPage() {
     e.preventDefault()
 
     if (formData.password !== formData.password_confirmation) {
-      toast.error('Passwords do not match')
+      toast.error(t('passwordsDoNotMatch'))
       return
     }
 
     if (!token) {
-      toast.error('Invalid reset token')
+      toast.error(t('invalidResetToken'))
       return
     }
 
@@ -42,10 +44,10 @@ export default function ResetPasswordPage() {
         password: formData.password,
         password_confirmation: formData.password_confirmation,
       })
-      toast.success('Password reset successfully!')
+      toast.success(t('passwordResetSuccess'))
       navigate('/login')
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to reset password')
+      toast.error(error instanceof Error ? error.message : t('passwordResetFailed'))
     } finally {
       setIsLoading(false)
     }
@@ -56,15 +58,15 @@ export default function ResetPasswordPage() {
       <Card className="w-full max-w-md">
         <div className="p-6 sm:p-8">
           <h1 className="mb-2 text-2xl font-bold text-slate-100">
-            Reset your password
+            {t('resetPasswordTitle')}
           </h1>
           <p className="mb-6 text-sm text-slate-400">
-            Enter your new password below.
+            {t('resetPasswordDescription')}
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <FormField
-              label="Email"
+              label={t('email')}
               type="email"
               id="email"
               value={formData.email}
@@ -75,7 +77,7 @@ export default function ResetPasswordPage() {
             />
 
             <FormField
-              label="New Password"
+              label={t('newPassword')}
               type="password"
               id="password"
               value={formData.password}
@@ -83,11 +85,11 @@ export default function ResetPasswordPage() {
                 setFormData((prev) => ({ ...prev, password: value }))
               }
               required
-              description="Minimum 8 characters"
+              description={t('passwordMinLength')}
             />
 
             <FormField
-              label="Confirm Password"
+              label={t('confirmPassword')}
               type="password"
               id="password_confirmation"
               value={formData.password_confirmation}
@@ -102,7 +104,7 @@ export default function ResetPasswordPage() {
               disabled={isLoading}
               className="w-full"
             >
-              {isLoading ? 'Resetting...' : 'Reset password'}
+              {isLoading ? t('resettingPassword') : t('resetPassword')}
             </Button>
 
             <div className="text-center">
@@ -110,7 +112,7 @@ export default function ResetPasswordPage() {
                 to="/login"
                 className="text-sm text-slate-400 hover:text-slate-300"
               >
-                Back to login
+                {t('backToLogin')}
               </Link>
             </div>
           </form>

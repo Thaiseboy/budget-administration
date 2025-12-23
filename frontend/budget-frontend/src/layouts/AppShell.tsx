@@ -16,11 +16,13 @@ import type { CategoryBudget } from "@/types";
 import { getBudgets } from "../api/budgets";
 import Card from "../components/ui/Card";
 import { useAuth } from "@/contexts";
+import { useTranslation } from "@/i18n";
 
 /**
  * ProtectedLayout - Loads data and shows protected routes
  */
 function ProtectedLayout() {
+  const { t } = useTranslation();
   const [items, setItems] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +33,7 @@ function ProtectedLayout() {
     getTransactions()
       .then((data) => setItems(data))
       .catch((e: unknown) => {
-        const message = e instanceof Error ? e.message : "Failed to load transactions";
+        const message = e instanceof Error ? e.message : t("failedToLoadTransactions");
         setError(message);
       })
       .finally(() => setLoading(false));
@@ -83,7 +85,7 @@ function ProtectedLayout() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-900">
         <Card className="p-6 text-slate-300">
-          Loading transactions...
+          {t("loadingTransactions")}
         </Card>
       </div>
     );
@@ -120,12 +122,13 @@ function ProtectedLayout() {
  */
 export default function AppShell() {
   const { isAuthenticated, isLoading } = useAuth();
+  const { t } = useTranslation();
 
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-900">
         <Card className="p-6 text-slate-300">
-          Loading...
+          {t("loading")}
         </Card>
       </div>
     );
