@@ -27,13 +27,11 @@ export type AuthResponse = {
 }
 
 export async function register(data: RegisterData): Promise<AuthResponse> {
-  const response = await http.post<AuthResponse>('/register', data)
-  return response.data
+  return http.post<AuthResponse>('/register', data)
 }
 
 export async function login(data: LoginData): Promise<AuthResponse> {
-  const response = await http.post<AuthResponse>('/login', data)
-  return response.data
+  return http.post<AuthResponse>('/login', data)
 }
 
 export async function logout(): Promise<void> {
@@ -42,7 +40,7 @@ export async function logout(): Promise<void> {
 
 export async function getCurrentUser(): Promise<User> {
   const response = await http.get<{ user: User }>('/user')
-  return response.data.user
+  return response.user
 }
 
 export async function sendVerificationEmail(): Promise<void> {
@@ -51,5 +49,5 @@ export async function sendVerificationEmail(): Promise<void> {
 
 export async function checkVerificationStatus(): Promise<boolean> {
   const response = await http.get<{ verified: boolean }>('/email/verification-status')
-  return response.data.verified
+  return response.verified
 }

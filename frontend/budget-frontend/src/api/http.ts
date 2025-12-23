@@ -34,8 +34,16 @@ async function request<T>(
       localStorage.removeItem(TOKEN_KEY);
     }
 
-    const message = await response.text();
-    throw new Error(message || 'API request failed');
+    // Try to parse error as JSON, fallback to text
+    let errorMessage = 'API request failed';
+    try {
+      const errorData = await response.json();
+      errorMessage = errorData.message || errorData.error || JSON.stringify(errorData);
+    } catch {
+      errorMessage = await response.text();
+    }
+
+    throw new Error(errorMessage);
   }
 
   // 204 No Content has no response body
