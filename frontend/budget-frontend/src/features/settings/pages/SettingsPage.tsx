@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth, useToast } from '@/contexts'
 import { Card, Button, ConfirmDialog } from '@/components/ui'
 import { FormField } from '@/components/form'
-import { updateProfile, updatePassword, deleteAccount } from '@/api'
+import { updateProfile, updatePassword, updatePreferences, deleteAccount } from '@/api'
 import AppLayout from '@/layouts/AppLayout'
 
 export default function SettingsPage() {
@@ -13,6 +13,7 @@ export default function SettingsPage() {
 
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false)
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false)
+  const [isUpdatingPreferences, setIsUpdatingPreferences] = useState(false)
   const [isDeletingAccount, setIsDeletingAccount] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [deletePassword, setDeletePassword] = useState('')
@@ -26,6 +27,13 @@ export default function SettingsPage() {
     current_password: '',
     password: '',
     password_confirmation: '',
+  })
+
+  const [preferencesData, setPreferencesData] = useState({
+    theme: user?.theme || 'dark' as const,
+    currency: user?.currency || 'EUR' as const,
+    date_format: user?.date_format || 'd-m-Y' as const,
+    language: user?.language || 'nl' as const,
   })
 
   async function handleProfileSubmit(e: React.FormEvent) {
@@ -65,6 +73,21 @@ export default function SettingsPage() {
       toast.error(error instanceof Error ? error.message : 'Failed to update password')
     } finally {
       setIsUpdatingPassword(false)
+    }
+  }
+
+  async function handlePreferencesSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setIsUpdatingPreferences(true)
+
+    try {
+      await updatePreferences(preferencesData)
+      await refreshUser()
+      toast.success('Preferences updated successfully')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to update preferences')
+    } finally {
+      setIsUpdatingPreferences(false)
     }
   }
 
@@ -129,6 +152,102 @@ export default function SettingsPage() {
                   disabled={isUpdatingProfile}
                 >
                   {isUpdatingProfile ? 'Saving...' : 'Save Changes'}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </Card>
+
+        {/* Preferences */}
+        <Card>
+          <div className="p-6">
+            <h2 className="mb-4 text-xl font-semibold text-slate-100">Preferences</h2>
+
+            <form onSubmit={handlePreferencesSubmit} className="space-y-4">
+              <div>
+                <label className="mb-2 block text-sm font-medium text-slate-300">
+                  Theme
+                </label>
+                <select
+                  value={preferencesData.theme}
+                  onChange={(e) =>
+                    setPreferencesData((prev) => ({
+                      ...prev,
+                      theme: e.target.value as 'light' | 'dark',
+                    }))
+                  }
+                  className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                >
+                  <option value="dark">Dark</option>
+                  <option value="light">Light</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-medium text-slate-300">
+                  Currency
+                </label>
+                <select
+                  value={preferencesData.currency}
+                  onChange={(e) =>
+                    setPreferencesData((prev) => ({
+                      ...prev,
+                      currency: e.target.value as 'EUR' | 'USD' | 'GBP',
+                    }))
+                  }
+                  className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                >
+                  <option value="EUR">Euro (€)</option>
+                  <option value="USD">US Dollar ($)</option>
+                  <option value="GBP">British Pound (£)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-medium text-slate-300">
+                  Date Format
+                </label>
+                <select
+                  value={preferencesData.date_format}
+                  onChange={(e) =>
+                    setPreferencesData((prev) => ({
+                      ...prev,
+                      date_format: e.target.value as 'd-m-Y' | 'Y-m-d' | 'm/d/Y',
+                    }))
+                  }
+                  className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                >
+                  <option value="d-m-Y">DD-MM-YYYY (31-12-2025)</option>
+                  <option value="Y-m-d">YYYY-MM-DD (2025-12-31)</option>
+                  <option value="m/d/Y">MM/DD/YYYY (12/31/2025)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-medium text-slate-300">
+                  Language
+                </label>
+                <select
+                  value={preferencesData.language}
+                  onChange={(e) =>
+                    setPreferencesData((prev) => ({
+                      ...prev,
+                      language: e.target.value as 'nl' | 'en',
+                    }))
+                  }
+                  className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                >
+                  <option value="nl">Nederlands</option>
+                  <option value="en">English</option>
+                </select>
+              </div>
+
+              <div className="flex justify-end">
+                <Button
+                  type="submit"
+                  disabled={isUpdatingPreferences}
+                >
+                  {isUpdatingPreferences ? 'Saving...' : 'Save Preferences'}
                 </Button>
               </div>
             </form>

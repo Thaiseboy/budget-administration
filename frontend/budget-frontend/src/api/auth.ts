@@ -5,6 +5,10 @@ export type User = {
   name: string
   email: string
   email_verified_at: string | null
+  theme: 'light' | 'dark'
+  currency: 'EUR' | 'USD' | 'GBP'
+  date_format: 'd-m-Y' | 'Y-m-d' | 'm/d/Y'
+  language: 'nl' | 'en'
 }
 
 export type RegisterData = {

@@ -33,6 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Profile routes
     Route::put('/profile', [ProfileController::class, 'update']);
     Route::put('/profile/password', [ProfileController::class, 'updatePassword']);
+    Route::put('/profile/preferences', [ProfileController::class, 'updatePreferences']);
     Route::delete('/profile', [ProfileController::class, 'delete']);
 
     // Protected budget app routes

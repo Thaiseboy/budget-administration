@@ -53,6 +53,25 @@ class ProfileController extends Controller
         ]);
     }
 
+    public function updatePreferences(Request $request)
+    {
+        $user = $request->user();
+
+        $data = $request->validate([
+            'theme' => ['required', 'string', Rule::in(['light', 'dark'])],
+            'currency' => ['required', 'string', Rule::in(['EUR', 'USD', 'GBP'])],
+            'date_format' => ['required', 'string', Rule::in(['d-m-Y', 'Y-m-d', 'm/d/Y'])],
+            'language' => ['required', 'string', Rule::in(['nl', 'en'])],
+        ]);
+
+        $user->update($data);
+
+        return response()->json([
+            'user' => $user,
+            'message' => 'Preferences updated successfully.',
+        ]);
+    }
+
     public function delete(Request $request)
     {
         $user = $request->user();
