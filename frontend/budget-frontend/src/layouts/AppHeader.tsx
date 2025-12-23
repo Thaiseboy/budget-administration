@@ -2,6 +2,7 @@ import { VscVscodeInsiders } from "react-icons/vsc";
 import { HiOutlineCurrencyEuro } from "react-icons/hi";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth, useToast } from "@/contexts";
+import { useTranslation } from "@/i18n";
 import { useState } from "react";
 
 export default function AppHeader() {
@@ -9,6 +10,7 @@ export default function AppHeader() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const toast = useToast();
+  const { t } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const isActive = (path: string) => location.pathname === path;
@@ -26,7 +28,7 @@ export default function AppHeader() {
   return (
     <header className="border-b border-slate-700 bg-slate-800">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:py-4">
-        <div className="flex items-center gap-2 font-semibold text-white">
+        <div className="flex items-center gap-2 font-semibold text-slate-100">
           <HiOutlineCurrencyEuro className="text-2xl text-amber-300 sm:text-3xl" />
           <span className="text-base sm:text-lg">Get money Administration</span>
         </div>
@@ -39,7 +41,7 @@ export default function AppHeader() {
                 ? "text-emerald-400 font-medium"
                 : "text-slate-400 hover:text-slate-200"
             }`} >
-            Dashboard
+            {t('dashboard')}
           </Link>
 
           <Link
@@ -49,7 +51,7 @@ export default function AppHeader() {
                 ? "text-emerald-400 font-medium"
                 : "text-slate-400 hover:text-slate-200"
             }`}>
-            Transactions
+            {t('transactions')}
           </Link>
 
           <Link
@@ -60,7 +62,7 @@ export default function AppHeader() {
                 : "text-slate-400 hover:text-slate-200"
             }`}
           >
-            Categories
+            {t('categories')}
           </Link>
         </nav>
 
@@ -82,7 +84,7 @@ export default function AppHeader() {
                   className="fixed inset-0 z-10"
                   onClick={() => setIsMenuOpen(false)}
                 />
-                <div className="absolute right-0 top-full z-20 mt-2 w-48 rounded-lg border border-slate-700 bg-slate-800 py-1 shadow-xl">
+                <div className="dropdown-menu absolute right-0 top-full z-20 mt-2 w-48 rounded-lg border border-slate-700 py-1 shadow-2xl ring-1 ring-slate-900/10">
                   <div className="border-b border-slate-700 px-4 py-2">
                     <p className="text-sm font-medium text-slate-200">{user?.name}</p>
                     <p className="text-xs text-slate-400">{user?.email}</p>
@@ -90,15 +92,15 @@ export default function AppHeader() {
                   <Link
                     to="/settings"
                     onClick={() => setIsMenuOpen(false)}
-                    className="block w-full px-4 py-2 text-left text-sm text-slate-300 transition-colors hover:bg-slate-700"
+                    className="dropdown-menu-item block w-full px-4 py-2 text-left text-sm transition-colors"
                   >
-                    Settings
+                    {t('settings')}
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="w-full px-4 py-2 text-left text-sm text-slate-300 transition-colors hover:bg-slate-700"
+                    className="dropdown-menu-item w-full px-4 py-2 text-left text-sm transition-colors"
                   >
-                    Logout
+                    {t('logout')}
                   </button>
                 </div>
               </>

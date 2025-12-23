@@ -19,7 +19,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
       <div className="rounded-lg border border-slate-600 bg-slate-800 p-3 shadow-xl">
-        <p className="text-sm font-medium text-white mb-2">{label}</p>
+        <p className="text-sm font-medium text-slate-100 mb-2">{label}</p>
         {payload.map((entry: any, index: number) => (
           <p key={index} className="text-sm" style={{ color: entry.color }}>
             {entry.name}: {formatCurrency(entry.value)}

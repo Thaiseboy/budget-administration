@@ -25,7 +25,7 @@ export default function ImportCsvPreviewModal({
 
       <div className="relative z-10 w-full max-w-4xl rounded-2xl border border-slate-700 bg-slate-800 shadow-xl">
         <div className="p-5">
-          <h2 className="text-base font-semibold text-white">Preview import</h2>
+          <h2 className="text-base font-semibold text-slate-100">Preview import</h2>
           <p className="mt-1 text-sm text-slate-300">
             File: {preview.fileName} - {preview.rows.length} rows
           </p>
@@ -94,7 +94,7 @@ export default function ImportCsvPreviewModal({
               size="md"
               onClick={onConfirm}
               disabled={isImporting}
-              className="bg-slate-700 text-white hover:bg-slate-600"
+              className="bg-slate-700 text-slate-100 hover:bg-slate-600"
             >
               {isImporting ? "Importing..." : "Import"}
             </Button>

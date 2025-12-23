@@ -14,7 +14,7 @@ export default function TransactionItem({ item, onEdit, onDelete }: Props) {
   return (
     <li className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex-1">
-        <div className="break-words font-medium text-white">{item.description ?? "Untitled"}</div>
+        <div className="break-words font-medium text-slate-100">{item.description ?? "Untitled"}</div>
         <div className="text-xs text-slate-400">
           {item.date}
           {item.category ? ` • ${item.category}` : ""}

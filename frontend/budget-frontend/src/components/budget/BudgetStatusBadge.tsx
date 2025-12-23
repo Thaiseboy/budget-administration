@@ -21,10 +21,10 @@ export default function BudgetStatusBadge({
     null;
 
   const statusClass =
-    monthlyRemaining < 0 ? "bg-red-600 text-white" :
-    variablePercentage >= 100 ? "bg-red-600 text-white" :
+    monthlyRemaining < 0 ? "bg-red-600 text-slate-100" :
+    variablePercentage >= 100 ? "bg-red-600 text-slate-100" :
     variablePercentage >= 80 ? "bg-amber-400 text-slate-900" :
-    variablePercentage >= 60 ? "bg-orange-500 text-white" :
+    variablePercentage >= 60 ? "bg-orange-500 text-slate-100" :
     "";
 
   if (!status) return null;

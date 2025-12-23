@@ -45,7 +45,7 @@ export default function TransactionFiltersBar({
             active={typeFilter === v}
             activeClassName="bg-slate-700 !text-yellow-300 hover:bg-slate-700"
             onClick={() => onTypeChange(v)}
-            className="flex-1 rounded-md border border-transparent bg-transparent text-slate-300 hover:border-transparent hover:bg-slate-700/40 hover:text-white sm:flex-none"
+            className="flex-1 rounded-md border border-transparent bg-transparent text-slate-300 hover:border-transparent hover:bg-slate-700/40 hover:text-slate-100 sm:flex-none"
           >
             {v === "all" ? "All" : v === "income" ? "Income" : "Expense"}
           </Button>
@@ -55,7 +55,7 @@ export default function TransactionFiltersBar({
       <select
         value={categoryFilter}
         onChange={(e) => onCategoryChange(e.target.value)}
-        className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-sm text-white focus:border-slate-500 focus:outline-none sm:w-auto"
+        className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none sm:w-auto"
       >
         {categories.map((c) => (
           <option key={c} value={c}>
@@ -67,7 +67,7 @@ export default function TransactionFiltersBar({
       <select
         value={monthFilter}
         onChange={(e) => onMonthChange(e.target.value)}
-        className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-sm text-white focus:border-slate-500 focus:outline-none sm:w-auto"
+        className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none sm:w-auto"
       >
         <option value="all">All months</option>
         {MONTH_OPTIONS_PADDED.map((option) => (
@@ -83,7 +83,7 @@ export default function TransactionFiltersBar({
         size="md"
         fullWidth
         onClick={onExportCsv}
-        className="border-0 px-3 text-white sm:w-auto"
+        className="border-0 px-3 text-slate-100 sm:w-auto"
       >
         Export CSV
       </Button>
@@ -95,7 +95,7 @@ export default function TransactionFiltersBar({
         fullWidth
         onClick={() => fileInputRef.current?.click()}
         disabled={isImporting}
-        className="border-0 px-3 text-white sm:w-auto"
+        className="border-0 px-3 text-slate-100 sm:w-auto"
       >
         {isImporting ? "Importing..." : "Import CSV"}
       </Button>
@@ -120,7 +120,7 @@ export default function TransactionFiltersBar({
         size="md"
         fullWidth
         onClick={onResetFilters}
-        className="flex items-center justify-center border-0 bg-red-800 px-3 text-xl text-slate-300 hover:bg-red-700 hover:text-white sm:w-auto"
+        className="flex items-center justify-center border-0 bg-red-800 px-3 text-xl text-slate-300 hover:bg-red-700 hover:text-slate-100 sm:w-auto"
       >
         <GoSync />
       </Button>

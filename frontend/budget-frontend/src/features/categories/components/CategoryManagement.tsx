@@ -75,7 +75,7 @@ export default function CategoryManagement({ categories, onCategoriesUpdated }: 
 
   return (
     <Card className="p-4 sm:p-6">
-      <h2 className="mb-4 text-base font-semibold text-white">Manage Categories</h2>
+      <h2 className="mb-4 text-base font-semibold text-slate-100">Manage Categories</h2>
       <p className="mb-4 text-sm text-slate-400">
         Rename or merge categories to keep your data organized.
       </p>
@@ -108,7 +108,7 @@ export default function CategoryManagement({ categories, onCategoriesUpdated }: 
           >
             <div className="sm:col-span-3">
               <div className="text-xs font-semibold text-slate-400 sm:hidden">Category</div>
-              <div className="break-words text-sm font-medium text-white">{category.name}</div>
+              <div className="break-words text-sm font-medium text-slate-100">{category.name}</div>
             </div>
             <div className="sm:col-span-2">
               <div className="text-xs font-semibold text-slate-400 sm:hidden">Transactions</div>
@@ -124,7 +124,7 @@ export default function CategoryManagement({ categories, onCategoriesUpdated }: 
                     setRenameValues((prev) => ({ ...prev, [category.name]: e.target.value }))
                   }
                   disabled={isBusy}
-                  className="w-full flex-1 rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-xs text-white focus:border-slate-500 focus:outline-none disabled:opacity-50"
+                  className="w-full flex-1 rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-xs text-slate-100 focus:border-slate-500 focus:outline-none disabled:opacity-50"
                 />
                 <Button
                   type="button"
@@ -147,7 +147,7 @@ export default function CategoryManagement({ categories, onCategoriesUpdated }: 
                     setMergeTargets((prev) => ({ ...prev, [category.name]: e.target.value }))
                   }
                   disabled={isBusy}
-                  className="w-full flex-1 rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-xs text-white focus:border-slate-500 focus:outline-none disabled:opacity-50"
+                  className="w-full flex-1 rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-xs text-slate-100 focus:border-slate-500 focus:outline-none disabled:opacity-50"
                 >
                   <option value="">Select category...</option>
                   {mergeOptions.map((name) => (

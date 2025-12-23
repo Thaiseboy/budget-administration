@@ -66,7 +66,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
 
                     <div className="relative z-10 w-full max-w-md rounded-2xl bg-slate-800 shadow-xl border border-slate-700">
                         <div className="p-5">
-                            <h2 className="text-base font-semibold text-white">{state.options.title}</h2>
+                            <h2 className="text-base font-semibold text-slate-100">{state.options.title}</h2>
                             <p className="mt-2 text-sm text-slate-300">
                                 {state.options.message}
                             </p>
@@ -89,7 +89,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
                                     className={
                                         state.options.variant === "danger"
                                             ? ""
-                                            : "border-0 bg-slate-700 text-white hover:bg-slate-600"
+                                            : "border-0 bg-slate-700 text-slate-100 hover:bg-slate-600"
                                     }>
                                     {state.options.confirmText}
                                 </Button>

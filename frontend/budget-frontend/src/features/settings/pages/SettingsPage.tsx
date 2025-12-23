@@ -176,7 +176,7 @@ export default function SettingsPage() {
                       theme: e.target.value as 'light' | 'dark',
                     }))
                   }
-                  className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-slate-100 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                 >
                   <option value="dark">Dark</option>
                   <option value="light">Light</option>
@@ -195,7 +195,7 @@ export default function SettingsPage() {
                       currency: e.target.value as 'EUR' | 'USD' | 'GBP',
                     }))
                   }
-                  className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-slate-100 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                 >
                   <option value="EUR">Euro (€)</option>
                   <option value="USD">US Dollar ($)</option>
@@ -215,7 +215,7 @@ export default function SettingsPage() {
                       date_format: e.target.value as 'd-m-Y' | 'Y-m-d' | 'm/d/Y',
                     }))
                   }
-                  className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-slate-100 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                 >
                   <option value="d-m-Y">DD-MM-YYYY (31-12-2025)</option>
                   <option value="Y-m-d">YYYY-MM-DD (2025-12-31)</option>
@@ -235,7 +235,7 @@ export default function SettingsPage() {
                       language: e.target.value as 'nl' | 'en',
                     }))
                   }
-                  className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-slate-100 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                 >
                   <option value="nl">Nederlands</option>
                   <option value="en">English</option>

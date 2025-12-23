@@ -285,7 +285,7 @@ export default function TransactionsPage() {
 
             <Link
               to="/transactions/new"
-              className="w-full rounded-lg bg-emerald-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-slate-800 sm:ml-4 sm:w-auto"
+              className="w-full rounded-lg bg-emerald-600 px-4 py-2 text-center text-sm font-medium text-slate-100 hover:bg-slate-800 sm:ml-4 sm:w-auto"
             >
               Add transaction
             </Link>
@@ -302,7 +302,7 @@ export default function TransactionsPage() {
             id="year-select"
             value={selectedYear}
             onChange={(e) => setSelectedYear(Number(e.target.value))}
-            className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-white focus:border-slate-500 focus:outline-none sm:w-auto"
+            className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-slate-100 focus:border-slate-500 focus:outline-none sm:w-auto"
           >
             {years.map((year) => (
               <option key={year} value={year}>

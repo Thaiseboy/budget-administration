@@ -34,7 +34,7 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
   const fieldUi = {
     labelClass: "block text-sm font-medium text-slate-700 dark:text-slate-300",
     inputClass:
-      "border-slate-300 bg-white text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-white",
+      "border-slate-300 bg-white text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100",
   };
 
   const fields = [
@@ -181,7 +181,7 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
   return (
     <div className="rounded-lg bg-white p-4 shadow dark:bg-slate-800 sm:p-6">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-lg font-semibold text-slate-900 dark:text-white sm:text-xl">
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 sm:text-xl">
           Fixed Monthly Items
         </h2>
         {!isAdding && (
@@ -286,7 +286,7 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
                   className="flex flex-col gap-3 rounded bg-green-50 p-3 dark:bg-green-900/20 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div>
-                    <div className="break-words font-medium text-slate-900 dark:text-white">
+                    <div className="break-words font-medium text-slate-900 dark:text-slate-100">
                       {item.description}
                     </div>
                     {item.category && (
@@ -338,7 +338,7 @@ export function FixedItemsList({ items, onUpdate, categories }: Props) {
                   className="flex flex-col gap-3 rounded bg-red-50 p-3 dark:bg-red-900/20 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div>
-                    <div className="break-words font-medium text-slate-900 dark:text-white">
+                    <div className="break-words font-medium text-slate-900 dark:text-slate-100">
                       {item.description}
                     </div>
                     {item.category && (

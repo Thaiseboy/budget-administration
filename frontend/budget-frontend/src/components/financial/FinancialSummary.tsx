@@ -32,7 +32,7 @@ export default function FinancialSummary({
 
   return (
     <Card className="p-4 sm:p-6">
-      <h2 className="text-base font-semibold text-white">{title}</h2>
+      <h2 className="text-base font-semibold text-slate-100">{title}</h2>
 
       <div className={`mt-4 grid gap-4 ${gridCols}`}>
         {showIncome && (
@@ -48,7 +48,7 @@ export default function FinancialSummary({
                 <span className="text-green-400 font-semibold">{formatCurrency(variableIncome)}</span>
               </div>
               <div className="flex justify-between border-t border-slate-600 pt-2">
-                <span className="text-white font-semibold">Total income:</span>
+                <span className="text-slate-100 font-semibold">Total income:</span>
                 <span className="text-green-300 font-bold">{formatCurrency(totalIncome)}</span>
               </div>
             </div>
@@ -68,7 +68,7 @@ export default function FinancialSummary({
                 <span className="text-red-400 font-semibold">{formatCurrency(variableExpense)}</span>
               </div>
               <div className="flex justify-between border-t border-slate-600 pt-2">
-                <span className="text-white font-semibold">Total expenses:</span>
+                <span className="text-slate-100 font-semibold">Total expenses:</span>
                 <span className="text-red-300 font-bold">{formatCurrency(totalExpense)}</span>
               </div>
             </div>
@@ -88,7 +88,7 @@ export default function FinancialSummary({
                 <span className="text-red-400 font-semibold">{formatCurrency(totalExpense)}</span>
               </div>
               <div className="flex justify-between border-t border-slate-600 pt-2">
-                <span className="text-white font-semibold">Remaining:</span>
+                <span className="text-slate-100 font-semibold">Remaining:</span>
                 <span
                   className={`font-bold ${remaining >= 0 ? "text-emerald-300" : "text-red-300"}`}
                 >

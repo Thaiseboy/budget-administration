@@ -57,7 +57,7 @@ export default function TransactionForm({
         setFormData((prev) => ({ ...prev, [name]: value as string }));
     }
 
-    const commonInputClass = "border-2 bg-slate-700 px-4 py-3 text-white focus:outline-none transition-colors";
+    const commonInputClass = "border-2 bg-slate-700 px-4 py-3 text-slate-100 focus:outline-none transition-colors";
     const labelClass = "block text-sm font-semibold text-slate-200 mb-2";
 
     const amountField = useMemo(() => ({

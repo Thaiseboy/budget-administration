@@ -9,7 +9,7 @@ type Props = {
 
 export default function AppLayout({ children }: Props) {
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
+    <div className="min-h-screen bg-slate-900 text-slate-100">
       <AppHeader />
       <EmailVerificationBanner />
       <main className="mx-auto w-full max-w-5xl px-4 py-4 sm:py-6">{children}</main>

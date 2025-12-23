@@ -59,7 +59,7 @@ export default function ConfirmDialog({
           <button
             onClick={onConfirm}
             disabled={isLoading}
-            className={`rounded-lg px-4 py-2 font-medium text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${variantStyles[variant]}`}
+            className={`rounded-lg px-4 py-2 font-medium text-slate-100 transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${variantStyles[variant]}`}
           >
             {isLoading ? 'Processing...' : confirmText}
           </button>

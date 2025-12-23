@@ -29,10 +29,10 @@ export default function Button({
   const baseClass = "rounded-lg font-medium transition-colors focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed";
 
   const variantClasses: Record<ButtonVariant, string> = {
-    primary: "bg-blue-600 text-white hover:bg-blue-700",
+    primary: "bg-blue-600 text-slate-100 hover:bg-blue-700",
     secondary: "border-2 border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600",
-    danger: "bg-red-600 text-white hover:bg-red-700",
-    success: "bg-green-600 text-white hover:bg-green-700",
+    danger: "bg-red-600 text-slate-100 hover:bg-red-700",
+    success: "bg-green-600 text-slate-100 hover:bg-green-700",
     ghost: "border-2 border-slate-600 bg-slate-700/50 text-slate-300 hover:border-slate-500",
     link: "text-blue-400 hover:text-blue-300 underline",
   };
