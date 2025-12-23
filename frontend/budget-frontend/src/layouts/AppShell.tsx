@@ -9,6 +9,8 @@ import DashboardPage from "../features/dashboard/pages/DashboardPage";
 import CategoriesPage from "../features/categories/pages/CategoriesPage";
 import LoginPage from "../features/auth/pages/LoginPage";
 import RegisterPage from "../features/auth/pages/RegisterPage";
+import ForgotPasswordPage from "../features/auth/pages/ForgotPasswordPage";
+import ResetPasswordPage from "../features/auth/pages/ResetPasswordPage";
 import { SettingsPage } from "../features/settings";
 import type { CategoryBudget } from "@/types";
 import { getBudgets } from "../api/budgets";
@@ -134,6 +136,8 @@ export default function AppShell() {
       {/* Public routes */}
       <Route path="/login" element={isAuthenticated ? <Navigate to="/transactions" replace /> : <LoginPage />} />
       <Route path="/register" element={isAuthenticated ? <Navigate to="/transactions" replace /> : <RegisterPage />} />
+      <Route path="/forgot-password" element={isAuthenticated ? <Navigate to="/transactions" replace /> : <ForgotPasswordPage />} />
+      <Route path="/reset-password" element={isAuthenticated ? <Navigate to="/transactions" replace /> : <ResetPasswordPage />} />
 
       {/* Protected routes */}
       {isAuthenticated ? (

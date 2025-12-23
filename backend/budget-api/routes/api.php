@@ -12,10 +12,13 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\ProfileController;
+use App\Http\Controllers\Auth\PasswordResetController;
 
 // Public auth routes
 Route::post('/register', RegisterController::class);
 Route::post('/login', LoginController::class);
+Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink']);
+Route::post('/reset-password', [PasswordResetController::class, 'reset']);
 
 // Protected auth routes
 Route::middleware('auth:sanctum')->group(function () {
