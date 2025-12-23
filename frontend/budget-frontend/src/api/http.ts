@@ -20,7 +20,6 @@ async function request<T>(
   options?: RequestInit
 ): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    headers: getHeaders(),
     ...options,
     headers: {
       ...getHeaders(),

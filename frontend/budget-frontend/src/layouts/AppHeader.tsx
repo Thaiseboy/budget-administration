@@ -87,6 +87,13 @@ export default function AppHeader() {
                     <p className="text-sm font-medium text-slate-200">{user?.name}</p>
                     <p className="text-xs text-slate-400">{user?.email}</p>
                   </div>
+                  <Link
+                    to="/settings"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="block w-full px-4 py-2 text-left text-sm text-slate-300 transition-colors hover:bg-slate-700"
+                  >
+                    Settings
+                  </Link>
                   <button
                     onClick={handleLogout}
                     className="w-full px-4 py-2 text-left text-sm text-slate-300 transition-colors hover:bg-slate-700"

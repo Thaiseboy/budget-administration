@@ -9,6 +9,7 @@ import DashboardPage from "../features/dashboard/pages/DashboardPage";
 import CategoriesPage from "../features/categories/pages/CategoriesPage";
 import LoginPage from "../features/auth/pages/LoginPage";
 import RegisterPage from "../features/auth/pages/RegisterPage";
+import { SettingsPage } from "../features/settings";
 import type { CategoryBudget } from "@/types";
 import { getBudgets } from "../api/budgets";
 import Card from "../components/ui/Card";
@@ -143,6 +144,7 @@ export default function AppShell() {
           <Route path="transactions/:id/edit" element={<EditTransactionPage />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="categories" element={<CategoriesPage />} />
+          <Route path="settings" element={<SettingsPage />} />
         </Route>
       ) : (
         <Route path="*" element={<Navigate to="/login" replace />} />

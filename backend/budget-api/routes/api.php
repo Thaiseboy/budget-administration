@@ -11,6 +11,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\Auth\EmailVerificationController;
+use App\Http\Controllers\Auth\ProfileController;
 
 // Public auth routes
 Route::post('/register', RegisterController::class);
@@ -25,6 +26,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/email/verification-notification', [EmailVerificationController::class, 'sendVerificationEmail']);
     Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])->name('verification.verify');
     Route::get('/email/verification-status', [EmailVerificationController::class, 'checkStatus']);
+
+    // Profile routes
+    Route::put('/profile', [ProfileController::class, 'update']);
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword']);
 
     // Protected budget app routes
     Route::get('/transactions', [TransactionController::class, 'index']);
