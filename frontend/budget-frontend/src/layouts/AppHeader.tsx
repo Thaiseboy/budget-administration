@@ -1,11 +1,27 @@
 import { VscVscodeInsiders } from "react-icons/vsc";
 import { HiOutlineCurrencyEuro } from "react-icons/hi";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth, useToast } from "@/contexts";
+import { useState } from "react";
 
 export default function AppHeader() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  const toast = useToast();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const isActive = (path: string) => location.pathname === path;
+
+  async function handleLogout() {
+    try {
+      await logout();
+      toast.success('Logged out successfully');
+      navigate('/login');
+    } catch (error) {
+      toast.error('Failed to logout');
+    }
+  }
 
   return (
     <header className="border-b border-slate-700 bg-slate-800">
@@ -48,8 +64,43 @@ export default function AppHeader() {
           </Link>
         </nav>
 
-        <div className="hidden text-4xl text-red-600 sm:block">
-          <VscVscodeInsiders />
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-slate-300 transition-colors hover:bg-slate-700"
+            >
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-700 text-xs font-medium text-slate-200">
+                {user?.name?.charAt(0).toUpperCase() || 'U'}
+              </div>
+              <span className="hidden sm:inline">{user?.name}</span>
+            </button>
+
+            {isMenuOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setIsMenuOpen(false)}
+                />
+                <div className="absolute right-0 top-full z-20 mt-2 w-48 rounded-lg border border-slate-700 bg-slate-800 py-1 shadow-xl">
+                  <div className="border-b border-slate-700 px-4 py-2">
+                    <p className="text-sm font-medium text-slate-200">{user?.name}</p>
+                    <p className="text-xs text-slate-400">{user?.email}</p>
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full px-4 py-2 text-left text-sm text-slate-300 transition-colors hover:bg-slate-700"
+                  >
+                    Logout
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+
+          <div className="hidden text-4xl text-red-600 sm:block">
+            <VscVscodeInsiders />
+          </div>
         </div>
       </div>
     </header>

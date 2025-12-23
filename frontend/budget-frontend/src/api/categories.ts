@@ -10,8 +10,5 @@ export type MergeCategoriesResponse = {
 };
 
 export function mergeCategories(payload: { from: string; to: string }) {
-  return http<MergeCategoriesResponse>("/categories/merge", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
+  return http.post<MergeCategoriesResponse>("/categories/merge", payload);
 }
