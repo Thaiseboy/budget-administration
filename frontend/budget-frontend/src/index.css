@@ -1,1 +1,73 @@
 @import "tailwindcss";
+
+.light {
+  /* Backgrounds - lightest to darkest */
+  --color-slate-900: 248 250 252; /* slate-50 - main background */
+  --color-slate-800: 255 255 255; /* white - cards */
+  --color-slate-700: 226 232 240; /* slate-200 - borders */
+
+  /* Text colors - darkest to lightest */
+  --color-slate-100: 15 23 42;   /* slate-900 - primary text */
+  --color-slate-200: 30 41 59;   /* slate-800 - headings */
+  --color-slate-300: 51 65 85;   /* slate-700 - body text */
+  --color-slate-400: 100 116 139; /* slate-500 - muted text */
+  --color-slate-500: 148 163 184; /* slate-400 - placeholder */
+  --color-slate-600: 203 213 225; /* slate-300 - disabled */
+}
+
+.light {
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+.light select option {
+  background-color: rgb(255 255 255);
+  color: rgb(15 23 42);
+}
+
+.dark select option {
+  background-color: rgb(30 41 59);
+  color: rgb(248 250 252);
+}
+
+.light input,
+.light select,
+.light textarea {
+  background-color: rgb(255 255 255);
+  color: rgb(15 23 42);
+  border-color: rgb(226 232 240);
+}
+
+.light input:focus,
+.light select:focus,
+.light textarea:focus {
+  border-color: rgb(59 130 246);
+  background-color: rgb(255 255 255);
+}
+
+.dropdown-menu {
+  background-color: rgb(30 41 59); /* slate-800 in dark */
+}
+
+.light .dropdown-menu {
+  background-color: rgb(255 255 255); /* white in light */
+}
+
+.dropdown-menu-item {
+  color: rgb(203 213 225); /* slate-300 in dark */
+}
+
+.dropdown-menu-item:hover {
+  background-color: rgb(15 23 42); /* slate-900 in dark */
+}
+
+.light .dropdown-menu-item {
+  color: rgb(51 65 85); /* slate-700 in light */
+}
+
+.light .dropdown-menu-item:hover {
+  background-color: rgb(248 250 252); /* slate-50 in light */
+}

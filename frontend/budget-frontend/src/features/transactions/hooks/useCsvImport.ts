@@ -4,6 +4,7 @@ import { useToast } from "@/contexts";
 import { normalizeCategory, parseCsv } from "@/utils";
 import type { Transaction } from "@/types";
 import type { ImportPreview } from "../types";
+import { useTranslation } from "@/i18n";
 
 type UseCsvImportArgs = {
   onCreated: (transaction: Transaction) => void;
@@ -21,6 +22,7 @@ function parseAmount(raw: string): number {
 
 export function useCsvImport({ onCreated }: UseCsvImportArgs) {
   const toast = useToast();
+  const { t } = useTranslation();
   const [isImporting, setIsImporting] = useState(false);
   const [importPreview, setImportPreview] = useState<ImportPreview | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -32,7 +34,7 @@ export function useCsvImport({ onCreated }: UseCsvImportArgs) {
       const rows = parseCsv(text);
 
       if (rows.length === 0) {
-        toast.error("CSV is empty");
+        toast.error(t("csvEmpty"));
         return;
       }
 
@@ -45,7 +47,7 @@ export function useCsvImport({ onCreated }: UseCsvImportArgs) {
       const descriptionIdx = headerMap.indexOf("description");
 
       if ([dateIdx, typeIdx, categoryIdx, amountIdx, descriptionIdx].some((i) => i < 0)) {
-        toast.error("CSV header is missing required columns");
+        toast.error(t("csvMissingColumns"));
         return;
       }
 
@@ -54,7 +56,7 @@ export function useCsvImport({ onCreated }: UseCsvImportArgs) {
         .filter(({ row }) => row.some((cell) => (cell ?? "").trim() !== ""));
 
       if (rowsWithData.length === 0) {
-        toast.error("CSV has no data rows");
+        toast.error(t("csvNoDataRows"));
         return;
       }
 
@@ -88,7 +90,7 @@ export function useCsvImport({ onCreated }: UseCsvImportArgs) {
           .map((t) => t.rowNumber)
           .join(", ");
         const suffix = invalidRows.length > 5 ? "..." : "";
-        toast.error(`Invalid CSV rows: ${rowList}${suffix}`);
+        toast.error(t("csvInvalidRows", { rows: `${rowList}${suffix}` }));
         return;
       }
 
@@ -97,7 +99,7 @@ export function useCsvImport({ onCreated }: UseCsvImportArgs) {
         rows: parsed,
       });
     } catch (err) {
-      toast.error("Failed to import CSV");
+      toast.error(t("csvImportFailed"));
       console.error(err);
     } finally {
       setIsImporting(false);
@@ -113,10 +115,10 @@ export function useCsvImport({ onCreated }: UseCsvImportArgs) {
       );
 
       created.forEach((t) => onCreated(t));
-      toast.success(`Imported ${created.length} transaction(s)`);
+      toast.success(t("csvImported", { count: created.length }));
       setImportPreview(null);
     } catch (err) {
-      toast.error("Failed to import CSV");
+      toast.error(t("csvImportFailed"));
       console.error(err);
     } finally {
       setIsImporting(false);

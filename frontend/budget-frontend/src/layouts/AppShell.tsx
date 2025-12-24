@@ -7,15 +7,22 @@ import NewTransactionPage from "../features/transactions/pages/NewTransactionPag
 import EditTransactionPage from "../features/transactions/pages/EditTransactionPage";
 import DashboardPage from "../features/dashboard/pages/DashboardPage";
 import CategoriesPage from "../features/categories/pages/CategoriesPage";
+import LoginPage from "../features/auth/pages/LoginPage";
+import RegisterPage from "../features/auth/pages/RegisterPage";
+import ForgotPasswordPage from "../features/auth/pages/ForgotPasswordPage";
+import ResetPasswordPage from "../features/auth/pages/ResetPasswordPage";
+import { SettingsPage } from "../features/settings";
 import type { CategoryBudget } from "@/types";
 import { getBudgets } from "../api/budgets";
 import Card from "../components/ui/Card";
+import { useAuth } from "@/contexts";
+import { useTranslation } from "@/i18n";
 
 /**
- * AppShell - Central data management and routing for the entire app
- * Loads transactions once and provides them to all child routes via context
+ * ProtectedLayout - Loads data and shows protected routes
  */
-export default function AppShell() {
+function ProtectedLayout() {
+  const { t } = useTranslation();
   const [items, setItems] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +33,7 @@ export default function AppShell() {
     getTransactions()
       .then((data) => setItems(data))
       .catch((e: unknown) => {
-        const message = e instanceof Error ? e.message : "Failed to load transactions";
+        const message = e instanceof Error ? e.message : t("failedToLoadTransactions");
         setError(message);
       })
       .finally(() => setLoading(false));
@@ -78,7 +85,7 @@ export default function AppShell() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-900">
         <Card className="p-6 text-slate-300">
-          Loading transactions...
+          {t("loadingTransactions")}
         </Card>
       </div>
     );
@@ -106,15 +113,49 @@ export default function AppShell() {
   };
 
   return (
+    <Outlet context={contextValue} />
+  );
+}
+
+/**
+ * AppShell - Central routing with auth protection
+ */
+export default function AppShell() {
+  const { isAuthenticated, isLoading } = useAuth();
+  const { t } = useTranslation();
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-900">
+        <Card className="p-6 text-slate-300">
+          {t("loading")}
+        </Card>
+      </div>
+    );
+  }
+
+  return (
     <Routes>
-      <Route path="/" element={<Outlet context={contextValue} />}>
-        <Route index element={<Navigate to="/transactions" replace />} />
-        <Route path="transactions" element={<TransactionsPage />} />
-        <Route path="transactions/new" element={<NewTransactionPage />} />
-        <Route path="transactions/:id/edit" element={<EditTransactionPage />} />
-        <Route path="dashboard" element={<DashboardPage />} />
-        <Route path="categories" element={<CategoriesPage />} />
-      </Route>
+      {/* Public routes */}
+      <Route path="/login" element={isAuthenticated ? <Navigate to="/transactions" replace /> : <LoginPage />} />
+      <Route path="/register" element={isAuthenticated ? <Navigate to="/transactions" replace /> : <RegisterPage />} />
+      <Route path="/forgot-password" element={isAuthenticated ? <Navigate to="/transactions" replace /> : <ForgotPasswordPage />} />
+      <Route path="/reset-password" element={isAuthenticated ? <Navigate to="/transactions" replace /> : <ResetPasswordPage />} />
+
+      {/* Protected routes */}
+      {isAuthenticated ? (
+        <Route path="/" element={<ProtectedLayout />}>
+          <Route index element={<Navigate to="/transactions" replace />} />
+          <Route path="transactions" element={<TransactionsPage />} />
+          <Route path="transactions/new" element={<NewTransactionPage />} />
+          <Route path="transactions/:id/edit" element={<EditTransactionPage />} />
+          <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="categories" element={<CategoriesPage />} />
+          <Route path="settings" element={<SettingsPage />} />
+        </Route>
+      ) : (
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      )}
     </Routes>
   );
 }

@@ -4,6 +4,7 @@ import { normalizeCategory } from "@/utils";
 import { isFixedCategory } from "@/utils";
 import { Card } from "@/components/ui";
 import BudgetStatusBadge from "../budget/BudgetStatusBadge";
+import { useTranslation } from "@/i18n";
 
 type TypeFilter = "all" | "income" | "expense";
 
@@ -13,6 +14,7 @@ type Props = {
 };
 
 export default function TransactionSummary({ items, typeFilter = "all" }: Props) {
+    const { t } = useTranslation();
     const income = items
         .filter((t) => t.type === "income")
         .reduce((sum, t) => sum + t.amount, 0);
@@ -42,7 +44,7 @@ export default function TransactionSummary({ items, typeFilter = "all" }: Props)
         <div className={`grid gap-3 ${gridCols}`}>
             {showIncome && (
                 <Card className="p-4">
-                    <div className="text-xs text-slate-300">Total income</div>
+                    <div className="text-xs text-slate-300">{t("totalIncome")}</div>
                     <div className="mt-1 text-lg font-semibold text-emerald-400">
                         {formatCurrency(income)}
                     </div>
@@ -51,7 +53,7 @@ export default function TransactionSummary({ items, typeFilter = "all" }: Props)
 
             {showExpense && (
                 <Card className="p-4">
-                    <div className="text-xs text-slate-300">Total expense</div>
+                    <div className="text-xs text-slate-300">{t("totalExpenses")}</div>
                     <div className="mt-1 text-lg font-semibold text-red-400">
                         {formatCurrency(expense)}
                     </div>
@@ -60,7 +62,7 @@ export default function TransactionSummary({ items, typeFilter = "all" }: Props)
 
             {showBalance && (
                 <Card className="p-4">
-                    <div className="text-xs text-slate-300">Balance</div>
+                    <div className="text-xs text-slate-300">{t("balance")}</div>
                     <div className={`mt-1 text-lg font-semibold ${balance >= 0 ? "text-emerald-400" : "text-red-500"}`}>
                         {formatCurrency(balance)}
                     </div>

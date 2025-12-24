@@ -47,7 +47,7 @@ class MonthlyPlanController extends Controller
         ]);
 
         $plan = MonthlyPlan::updateOrCreate(
-            ['year' => $data['year'], 'month' => $data['month']],
+            ['user_id' => auth()->id(), 'year' => $data['year'], 'month' => $data['month']],
             ['expected_income' => $data['expected_income']]
         );
 

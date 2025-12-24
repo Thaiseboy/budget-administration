@@ -8,10 +8,12 @@ import { FixedItemsList } from "../../dashboard/components/FixedItemsList";
 import CategoryManagement from "../components/CategoryManagement";
 import { PageHeader } from "@/components/ui";
 import { Link } from "react-router-dom";
+import { useTranslation } from "@/i18n";
 
 export default function CategoriesPage() {
   const { items, setItems } = useAppContext();
   const [fixedItems, setFixedItems] = useState<FixedMonthlyItem[]>([]);
+  const { t } = useTranslation();
 
   const categories = useMemo(() => {
     const map = new Map<string, number>();
@@ -45,22 +47,22 @@ export default function CategoriesPage() {
   return (
     <AppLayout>
       <PageHeader
-        title="Categories & Settings"
-        description="Manage your categories and fixed items."
+        title={t("categoriesAndSettings")}
+        description={t("manageCategoriesAndFixedItems")}
         actions={
           <>
             <Link
               to="/dashboard"
               className="w-full rounded-lg border border-slate-600 px-4 py-2 text-center text-sm text-slate-300 hover:bg-slate-800 sm:w-auto"
             >
-              Dashboard
+              {t("dashboard")}
             </Link>
 
             <Link
               to="/transactions"
               className="w-full rounded-lg border border-slate-600 px-4 py-2 text-center text-sm text-slate-300 hover:bg-slate-800 sm:w-auto"
             >
-              View Transactions
+              {t("viewTransactions")}
             </Link>
           </>
         }

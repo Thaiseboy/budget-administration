@@ -9,13 +9,14 @@ return new class extends Migration {
     {
         Schema::create('category_budgets', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->unsignedInteger('year');
             $table->unsignedTinyInteger('month'); // 1-12
             $table->string('category', 255);
             $table->decimal('amount', 10, 2);
             $table->timestamps();
 
-            $table->unique(['year', 'month', 'category']);
+            $table->unique(['user_id', 'year', 'month', 'category']);
         });
     }
 

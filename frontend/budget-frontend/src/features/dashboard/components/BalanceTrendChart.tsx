@@ -8,6 +8,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import { formatCurrency } from "@/utils";
+import { useTranslation } from "@/i18n";
 
 type Props = {
   data: {
@@ -17,6 +18,8 @@ type Props = {
 };
 
 export default function BalanceTrendChart({ data }: Props) {
+  const { t } = useTranslation();
+
   return (
     <div className="h-64 w-full sm:h-80">
       <ResponsiveContainer width="100%" height="100%">
@@ -37,13 +40,13 @@ export default function BalanceTrendChart({ data }: Props) {
 
           <Tooltip
             formatter={(v) => formatCurrency(Number(v))}
-            labelFormatter={(label) => `Month: ${label}`}
+            labelFormatter={(label) => `${t("month")}: ${label}`}
           />
 
           <Line
             type="monotone"
             dataKey="cumulativeBalance"
-            name="Balance"
+            name={t("balance")}
             stroke="#60a5fa"
             strokeWidth={3}
             dot={{ r: 3 }}

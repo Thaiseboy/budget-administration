@@ -3,8 +3,22 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class MonthlyPlan extends Model
 {
-    protected $fillable = ['year', 'month', 'expected_income'];
+    protected static function booted(): void
+    {
+        static::addGlobalScope('user', function (Builder $builder) {
+            if (auth()->check()) {
+                $builder->where('user_id', auth()->id());
+            }
+        });
+    }
+    protected $fillable = ['user_id', 'year', 'month', 'expected_income'];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

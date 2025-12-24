@@ -3,7 +3,7 @@ import AppLayout from "@/layouts/AppLayout";
 import { Link, useNavigate } from "react-router-dom";
 import { deleteTransaction, createTransaction, getFixedItems } from "@/api";
 import { useToast, useConfirm } from "@/contexts";
-import { groupByMonth, type MonthKey, normalizeCategory, isFixedCategory, downloadCsv, MONTH_OPTIONS } from "@/utils";
+import { groupByMonth, type MonthKey, normalizeCategory, isFixedCategory, downloadCsv, getMonthOptions } from "@/utils";
 import { MonthlyTransactionSection, ImportCsvPreviewModal, TransactionFiltersBar } from "../components";
 import { useAppContext } from "@/hooks/useAppContext";
 import type { FixedMonthlyItem } from "@/types";
@@ -12,16 +12,19 @@ import ApplyFixedItems from "@/components/fixed-items/ApplyFixedItems";
 import { PageHeader, Card } from "@/components/ui";
 import { useCsvImport } from "../hooks/useCsvImport";
 import { useTransactionFilters } from "../hooks/useTransactionFilters";
+import { useTranslation } from "@/i18n";
 
 export default function TransactionsPage() {
   const navigate = useNavigate();
   const toast = useToast();
   const confirm = useConfirm();
+  const { t, locale } = useTranslation();
   const { items, onDeleted, onCreated } = useAppContext();
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
   const [openMonthKeys, setOpenMonthKeys] = useState<MonthKey[]>([]);
   const [fixedItems, setFixedItems] = useState<FixedMonthlyItem[]>([]);
+  const monthOptions = useMemo(() => getMonthOptions(locale), [locale]);
 
   const {
     selectedYear,
@@ -50,10 +53,10 @@ export default function TransactionsPage() {
 
   async function handleDelete(id: number) {
     const ok = await confirm({
-      title: "Delete transaction?",
-      message: "This action cannot be undone.",
-      confirmText: "Delete",
-      cancelText: "Cancel",
+      title: t("deleteTransactionTitle"),
+      message: t("actionCannotBeUndone"),
+      confirmText: t("delete"),
+      cancelText: t("cancel"),
       variant: "danger",
     });
 
@@ -62,15 +65,15 @@ export default function TransactionsPage() {
     try {
       await deleteTransaction(id);
       onDeleted(id);
-      toast.success("Transaction deleted");
+      toast.success(t("transactionDeleted"));
     } catch {
-      toast.error("Failed to delete transaction");
+      toast.error(t("transactionDeleteFailed"));
     }
   }
 
   async function handleApplyFixedItems(year: number, month: number) {
     if (fixedItems.length === 0) {
-      toast.error("No fixed items to apply");
+      toast.error(t("noFixedItemsToApply"));
       return;
     }
 
@@ -78,10 +81,10 @@ export default function TransactionsPage() {
     const monthKey = `${year}-${monthStr}`;
 
     const ok = await confirm({
-      title: "Apply fixed items?",
-      message: `This will create ${fixedItems.length} transaction(s) for ${monthKey}. You can edit or delete them afterwards.`,
-      confirmText: "Apply",
-      cancelText: "Cancel",
+      title: t("applyFixedItemsConfirmTitle"),
+      message: t("applyFixedItemsConfirmMessage", { count: fixedItems.length, month: monthKey }),
+      confirmText: t("apply"),
+      cancelText: t("cancel"),
       variant: "default",
     });
 
@@ -104,9 +107,9 @@ export default function TransactionsPage() {
 
       createdTransactions.forEach((t) => onCreated(t));
 
-      toast.success(`Applied ${fixedItems.length} fixed item(s) to ${monthKey}`);
+      toast.success(t("appliedFixedItemsSuccess", { count: fixedItems.length, month: monthKey }));
     } catch (err) {
-      toast.error("Failed to apply fixed items");
+      toast.error(t("applyFixedItemsFailed"));
       console.error(err);
     }
   }
@@ -266,28 +269,28 @@ export default function TransactionsPage() {
   return (
     <AppLayout>
       <PageHeader
-        title="Transactions"
+        title={t("transactions")}
         actions={
           <>
             <Link
               to="/dashboard"
               className="w-full rounded-lg border border-slate-600 px-4 py-2 text-center text-sm text-slate-300 hover:bg-slate-800 sm:w-auto"
             >
-              Dashboard
+              {t("dashboard")}
             </Link>
 
             <Link
               to="/categories"
               className="w-full rounded-lg border border-slate-600 px-4 py-2 text-center text-sm text-slate-300 hover:bg-slate-800 sm:w-auto"
             >
-              Categories
+              {t("categories")}
             </Link>
 
             <Link
               to="/transactions/new"
-              className="w-full rounded-lg bg-emerald-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-slate-800 sm:ml-4 sm:w-auto"
+              className="w-full rounded-lg bg-emerald-600 px-4 py-2 text-center text-sm font-medium text-slate-100 hover:bg-slate-800 sm:ml-4 sm:w-auto"
             >
-              Add transaction
+              {t("addTransaction")}
             </Link>
           </>
         }
@@ -296,13 +299,13 @@ export default function TransactionsPage() {
       {years.length > 0 && (
         <div className="mt-4">
           <label htmlFor="year-select" className="block text-sm font-medium text-slate-300 mb-2">
-            Select Year
+            {t("selectYear")}
           </label>
           <select
             id="year-select"
             value={selectedYear}
             onChange={(e) => setSelectedYear(Number(e.target.value))}
-            className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-white focus:border-slate-500 focus:outline-none sm:w-auto"
+            className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-slate-100 focus:border-slate-500 focus:outline-none sm:w-auto"
           >
             {years.map((year) => (
               <option key={year} value={year}>
@@ -335,11 +338,14 @@ export default function TransactionsPage() {
         <FinancialSummary
           title={(() => {
             let title = monthFilter === "all"
-              ? `Total Overview (${selectedYear})`
-              : `Total Overview (${MONTH_OPTIONS[parseInt(monthFilter) - 1]?.label} ${selectedYear})`;
+              ? t("totalOverviewYear", { year: selectedYear })
+              : t("totalOverviewMonthYear", {
+                month: monthOptions[parseInt(monthFilter, 10) - 1]?.label ?? "",
+                year: selectedYear,
+              });
 
             if (typeFilter !== "all") {
-              title += ` - ${typeFilter === "income" ? "Income" : "Expense"}`;
+              title += ` - ${typeFilter === "income" ? t("income") : t("expense")}`;
             }
 
             if (categoryFilter !== "all") {
@@ -389,7 +395,7 @@ export default function TransactionsPage() {
 
       {filteredSortedItems.length === 0 && (
         <Card className="mt-6 p-4 text-center text-sm text-slate-400 sm:p-6">
-          No transactions found for {selectedYear} with the current filters.
+          {t("noTransactionsForYearWithFilters", { year: selectedYear })}
         </Card>
       )}
 

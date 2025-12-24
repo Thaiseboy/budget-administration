@@ -80,7 +80,7 @@ export default function FormField(props: FormFieldProps) {
     name,
   } = props;
 
-  const baseInputClassName = "mt-1 w-full rounded-lg border border-slate-600 bg-slate-700 text-white px-3 py-2 focus:border-slate-500 focus:outline-none";
+  const baseInputClassName = "mt-1 w-full rounded-lg border border-slate-600 bg-slate-700 text-slate-100 px-3 py-2 focus:border-slate-500 focus:outline-none";
   const checkboxRadioClassName = "rounded border-slate-600";
 
   const getInputClassName = () => {

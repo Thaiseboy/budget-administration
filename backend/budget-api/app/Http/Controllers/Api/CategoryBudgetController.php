@@ -40,6 +40,7 @@ class CategoryBudgetController extends Controller
 
         $budget = CategoryBudget::updateOrCreate(
             [
+                'user_id' => auth()->id(),
                 'year' => $data['year'],
                 'month' => $data['month'],
                 'category' => $data['category']

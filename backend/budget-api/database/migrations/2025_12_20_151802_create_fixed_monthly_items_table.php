@@ -13,11 +13,14 @@ return new class extends Migration
     {
         Schema::create('fixed_monthly_items', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('description');
             $table->string('category')->nullable();
             $table->decimal('amount', 10, 2);
             $table->enum('type', ['income', 'expense']);
             $table->timestamps();
+
+            $table->index('user_id');
         });
     }
 

@@ -16,7 +16,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Create test user
+        $user = User::create([
+            'name' => 'Test User',
+            'email' => 'test@test.com',
+            'password' => bcrypt('password'),
+            'email_verified_at' => now(),
+        ]);
+
+        // Create transactions for test user
         Transaction::create([
+            'user_id' => $user->id,
             'type' => 'income',
             'amount' => 2500,
             'description' => 'Salary',
@@ -25,6 +35,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Transaction::create([
+            'user_id' => $user->id,
             'type' => 'expense',
             'amount' => 65.40,
             'description' => 'Groceries',

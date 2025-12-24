@@ -6,6 +6,9 @@ import { Link } from "react-router-dom";
 import { IncomeExpenseChart, BalanceTrendChart, CategoryBreakdownChart } from "../components";
 import { buildMonthlyTotals, withCumulativeBalance, buildCategoryTotals, normalizeCategory, formatCurrency } from "@/utils";
 import { PageHeader, Card, Button } from "@/components/ui";
+import { useTranslation } from "@/i18n";
+import { useAuth } from "@/contexts";
+import { formatDate } from "@/utils/formatting";
 
 function getYear(date: string) {
     return Number(date.slice(0, 4));
@@ -13,6 +16,8 @@ function getYear(date: string) {
 
 export default function DashboardPage() {
     const { items } = useAppContext();
+    const { t, locale } = useTranslation();
+    const { user } = useAuth();
     const currentYear = new Date().getFullYear();
     const [selectedYear, setSelectedYear] = useState<number>(currentYear);
     const [categoryType, setCategoryType] = useState<"expense" | "income">("expense");
@@ -30,8 +35,8 @@ export default function DashboardPage() {
     }, [items, selectedYear]);
 
     const monthlyTotals = useMemo(() => {
-        return buildMonthlyTotals(yearItems, selectedYear, "nl-NL");
-    }, [yearItems, selectedYear]);
+        return buildMonthlyTotals(yearItems, selectedYear, locale);
+    }, [yearItems, selectedYear, locale]);
 
     const balanceTrendData = useMemo(() => {
         return withCumulativeBalance(monthlyTotals);
@@ -56,28 +61,28 @@ export default function DashboardPage() {
     return (
         <AppLayout>
             <PageHeader
-                title="Dashboard"
+                title={t("dashboard")}
                 actions={
                     <>
                         <Link
                             to="/transactions"
                             className="w-full rounded-lg border border-slate-600 px-4 py-2 text-center text-sm text-slate-300 hover:bg-slate-800 sm:w-auto"
                         >
-                            View Transactions
+                            {t("viewTransactions")}
                         </Link>
 
                         <Link
                             to="/categories"
                             className="w-full rounded-lg border border-slate-600 px-4 py-2 text-center text-sm text-slate-300 hover:bg-slate-800 sm:w-auto"
                         >
-                            Categories
+                            {t("categories")}
                         </Link>
 
                         <Link
                             to="/transactions/new"
-                            className="w-full rounded-lg bg-emerald-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-slate-800 sm:ml-4 sm:w-auto"
+                            className="w-full rounded-lg bg-emerald-600 px-4 py-2 text-center text-sm font-medium text-slate-100 hover:bg-slate-800 sm:ml-4 sm:w-auto"
                         >
-                            Add transaction
+                            {t("addTransaction")}
                         </Link>
                     </>
                 }
@@ -85,11 +90,11 @@ export default function DashboardPage() {
 
             <div className="mt-4">
                 <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
-                    <span className="text-sm text-slate-300">Year:</span>
+                    <span className="text-sm text-slate-300">{t("year")}:</span>
                     <select
                         value={selectedYear}
                         onChange={(e) => setSelectedYear(Number(e.target.value))}
-                        className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-sm text-white focus:border-slate-500 focus:outline-none sm:w-auto"
+                        className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none sm:w-auto"
                     >
                         {years.map((y) => (
                             <option key={y} value={y}>
@@ -106,11 +111,11 @@ export default function DashboardPage() {
 
             {!hasYearData && (
                 <Card className="mt-6 p-4 sm:p-6">
-                    <h2 className="text-base font-semibold text-white">
-                        No data for {selectedYear}
+                    <h2 className="text-base font-semibold text-slate-100">
+                        {t("noDataForYear", { year: selectedYear })}
                     </h2>
                     <p className="mt-2 text-sm text-slate-400">
-                        Add a transaction or pick another year to see charts and category insights.
+                        {t("addTransactionOrPickYear")}
                     </p>
                 </Card>
             )}
@@ -118,9 +123,9 @@ export default function DashboardPage() {
             {hasYearData && (
                 <>
                     <Card className="mt-6 p-4 sm:p-6">
-                        <h2 className="text-base font-semibold text-white">Balance Trend</h2>
+                        <h2 className="text-base font-semibold text-slate-100">{t("balanceTrend")}</h2>
                         <p className="mt-2 text-sm text-slate-400">
-                            Cumulative balance over {selectedYear}.
+                            {t("cumulativeBalanceOverYear", { year: selectedYear })}
                         </p>
 
                         <div className="mt-4">
@@ -129,9 +134,9 @@ export default function DashboardPage() {
                     </Card>
 
                     <Card className="mt-6 p-4 sm:p-6">
-                        <h2 className="text-base font-semibold text-white">Income vs Expense</h2>
+                        <h2 className="text-base font-semibold text-slate-100">{t("incomeVsExpense")}</h2>
                         <p className="mt-2 text-sm text-slate-400">
-                            Overview per month for {selectedYear}.
+                            {t("overviewPerMonth", { year: selectedYear })}
                         </p>
 
                         <div className="mt-4">
@@ -141,7 +146,7 @@ export default function DashboardPage() {
 
                     <Card className="mt-6 p-4 sm:p-6">
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                            <h2 className="text-base font-semibold text-white">Category breakdown</h2>
+                            <h2 className="text-base font-semibold text-slate-100">{t("categoryBreakdown")}</h2>
 
                             <div className="flex w-full gap-2 sm:w-auto">
                                 <Button
@@ -154,7 +159,7 @@ export default function DashboardPage() {
                                     }}
                                     className="flex-1 border-0 px-3 py-1 text-sm sm:flex-none"
                                 >
-                                    Expense
+                                    {t("expense")}
                                 </Button>
 
                                 <Button
@@ -167,14 +172,16 @@ export default function DashboardPage() {
                                     }}
                                     className="flex-1 border-0 px-3 py-1 text-sm sm:flex-none"
                                 >
-                                    Income
+                                    {t("income")}
                                 </Button>
                             </div>
                         </div>
 
                         <p className="mt-2 text-sm text-slate-400">
-                            {categoryType === "expense" ? "Expenses" : "Income"} per category in{" "}
-                            {selectedYear}.
+                            {t("perCategoryInYear", {
+                                type: categoryType === "expense" ? t("expenses") : t("income"),
+                                year: selectedYear,
+                            })}
                         </p>
 
                         <div className="mt-4">
@@ -187,8 +194,8 @@ export default function DashboardPage() {
                         {selectedCategory && filteredTransactions.length > 0 && (
                             <div className="mt-4 rounded-xl border border-slate-600 bg-slate-700 p-4">
                                 <div className="mb-3 flex items-center justify-between">
-                                    <h3 className="text-sm font-semibold text-white">
-                                        {selectedCategory} - {categoryType === "expense" ? "Expenses" : "Income"}
+                                    <h3 className="text-sm font-semibold text-slate-100">
+                                        {selectedCategory} - {categoryType === "expense" ? t("expenses") : t("income")}
                                     </h3>
                                     <Button
                                         type="button"
@@ -197,21 +204,21 @@ export default function DashboardPage() {
                                         onClick={() => setSelectedCategory(null)}
                                         className="text-xs text-slate-400 hover:text-slate-300 underline"
                                     >
-                                        Clear filter
+                                        {t("clearFilter")}
                                     </Button>
                                 </div>
                                 <div className="space-y-2">
-                                    {filteredTransactions.map((t) => (
+                                    {filteredTransactions.map((tx) => (
                                         <div
-                                            key={t.id}
+                                            key={tx.id}
                                             className="flex flex-col gap-2 rounded-lg bg-slate-800 px-3 py-2 text-sm sm:flex-row sm:items-center sm:justify-between"
                                         >
                                             <div>
-                                                <div className="break-words text-white">{t.description || "No description"}</div>
-                                                <div className="text-xs text-slate-400">{t.date}</div>
+                                                <div className="break-words text-slate-100">{tx.description || t("noDescription")}</div>
+                                                <div className="text-xs text-slate-400">{formatDate(tx.date, user)}</div>
                                             </div>
-                                            <div className={`text-left font-semibold sm:text-right ${t.type === "expense" ? "text-red-400" : "text-green-400"}`}>
-                                                {t.type === "expense" ? "-" : "+"}{formatCurrency(t.amount)}
+                                            <div className={`text-left font-semibold sm:text-right ${tx.type === "expense" ? "text-red-400" : "text-green-400"}`}>
+                                                {tx.type === "expense" ? "-" : "+"}{formatCurrency(tx.amount)}
                                             </div>
                                         </div>
                                     ))}
