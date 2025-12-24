@@ -18,10 +18,13 @@ The focus is not only on features, but on **clean structure, consistency, and fu
 
 ## Features
 ### Core Functionality
-- View all transactions (income & expenses)
-- Create new transactions
-- Edit existing transactions
-- Delete transactions with confirmation
+- Authentication (register, login, logout, forgot/reset password)
+- View, create, edit, and delete transactions
+- Dashboard analytics (income vs expense, balance trend, category breakdown)
+- Categories management (rename and merge)
+- Fixed monthly items with one-click apply to a month
+- CSV import/export for transactions
+- Profile, preferences, and account settings (theme, currency, date format, language)
 - Real API integration (no mock data)
 - Instant UI updates after create/update/delete
 
@@ -32,10 +35,12 @@ The focus is not only on features, but on **clean structure, consistency, and fu
 - **Toast Notifications** - Success/error feedback for user actions
 - **Confirmation Dialogs** - Safe deletion with custom modal confirmations
 - **Auto-open Current Month** - Latest month automatically expanded on page load
+- **i18n (nl/en)** - Locale-aware labels and month names
+- **Date Format Preference** - Dates render based on user settings
 
 ### Code Quality
-- Reusable & DRY form components
-- Type safe utilities with JSDoc documentation
+- Reusable and DRY form components
+- Type-safe utilities
 - Performance optimized with useMemo hooks
 - Clean separation of concerns
 - Component-based architecture
@@ -47,9 +52,10 @@ The focus is not only on features, but on **clean structure, consistency, and fu
 - Vite for fast development and building
 - Tailwind CSS v4 for styling
 - React Router for navigation
+- Recharts for charts
 - Fetch API (custom HTTP layer)
 - React Icons for UI elements
-- Context API for global state (Toast & Confirm)
+- Context API for global state (Auth, Theme, Toast, Confirm)
 
 ### Backend
 - Laravel
