@@ -6,7 +6,7 @@ export type User = {
   email: string
   email_verified_at: string | null
   theme: 'light' | 'dark'
-  currency: 'EUR' | 'USD' | 'GBP'
+  currency: 'EUR' | 'USD' | 'GBP' | 'THB'
   date_format: 'd-m-Y' | 'Y-m-d' | 'm/d/Y'
   language: 'nl' | 'en'
 }

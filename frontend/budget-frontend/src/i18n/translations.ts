@@ -160,6 +160,7 @@ export const translations = {
     currencyEuro: 'Euro (€)',
     currencyUsd: 'Amerikaanse dollar ($)',
     currencyGbp: 'Britse pond (£)',
+    currencyThb: 'Thaise baht (฿)',
 
     // Settings - Language options
     nederlands: 'Nederlands',
@@ -420,6 +421,7 @@ export const translations = {
     currencyEuro: 'Euro (€)',
     currencyUsd: 'US Dollar ($)',
     currencyGbp: 'British Pound (£)',
+    currencyThb: 'Thai Baht (฿)',
 
     // Settings - Language options
     nederlands: 'Nederlands',

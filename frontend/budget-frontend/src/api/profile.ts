@@ -31,7 +31,7 @@ export type DeleteAccountResponse = {
 
 export type UpdatePreferencesData = {
   theme: 'light' | 'dark'
-  currency: 'EUR' | 'USD' | 'GBP'
+  currency: 'EUR' | 'USD' | 'GBP' | 'THB'
   date_format: 'd-m-Y' | 'Y-m-d' | 'm/d/Y'
   language: 'nl' | 'en'
 }

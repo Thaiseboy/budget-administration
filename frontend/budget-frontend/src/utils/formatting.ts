@@ -1,17 +1,19 @@
 import type { User } from '@/api'
 
-type Currency = 'EUR' | 'USD' | 'GBP'
+type Currency = 'EUR' | 'USD' | 'GBP' | 'THB'
 
 const currencySymbols: Record<Currency, string> = {
   EUR: '€',
   USD: '$',
   GBP: '£',
+  THB: '฿',
 }
 
 const currencyLocales: Record<Currency, string> = {
   EUR: 'nl-NL',
   USD: 'en-US',
   GBP: 'en-GB',
+  THB: 'th-TH',
 }
 
 /**

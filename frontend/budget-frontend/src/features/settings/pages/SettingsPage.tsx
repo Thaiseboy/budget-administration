@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth, useToast } from '@/contexts'
 import { Card, Button, ConfirmDialog } from '@/components/ui'
-import { FormField } from '@/components/form'
-import { updateProfile, updatePassword, updatePreferences, deleteAccount } from '@/api'
+import { FormField, FormFieldGroup } from '@/components/form'
+import { updateProfile, updatePassword, updatePreferences, deleteAccount, type UpdatePreferencesData } from '@/api'
 import { useTranslation } from '@/i18n'
 import AppLayout from '@/layouts/AppLayout'
 
@@ -31,12 +31,64 @@ export default function SettingsPage() {
     password_confirmation: '',
   })
 
-  const [preferencesData, setPreferencesData] = useState({
-    theme: user?.theme || 'dark' as const,
-    currency: user?.currency || 'EUR' as const,
-    date_format: user?.date_format || 'd-m-Y' as const,
-    language: user?.language || 'nl' as const,
+  const [preferencesData, setPreferencesData] = useState<UpdatePreferencesData>({
+    theme: user?.theme || 'dark',
+    currency: user?.currency || 'EUR',
+    date_format: user?.date_format || 'd-m-Y',
+    language: user?.language || 'nl',
   })
+
+  const preferenceFieldUi = {
+    labelClass: 'mb-2 block text-sm font-medium text-slate-300',
+    inputClass:
+      'border-slate-700 bg-slate-800 px-4 py-2 text-slate-100 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20',
+  }
+
+  const preferenceFields = [
+    {
+      name: 'theme',
+      label: t('theme'),
+      type: 'select' as const,
+      ...preferenceFieldUi,
+      options: [
+        { label: t('dark'), value: 'dark' },
+        { label: t('light'), value: 'light' },
+      ],
+    },
+    {
+      name: 'currency',
+      label: t('currency'),
+      type: 'select' as const,
+      ...preferenceFieldUi,
+      options: [
+        { label: t('currencyEuro'), value: 'EUR' },
+        { label: t('currencyUsd'), value: 'USD' },
+        { label: t('currencyGbp'), value: 'GBP' },
+        { label: t('currencyThb'), value: 'THB' },
+      ],
+    },
+    {
+      name: 'date_format',
+      label: t('dateFormat'),
+      type: 'select' as const,
+      ...preferenceFieldUi,
+      options: [
+        { label: 'DD-MM-YYYY (31-12-2025)', value: 'd-m-Y' },
+        { label: 'YYYY-MM-DD (2025-12-31)', value: 'Y-m-d' },
+        { label: 'MM/DD/YYYY (12/31/2025)', value: 'm/d/Y' },
+      ],
+    },
+    {
+      name: 'language',
+      label: t('language'),
+      type: 'select' as const,
+      ...preferenceFieldUi,
+      options: [
+        { label: t('nederlands'), value: 'nl' },
+        { label: t('english'), value: 'en' },
+      ],
+    },
+  ]
 
   async function handleProfileSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -166,83 +218,17 @@ export default function SettingsPage() {
             <h2 className="mb-4 text-xl font-semibold text-slate-100">{t('preferences')}</h2>
 
             <form onSubmit={handlePreferencesSubmit} className="space-y-4">
-              <div>
-                <label className="mb-2 block text-sm font-medium text-slate-300">
-                  {t('theme')}
-                </label>
-                <select
-                  value={preferencesData.theme}
-                  onChange={(e) =>
-                    setPreferencesData((prev) => ({
-                      ...prev,
-                      theme: e.target.value as 'light' | 'dark',
-                    }))
-                  }
-                  className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-slate-100 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                >
-                  <option value="dark">{t('dark')}</option>
-                  <option value="light">{t('light')}</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-medium text-slate-300">
-                  {t('currency')}
-                </label>
-                <select
-                  value={preferencesData.currency}
-                  onChange={(e) =>
-                    setPreferencesData((prev) => ({
-                      ...prev,
-                      currency: e.target.value as 'EUR' | 'USD' | 'GBP',
-                    }))
-                  }
-                  className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-slate-100 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                >
-                  <option value="EUR">{t('currencyEuro')}</option>
-                  <option value="USD">{t('currencyUsd')}</option>
-                  <option value="GBP">{t('currencyGbp')}</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-medium text-slate-300">
-                  {t('dateFormat')}
-                </label>
-                <select
-                  value={preferencesData.date_format}
-                  onChange={(e) =>
-                    setPreferencesData((prev) => ({
-                      ...prev,
-                      date_format: e.target.value as 'd-m-Y' | 'Y-m-d' | 'm/d/Y',
-                    }))
-                  }
-                  className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-slate-100 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                >
-                  <option value="d-m-Y">DD-MM-YYYY (31-12-2025)</option>
-                  <option value="Y-m-d">YYYY-MM-DD (2025-12-31)</option>
-                  <option value="m/d/Y">MM/DD/YYYY (12/31/2025)</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-medium text-slate-300">
-                  {t('language')}
-                </label>
-                <select
-                  value={preferencesData.language}
-                  onChange={(e) =>
-                    setPreferencesData((prev) => ({
-                      ...prev,
-                      language: e.target.value as 'nl' | 'en',
-                    }))
-                  }
-                  className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-slate-100 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                >
-                  <option value="nl">{t('nederlands')}</option>
-                  <option value="en">{t('english')}</option>
-                </select>
-              </div>
+              <FormFieldGroup
+                fields={preferenceFields}
+                formData={preferencesData}
+                onFieldChange={(name, value) => {
+                  setPreferencesData((prev) => ({
+                    ...prev,
+                    [name as keyof UpdatePreferencesData]:
+                      value as UpdatePreferencesData[keyof UpdatePreferencesData],
+                  }))
+                }}
+              />
 
               <div className="flex justify-end">
                 <Button
@@ -282,7 +268,7 @@ export default function SettingsPage() {
                   setPasswordData((prev) => ({ ...prev, password: value }))
                 }
                 required
-                description="Minimum 8 characters"
+                description={t('passwordMinLength')}
               />
 
               <FormField
