@@ -7,6 +7,8 @@ import { IncomeExpenseChart, BalanceTrendChart, CategoryBreakdownChart } from ".
 import { buildMonthlyTotals, withCumulativeBalance, buildCategoryTotals, normalizeCategory, formatCurrency } from "@/utils";
 import { PageHeader, Card, Button } from "@/components/ui";
 import { useTranslation } from "@/i18n";
+import { useAuth } from "@/contexts";
+import { formatDate } from "@/utils/formatting";
 
 function getYear(date: string) {
     return Number(date.slice(0, 4));
@@ -15,6 +17,7 @@ function getYear(date: string) {
 export default function DashboardPage() {
     const { items } = useAppContext();
     const { t, locale } = useTranslation();
+    const { user } = useAuth();
     const currentYear = new Date().getFullYear();
     const [selectedYear, setSelectedYear] = useState<number>(currentYear);
     const [categoryType, setCategoryType] = useState<"expense" | "income">("expense");
@@ -212,7 +215,7 @@ export default function DashboardPage() {
                                         >
                                             <div>
                                                 <div className="break-words text-slate-100">{tx.description || t("noDescription")}</div>
-                                                <div className="text-xs text-slate-400">{tx.date}</div>
+                                                <div className="text-xs text-slate-400">{formatDate(tx.date, user)}</div>
                                             </div>
                                             <div className={`text-left font-semibold sm:text-right ${tx.type === "expense" ? "text-red-400" : "text-green-400"}`}>
                                                 {tx.type === "expense" ? "-" : "+"}{formatCurrency(tx.amount)}

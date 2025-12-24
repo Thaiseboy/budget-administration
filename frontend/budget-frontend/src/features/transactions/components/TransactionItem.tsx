@@ -2,6 +2,8 @@ import type { Transaction } from "@/types";
 import { formatCurrency } from "@/utils";
 import { Button } from "@/components/ui";
 import { useTranslation } from "@/i18n";
+import { useAuth } from "@/contexts";
+import { formatDate } from "@/utils/formatting";
 
 type Props = {
   item: Transaction;
@@ -11,14 +13,16 @@ type Props = {
 
 export default function TransactionItem({ item, onEdit, onDelete }: Props) {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const isExpense = item.type === "expense";
+  const formattedDate = formatDate(item.date, user);
 
   return (
     <li className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex-1">
         <div className="break-words font-medium text-slate-100">{item.description ?? t("untitled")}</div>
         <div className="text-xs text-slate-400">
-          {item.date}
+          {formattedDate}
           {item.category ? ` • ${item.category}` : ""}
         </div>
       </div>

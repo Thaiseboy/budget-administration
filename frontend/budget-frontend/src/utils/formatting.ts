@@ -29,6 +29,21 @@ export function formatCurrency(amount: number, user: User | null): string {
   }).format(amount)
 }
 
+function parseDateInput(date: Date | string): Date | null {
+  if (date instanceof Date) return date
+  const trimmed = date.trim()
+  const isoMatch = /^(\d{4})-(\d{2})-(\d{2})/.exec(trimmed)
+  if (isoMatch) {
+    const year = Number(isoMatch[1])
+    const month = Number(isoMatch[2]) - 1
+    const day = Number(isoMatch[3])
+    const parsed = new Date(year, month, day)
+    return Number.isNaN(parsed.getTime()) ? null : parsed
+  }
+  const parsed = new Date(trimmed)
+  return Number.isNaN(parsed.getTime()) ? null : parsed
+}
+
 /**
  * Get currency symbol
  */
@@ -41,7 +56,8 @@ export function getCurrencySymbol(user: User | null): string {
  * Format date based on user preference
  */
 export function formatDate(date: Date | string, user: User | null): string {
-  const dateObj = typeof date === 'string' ? new Date(date) : date
+  const dateObj = parseDateInput(date)
+  if (!dateObj) return typeof date === 'string' ? date : ''
   const format = user?.date_format || 'd-m-Y'
 
   const day = dateObj.getDate().toString().padStart(2, '0')
