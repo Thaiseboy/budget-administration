@@ -10,7 +10,6 @@ This application allows me to practice and demonstrate how to:
 
 - Design a modern frontend architecture with React and TypeScript
 - Build a clean REST API using Laravel
-- Replace legacy UI patterns with reusable, component based solutions
 - Apply DRY principles and separation of concerns
 - Think in terms of scalability, maintainability, and long term growth
 
@@ -37,13 +36,6 @@ The focus is not only on features, but on **clean structure, consistency, and fu
 - **Auto-open Current Month** - Latest month automatically expanded on page load
 - **i18n (nl/en)** - Locale-aware labels and month names
 - **Date Format Preference** - Dates render based on user settings
-
-### Code Quality
-- Reusable and DRY form components
-- Type-safe utilities
-- Performance optimized with useMemo hooks
-- Clean separation of concerns
-- Component-based architecture
 
 ## Tech Stack
 ### Frontend
@@ -78,5 +70,5 @@ The focus is not only on features, but on **clean structure, consistency, and fu
 
 ### Frontend (React)
 - cd frontend/budget-frontend
-- npm install
-- npm run dev
+- pnpm install
+- pnpm run dev
