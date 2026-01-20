@@ -79,6 +79,7 @@ export default function RegisterPage() {
                 setFormData((prev) => ({ ...prev, password: value }))
               }
               required
+              showPasswordToggle
             />
 
             <FormField
@@ -93,6 +94,7 @@ export default function RegisterPage() {
                 }))
               }
               required
+              showPasswordToggle
             />
 
             <button
