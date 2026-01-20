@@ -1,4 +1,5 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 interface BaseFormFieldProps {
   label?: string;
@@ -24,6 +25,7 @@ interface TextInputProps extends BaseFormFieldProps {
   rows?: never;
   prefix?: ReactNode;
   suffix?: ReactNode;
+  showPasswordToggle?: boolean;
 }
 
 interface TextareaProps extends BaseFormFieldProps {
@@ -79,6 +81,9 @@ export default function FormField(props: FormFieldProps) {
     id,
     name,
   } = props;
+
+  const [showPassword, setShowPassword] = useState(false);
+  const showPasswordToggle = (props as TextInputProps).showPasswordToggle;
 
   const baseInputClassName = "mt-1 w-full rounded-lg border border-slate-600 bg-slate-700 text-slate-100 px-3 py-2 focus:border-slate-500 focus:outline-none";
   const checkboxRadioClassName = "rounded border-slate-600";
@@ -159,7 +164,10 @@ export default function FormField(props: FormFieldProps) {
 
     const { value, onChange, step, placeholder, min, max, prefix, suffix } = props as TextInputProps;
 
-    if (prefix || suffix) {
+    const inputType = type === "password" && showPassword ? "text" : type;
+    const hasPasswordToggle = type === "password" && showPasswordToggle;
+
+    if (prefix || suffix || hasPasswordToggle) {
       return (
         <div className="relative">
           {prefix && (
@@ -170,7 +178,7 @@ export default function FormField(props: FormFieldProps) {
           <input
             id={id}
             name={name}
-            type={type}
+            type={inputType}
             value={value}
             onChange={(e) => onChange(e.target.value)}
             required={required}
@@ -178,9 +186,18 @@ export default function FormField(props: FormFieldProps) {
             placeholder={placeholder}
             min={min}
             max={max}
-            className={`${finalInputClassName} ${prefix ? 'pl-8' : ''} ${suffix ? 'pr-8' : ''}`}
+            className={`${finalInputClassName} ${prefix ? 'pl-8' : ''} ${suffix || hasPasswordToggle ? 'pr-10' : ''}`}
           />
-          {suffix && (
+          {hasPasswordToggle && (
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300 focus:outline-none"
+            >
+              {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+            </button>
+          )}
+          {suffix && !hasPasswordToggle && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
               {suffix}
             </div>
@@ -193,7 +210,7 @@ export default function FormField(props: FormFieldProps) {
       <input
         id={id}
         name={name}
-        type={type}
+        type={inputType}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         required={required}

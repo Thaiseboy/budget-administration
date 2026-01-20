@@ -61,6 +61,7 @@ export default function LoginPage() {
                 setFormData((prev) => ({ ...prev, password: value }))
               }
               required
+              showPasswordToggle
             />
 
             <div className="flex items-center justify-between">
