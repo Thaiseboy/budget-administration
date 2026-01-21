@@ -53,7 +53,7 @@ const meta = {
 } satisfies Meta<CardStoryArgs>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<CardStoryArgs>;
 
 export const Playground: Story = {
   args: {
@@ -107,8 +107,10 @@ export const Playground: Story = {
     balanceLabel,
     balanceValue,
     badgeText,
-    className: _className,
-    children: _children,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    className,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    children,
     ...cardArgs
   }) => {
     if (layout === "withBadge") {
@@ -226,6 +228,9 @@ export const WithFooter: Story = {
 export const Grid: Story = {
   parameters: {
     layout: "padded",
+  },
+  args: {
+    children: null,
   },
   render: () => (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
