@@ -5,7 +5,7 @@ import Card from "@/components/ui/Card";
 type CardStoryArgs = ComponentProps<typeof Card> & {
   width: "sm" | "md" | "lg";
   padding: "sm" | "md" | "lg";
-  layout: "default" | "withHeader" | "grid";
+  layout: "default" | "withBadge" | "grid";
   showTitle: boolean;
   title: string;
   body: string;
@@ -44,7 +44,7 @@ const meta = {
   argTypes: {
     layout: {
       control: "select",
-      options: ["default", "withHeader", "grid"],
+      options: ["default", "withBadge", "grid"],
       description: "Content layout preset for the playground",
     },
     className: { table: { disable: true } },
@@ -73,7 +73,7 @@ export const Playground: Story = {
   argTypes: {
     layout: {
       control: "select",
-      options: ["default", "withHeader", "grid"],
+      options: ["default", "withBadge", "grid"],
       description: "Switches the card content layout",
     },
     width: {
@@ -91,9 +91,9 @@ export const Playground: Story = {
     body: { control: "text", if: { arg: "layout", eq: "default" } },
     showFooter: { control: "boolean", if: { arg: "layout", eq: "default" } },
     footerText: { control: "text", if: { arg: "showFooter", eq: true } },
-    balanceLabel: { control: "text", if: { arg: "layout", eq: "withHeader" } },
-    balanceValue: { control: "text", if: { arg: "layout", eq: "withHeader" } },
-    badgeText: { control: "text", if: { arg: "layout", eq: "withHeader" } },
+    balanceLabel: { control: "text", if: { arg: "layout", eq: "withBadge" } },
+    balanceValue: { control: "text", if: { arg: "layout", eq: "withBadge" } },
+    badgeText: { control: "text", if: { arg: "layout", eq: "withBadge" } },
   },
   render: ({
     layout,
@@ -111,7 +111,7 @@ export const Playground: Story = {
     children: _children,
     ...cardArgs
   }) => {
-    if (layout === "withHeader") {
+    if (layout === "withBadge") {
       return (
         <Card
           {...cardArgs}
@@ -181,7 +181,7 @@ export const Default: Story = {
   },
 };
 
-export const WithHeader: Story = {
+export const withBadge: Story = {
   args: {
     className: "p-6 w-96",
     variant: "elevated",
