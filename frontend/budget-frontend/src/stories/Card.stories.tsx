@@ -1,39 +1,127 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import Card from '@/components/ui/Card'
+import type { ComponentProps } from "react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import Card from "@/components/ui/Card";
+
+type CardStoryArgs = ComponentProps<typeof Card> & {
+  width: "sm" | "md" | "lg";
+  padding: "sm" | "md" | "lg";
+  title: string;
+  body: string;
+  showFooter: boolean;
+  footerText: string;
+};
+
+const widthClasses: Record<CardStoryArgs["width"], string> = {
+  sm: "w-64",
+  md: "w-80",
+  lg: "w-96",
+};
+
+const paddingClasses: Record<CardStoryArgs["padding"], string> = {
+  sm: "p-4",
+  md: "p-6",
+  lg: "p-8",
+};
+
+const footerPaddingClasses: Record<CardStoryArgs["padding"], string> = {
+  sm: "px-4 py-3",
+  md: "px-6 py-4",
+  lg: "px-8 py-5",
+};
 
 const meta = {
-  title: 'UI/Card',
+  title: "UI/Card",
   component: Card,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
-    className: {
-      control: 'text',
-      description: 'Extra utility classes for the card container',
+    variant: {
+      control: "select",
+      options: ["default", "outline", "muted", "elevated"],
+      description: "Surface style of the card",
     },
+    className: { table: { disable: true } },
+    children: { table: { disable: true } },
   },
-} satisfies Meta<typeof Card>
+} satisfies Meta<CardStoryArgs>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Playground: Story = {
+  args: {
+    variant: "default",
+    width: "md",
+    padding: "md",
+    title: "Monthly Report",
+    body: "A quick overview of your income and expenses.",
+    showFooter: true,
+    footerText: "Updated 2 hours ago",
+  },
+  argTypes: {
+    width: {
+      control: "inline-radio",
+      options: ["sm", "md", "lg"],
+      description: "Card width preset",
+    },
+    padding: {
+      control: "inline-radio",
+      options: ["sm", "md", "lg"],
+      description: "Inner padding preset",
+    },
+    title: { control: "text" },
+    body: { control: "text" },
+    showFooter: { control: "boolean" },
+    footerText: { control: "text", if: { arg: "showFooter" } },
+  },
+  render: ({
+    width,
+    padding,
+    title,
+    body,
+    showFooter,
+    footerText,
+    className: _className,
+    children: _children,
+    ...cardArgs
+  }) => (
+    <Card {...cardArgs} className={widthClasses[width]}>
+      <div className={paddingClasses[padding]}>
+        <div className="text-base font-medium text-slate-100">{title}</div>
+        <div className="mt-2 text-sm text-slate-300">{body}</div>
+      </div>
+      {showFooter ? (
+        <div
+          className={`border-t border-slate-700 ${footerPaddingClasses[padding]} text-xs text-slate-400`}
+        >
+          {footerText}
+        </div>
+      ) : null}
+    </Card>
+  ),
+};
 
 export const Default: Story = {
   args: {
-    className: 'p-6 w-80',
+    className: "p-6 w-80",
+    variant: "default",
     children: <div className="text-sm text-slate-200">Simple card content</div>,
   },
-}
+};
 
 export const WithHeader: Story = {
   args: {
-    className: 'p-6 w-96',
+    className: "p-6 w-96",
+    variant: "elevated",
     children: (
       <div className="flex items-start justify-between">
         <div>
           <div className="text-sm text-slate-400">Balance</div>
-          <div className="text-2xl font-semibold text-white">€ 1.240,50</div>
+          <div className="text-2xl font-semibold text-slate-100">
+            € 1.240,50
+          </div>
         </div>
         <span className="rounded-full bg-emerald-500/20 px-2 py-1 text-xs text-emerald-300">
           +4.2%
@@ -41,15 +129,18 @@ export const WithHeader: Story = {
       </div>
     ),
   },
-}
+};
 
 export const WithFooter: Story = {
   args: {
-    className: 'w-96 p-0',
+    className: "w-96 p-0",
+    variant: "elevated",
     children: (
       <>
         <div className="p-6">
-          <div className="text-base font-medium text-white">Monthly Report</div>
+          <div className="text-base font-medium text-slate-100">
+            Monthly Report
+          </div>
           <div className="mt-2 text-sm text-slate-300">
             A quick overview of your income and expenses.
           </div>
@@ -60,22 +151,22 @@ export const WithFooter: Story = {
       </>
     ),
   },
-}
+};
 
 export const Grid: Story = {
   parameters: {
-    layout: 'padded',
+    layout: "padded",
   },
   render: () => (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-      <Card className="p-5">
+      <Card className="p-5" variant="default">
         <div className="text-sm text-slate-400">Income</div>
-        <div className="text-xl font-semibold text-white">€ 3.200</div>
+        <div className="text-xl font-semibold text-slate-100">€ 3.200</div>
       </Card>
-      <Card className="p-5">
+      <Card className="p-5" variant="default">
         <div className="text-sm text-slate-400">Expenses</div>
-        <div className="text-xl font-semibold text-white">€ 1.950</div>
+        <div className="text-xl font-semibold text-slate-100">€ 1.950</div>
       </Card>
     </div>
   ),
-}
+};
