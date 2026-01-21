@@ -5,10 +5,15 @@ import Card from "@/components/ui/Card";
 type CardStoryArgs = ComponentProps<typeof Card> & {
   width: "sm" | "md" | "lg";
   padding: "sm" | "md" | "lg";
+  layout: "default" | "withHeader" | "grid";
+  showTitle: boolean;
   title: string;
   body: string;
   showFooter: boolean;
   footerText: string;
+  balanceLabel: string;
+  balanceValue: string;
+  badgeText: string;
 };
 
 const widthClasses: Record<CardStoryArgs["width"], string> = {
@@ -37,10 +42,10 @@ const meta = {
   },
   tags: ["autodocs"],
   argTypes: {
-    variant: {
+    layout: {
       control: "select",
-      options: ["default", "outline", "muted", "elevated"],
-      description: "Surface style of the card",
+      options: ["default", "withHeader", "grid"],
+      description: "Content layout preset for the playground",
     },
     className: { table: { disable: true } },
     children: { table: { disable: true } },
@@ -53,14 +58,24 @@ type Story = StoryObj<typeof meta>;
 export const Playground: Story = {
   args: {
     variant: "default",
+    layout: "default",
     width: "md",
     padding: "md",
+    showTitle: true,
     title: "Monthly Report",
     body: "A quick overview of your income and expenses.",
     showFooter: true,
     footerText: "Updated 2 hours ago",
+    balanceLabel: "Balance",
+    balanceValue: "€ 1.240,50",
+    badgeText: "+4.2%",
   },
   argTypes: {
+    layout: {
+      control: "select",
+      options: ["default", "withHeader", "grid"],
+      description: "Switches the card content layout",
+    },
     width: {
       control: "inline-radio",
       options: ["sm", "md", "lg"],
@@ -71,36 +86,91 @@ export const Playground: Story = {
       options: ["sm", "md", "lg"],
       description: "Inner padding preset",
     },
-    title: { control: "text" },
-    body: { control: "text" },
-    showFooter: { control: "boolean" },
-    footerText: { control: "text", if: { arg: "showFooter" } },
+    showTitle: { control: "boolean", if: { arg: "layout", eq: "default" } },
+    title: { control: "text", if: { arg: "showTitle", eq: true } },
+    body: { control: "text", if: { arg: "layout", eq: "default" } },
+    showFooter: { control: "boolean", if: { arg: "layout", eq: "default" } },
+    footerText: { control: "text", if: { arg: "showFooter", eq: true } },
+    balanceLabel: { control: "text", if: { arg: "layout", eq: "withHeader" } },
+    balanceValue: { control: "text", if: { arg: "layout", eq: "withHeader" } },
+    badgeText: { control: "text", if: { arg: "layout", eq: "withHeader" } },
   },
   render: ({
+    layout,
     width,
     padding,
+    showTitle,
     title,
     body,
     showFooter,
     footerText,
+    balanceLabel,
+    balanceValue,
+    badgeText,
     className: _className,
     children: _children,
     ...cardArgs
-  }) => (
-    <Card {...cardArgs} className={widthClasses[width]}>
-      <div className={paddingClasses[padding]}>
-        <div className="text-base font-medium text-slate-100">{title}</div>
-        <div className="mt-2 text-sm text-slate-300">{body}</div>
-      </div>
-      {showFooter ? (
-        <div
-          className={`border-t border-slate-700 ${footerPaddingClasses[padding]} text-xs text-slate-400`}
+  }) => {
+    if (layout === "withHeader") {
+      return (
+        <Card
+          {...cardArgs}
+          className={`${paddingClasses[padding]} ${widthClasses[width]}`}
         >
-          {footerText}
+          <div className="flex items-start justify-between">
+            <div>
+              <div className="text-sm text-slate-400">{balanceLabel}</div>
+              <div className="text-2xl font-semibold text-slate-100">
+                {balanceValue}
+              </div>
+            </div>
+            <span className="rounded-full bg-emerald-500/20 px-2 py-1 text-xs text-emerald-300">
+              {badgeText}
+            </span>
+          </div>
+        </Card>
+      );
+    }
+
+    if (layout === "grid") {
+      return (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <Card
+            className={`${paddingClasses[padding]} ${widthClasses[width]}`}
+            variant="default"
+          >
+            <div className="text-sm text-slate-400">Income</div>
+            <div className="text-xl font-semibold text-slate-100">€ 3.200</div>
+          </Card>
+          <Card
+            className={`${paddingClasses[padding]} ${widthClasses[width]}`}
+            variant="default"
+          >
+            <div className="text-sm text-slate-400">Expenses</div>
+            <div className="text-xl font-semibold text-slate-100">€ 1.950</div>
+          </Card>
         </div>
-      ) : null}
-    </Card>
-  ),
+      );
+    }
+
+    return (
+      <Card {...cardArgs} className={widthClasses[width]}>
+        <div className={paddingClasses[padding]}>
+          {showTitle ? (
+            <div className="text-base font-medium text-slate-100">{title}</div>
+          ) : null}
+          <div className="mt-2 text-sm text-slate-300">{body}</div>
+        </div>
+        {showFooter ? (
+          <div
+            className={`border-t border-slate-700 ${footerPaddingClasses[padding]} text-xs text-slate-400`}
+          >
+            {footerText}
+          </div>
+        ) : null}
+      </Card>
+    );
+  },
 };
 
 export const Default: Story = {
