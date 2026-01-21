@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 
 // Mock User type
@@ -7,6 +7,7 @@ type MockUser = {
   name: string
   email: string
   language: 'nl' | 'en'
+  theme: 'light' | 'dark'
   email_verified_at?: string | null
 }
 
@@ -29,6 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     name: 'Storybook User',
     email: 'storybook@example.com',
     language: 'nl',
+    theme: 'dark',
     email_verified_at: '2024-01-01T00:00:00Z',
   }
 
@@ -113,14 +115,31 @@ type ThemeContextValue = {
 
 const ThemeContext = createContext<ThemeContextValue | null>(null)
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('dark')
+type ThemeProviderProps = {
+  children: ReactNode
+  initialTheme?: Theme
+  forcedTheme?: Theme
+}
+
+export function ThemeProvider({ children, initialTheme = 'dark', forcedTheme }: ThemeProviderProps) {
+  const [theme, setTheme] = useState<Theme>(forcedTheme ?? initialTheme)
+  const activeTheme = forcedTheme ?? theme
 
   const toggleTheme = () => {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))
   }
 
-  return <ThemeContext.Provider value={{ theme, toggleTheme }}>{children}</ThemeContext.Provider>
+  useEffect(() => {
+    if (typeof document === 'undefined') {
+      return
+    }
+
+    const root = document.documentElement
+    root.classList.remove('light', 'dark')
+    root.classList.add(activeTheme)
+  }, [activeTheme])
+
+  return <ThemeContext.Provider value={{ theme: activeTheme, toggleTheme }}>{children}</ThemeContext.Provider>
 }
 
 export function useTheme() {
