@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { monthKeyFromDate, sortByDateDesc } from "./groupTransactions";
+import {
+  monthKeyFromDate,
+  sortByDateDesc,
+  groupByMonth,
+} from "./groupTransactions";
 import type { Transaction } from "@/types";
 
 describe("monthKeyFromDate", () => {
@@ -29,12 +33,12 @@ describe("sortByDateDesc", () => {
 });
 
 describe("sortByDateDesc", () => {
-  // Test 1: Empty array
+  // Empty array
   it("returns empty array when input is empty", () => {
     expect(sortByDateDesc([])).toEqual([]);
   });
 
-  // Test 2: Immutability
+  // Immutability
   it("does not modify the original array", () => {
     const original = [
       { id: 1, date: "2024-01-15" },
@@ -43,5 +47,23 @@ describe("sortByDateDesc", () => {
     const copy = [...original];
     sortByDateDesc(original);
     expect(original).toEqual(copy);
+  });
+});
+
+describe("groupByMonth", () => {
+  it("groups transactions by month", () => {
+    const transactions = [
+      { id: 1, date: "2024-01-15" },
+      { id: 2, date: "2024-01-20" },
+      { id: 3, date: "2024-02-10" },
+    ] as Transaction[];
+
+    const result = groupByMonth(transactions);
+    // Check if there 2 months are present
+    expect(result.size).toBe(2);
+    // Check that januari has 2 transactions
+    expect(result.get("2024-01")).toHaveLength(2);
+    // Check if febuary has 1 transaction
+    expect(result.get("2024-02")).toHaveLength(1);
   });
 });
