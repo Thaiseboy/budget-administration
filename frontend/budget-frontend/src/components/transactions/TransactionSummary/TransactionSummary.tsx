@@ -3,7 +3,7 @@ import { formatCurrency } from "@/utils";
 import { normalizeCategory } from "@/utils";
 import { isFixedCategory } from "@/utils";
 import { Card } from "@/components/ui";
-import BudgetStatusBadge from "../budget/BudgetStatusBadge";
+import BudgetStatusBadge from "../../budget/BudgetStatusBadge";
 import { useTranslation } from "@/i18n";
 
 type TypeFilter = "all" | "income" | "expense";

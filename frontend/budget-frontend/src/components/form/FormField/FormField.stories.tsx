@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import FormField from "@/components/form/FormField";
+import FormField from "./FormField";
 
 // === META ===
 const meta: Meta<typeof FormField> = {
