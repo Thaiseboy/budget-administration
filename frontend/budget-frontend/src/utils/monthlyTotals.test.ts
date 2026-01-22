@@ -3,7 +3,7 @@ import { buildMonthlyTotals, withCumulativeBalance } from "./monthlyTotals";
 import type { Transaction } from "@/types";
 
 describe("buildMonthlyTotals", () => {
-  it("return 12 months for a year", () => {
+  it("returns 12 months for a year", () => {
     const result = buildMonthlyTotals([], 2024);
     expect(result).toHaveLength(12);
   });
@@ -20,6 +20,19 @@ describe("buildMonthlyTotals", () => {
     expect(january?.income).toBe(100);
     expect(january?.expense).toBe(30);
     expect(january?.balance).toBe(70);
+  });
+
+  it("ignores transactions from other years", () => {
+    const transactions = [
+      { id: 1, date: "2023-12-31", amount: 100, type: "income" },
+      { id: 2, date: "2024-01-01", amount: 50, type: "expense" },
+    ] as Transaction[];
+
+    const result = buildMonthlyTotals(transactions, 2024);
+    const january = result.find((m) => m.monthKey === "2024-01");
+
+    expect(january?.income).toBe(0);
+    expect(january?.expense).toBe(50);
   });
 });
 
@@ -54,5 +67,9 @@ describe("withCumulativeBalance", () => {
     expect(result[0].cumulativeBalance).toBe(50);
     expect(result[1].cumulativeBalance).toBe(150);
     expect(result[2].cumulativeBalance).toBe(100);
+  });
+
+  it("returns empty array for empty input", () => {
+    expect(withCumulativeBalance([])).toEqual([]);
   });
 });
