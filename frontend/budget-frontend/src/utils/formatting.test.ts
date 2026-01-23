@@ -85,4 +85,22 @@ describe("formatCurrency", () => {
     expect(result).toContain("$");
     expect(result).toContain("1,234.56");
   });
+
+  it("formats GBP correctly", () => {
+    const user = { currency: "GBP" } as User;
+    const result = formatCurrency(1234.56, user);
+    expect(result).toContain("£");
+    expect(result).toContain("1,234.56");
+  });
+
+  it("formats THB correctly", () => {
+    const user = { currency: "THB" } as User;
+    const result = formatCurrency(1234.56, user);
+    expect(result).toContain("฿");
+    expect(result).toContain("1,234.56");
+  });
+
+  it("handles zero amount", () => {
+    expect(formatCurrency(0, null)).toContain("0");
+  });
 });
