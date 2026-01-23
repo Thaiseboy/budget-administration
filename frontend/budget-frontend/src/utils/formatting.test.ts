@@ -34,3 +34,18 @@ describe("formatDate", () => {
     expect(formatDate(new Date("invalid"), null)).toBe("");
   });
 });
+
+describe("formatDateForInput", () => {
+  it("formats Date object as YYYY-MM-DD", () => {
+    const date = new Date(2024, 0, 5);
+    expect(formatDateForInput(date)).toBe("2024-01-05");
+  });
+
+  it("formats ISO date string as YYYY-MM-DD", () => {
+    expect(formatDateForInput("2024-12-31")).toBe("2024-12-31");
+  });
+
+  it("formats date-time string as YYYY-MM-DD", () => {
+    expect(formatDateForInput("2024-07-04T10:30:00")).toBe("2024-07-04");
+  });
+});
