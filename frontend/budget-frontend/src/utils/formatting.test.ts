@@ -49,6 +49,14 @@ describe("formatDateForInput", () => {
   it("formats date-time string as YYYY-MM-DD", () => {
     expect(formatDateForInput("2024-07-04T10:30:00")).toBe("2024-07-04");
   });
+
+  it("returns empty string for invalid string", () => {
+    expect(formatDateForInput("invalid")).toBe("");
+  });
+
+  it("returns empty string for invalid Date object", () => {
+    expect(formatDateForInput(new Date("invalid"))).toBe("");
+  });
 });
 
 describe("getCurrencySymbol", () => {

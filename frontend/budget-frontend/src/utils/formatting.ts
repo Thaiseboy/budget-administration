@@ -80,7 +80,8 @@ export function formatDate(date: Date | string, user: User | null): string {
  * Format date for input fields (always YYYY-MM-DD)
  */
 export function formatDateForInput(date: Date | string): string {
-  const dateObj = typeof date === "string" ? new Date(date) : date;
+  const dateObj = parseDateInput(date);
+  if (!dateObj) return "";
   const year = dateObj.getFullYear();
   const month = (dateObj.getMonth() + 1).toString().padStart(2, "0");
   const day = dateObj.getDate().toString().padStart(2, "0");
