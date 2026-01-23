@@ -51,21 +51,21 @@ describe("formatDateForInput", () => {
 });
 
 describe("getCurrencySymbol", () => {
-  it("return EUR symbool by default", () => {
+  it("returns EUR symbol by default", () => {
     expect(getCurrencySymbol(null)).toBe("€");
   });
 
-  it("return USD symbool", () => {
+  it("returns USD symbol", () => {
     const user = { currency: "USD" } as User;
     expect(getCurrencySymbol(user)).toBe("$");
   });
 
-  it("return GBP symbool", () => {
+  it("returns GBP symbol", () => {
     const user = { currency: "GBP" } as User;
     expect(getCurrencySymbol(user)).toBe("£");
   });
 
-  it("return THB symbool", () => {
+  it("returns THB symbol", () => {
     const user = { currency: "THB" } as User;
     expect(getCurrencySymbol(user)).toBe("฿");
   });
