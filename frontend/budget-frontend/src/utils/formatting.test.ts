@@ -49,3 +49,24 @@ describe("formatDateForInput", () => {
     expect(formatDateForInput("2024-07-04T10:30:00")).toBe("2024-07-04");
   });
 });
+
+describe("getCurrencySymbol", () => {
+  it("return EUR symbool by default", () => {
+    expect(getCurrencySymbol(null)).toBe("€");
+  });
+
+  it("return USD symbool", () => {
+    const user = { currency: "USD" } as User;
+    expect(getCurrencySymbol(user)).toBe("$");
+  });
+
+  it("return GBP symbool", () => {
+    const user = { currency: "GBP" } as User;
+    expect(getCurrencySymbol(user)).toBe("£");
+  });
+
+  it("return THB symbool", () => {
+    const user = { currency: "THB" } as User;
+    expect(getCurrencySymbol(user)).toBe("฿");
+  });
+});
