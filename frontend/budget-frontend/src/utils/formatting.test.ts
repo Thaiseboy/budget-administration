@@ -3,6 +3,7 @@ import {
   formatDate,
   formatDateForInput,
   getCurrencySymbol,
+  formatCurrency,
 } from "./formatting";
 import type { User } from "@/api";
 
@@ -68,5 +69,20 @@ describe("getCurrencySymbol", () => {
   it("returns THB symbol", () => {
     const user = { currency: "THB" } as User;
     expect(getCurrencySymbol(user)).toBe("฿");
+  });
+});
+
+describe("formatCurrency", () => {
+  it("uses EUR as default when user is null", () => {
+    const result = formatCurrency(1234.56, null);
+    expect(result).toContain("€");
+    expect(result).toContain("1.234,56");
+  });
+
+  it("formats USD correctly", () => {
+    const user = { currency: "USD" } as User;
+    const result = formatCurrency(1234.56, user);
+    expect(result).toContain("$");
+    expect(result).toContain("1,234.56");
   });
 });
