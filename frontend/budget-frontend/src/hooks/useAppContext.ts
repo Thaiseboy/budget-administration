@@ -8,7 +8,8 @@ type AppContextType = {
   onCreated: (transaction: Transaction) => void;
   onUpdated: (transaction: Transaction) => void;
   onDeleted: (id: number) => void;
-  budgetsByYear: Record<number, CategoryBudget[]>;
+  budgetCache: Record<string, CategoryBudget[]>;
+  getCacheKey: (year: number, month: number) => string;
   loadBudgets: (year: number, month: number) => Promise<void>;
   upsertBudgetInCache: (budget: CategoryBudget) => void;
 };
