@@ -24,22 +24,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Initialize: check if we have a token and fetch user
   useEffect(() => {
     const token = localStorage.getItem(TOKEN_KEY)
-    if (token) {
-      authApi
-        .getCurrentUser()
-        .then((user) => {
-          setUser(user)
-        })
-        .catch(() => {
-          // Token invalid, clear it
-          localStorage.removeItem(TOKEN_KEY)
-        })
-        .finally(() => {
-          setIsLoading(false)
-        })
-    } else {
+    if (!token) {
       setIsLoading(false)
+      return
     }
+
+    const controller = new AbortController()
+
+    authApi
+      .getCurrentUser({ signal: controller.signal })
+      .then((user) => {
+        setUser(user)
+      })
+      .catch((e) => {
+        if (e instanceof Error && e.name === 'AbortError') {
+          return
+        }
+        // Token invalid, clear it
+        localStorage.removeItem(TOKEN_KEY)
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
+
+    return () => controller.abort()
   }, [])
 
   async function login(data: LoginData) {
