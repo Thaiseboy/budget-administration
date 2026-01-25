@@ -14,19 +14,19 @@ type UseTransactionFiltersArgs = {
   fallbackYear: number;
 };
 
-function parseYearParam(value: string | null, fallback: number): number {
+export function parseYearParam(value: string | null, fallback: number): number {
   if (!value) return fallback;
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
-function parseTypeParam(value: string | null): TypeFilter {
+export function parseTypeParam(value: string | null): TypeFilter {
   const v = (value ?? "").toLowerCase();
   if (v === "income" || v === "expense") return v;
   return "all";
 }
 
-function parseMonthParam(value: string | null): string {
+export function parseMonthParam(value: string | null): string {
   const v = (value ?? "").trim().toLowerCase();
   if (!v || v === "all") return "all";
   const asNumber = Number(v);
@@ -37,13 +37,16 @@ function parseMonthParam(value: string | null): string {
   return "all";
 }
 
-function parseCategoryParam(value: string | null): string {
+export function parseCategoryParam(value: string | null): string {
   if (!value) return "all";
   if (value.trim().toLowerCase() === "all") return "all";
   return normalizeCategory(value);
 }
 
-function getFilterParams(params: URLSearchParams, fallbackYear: number): FilterParams {
+function getFilterParams(
+  params: URLSearchParams,
+  fallbackYear: number,
+): FilterParams {
   return {
     year: parseYearParam(params.get("year"), fallbackYear),
     month: parseMonthParam(params.get("month")),
@@ -52,7 +55,9 @@ function getFilterParams(params: URLSearchParams, fallbackYear: number): FilterP
   };
 }
 
-export function useTransactionFilters({ fallbackYear }: UseTransactionFiltersArgs) {
+export function useTransactionFilters({
+  fallbackYear,
+}: UseTransactionFiltersArgs) {
   const [searchParams, setSearchParams] = useSearchParams();
   const searchParamsString = searchParams.toString();
   const initialFiltersRef = useRef<FilterParams | null>(null);
@@ -63,7 +68,9 @@ export function useTransactionFilters({ fallbackYear }: UseTransactionFiltersArg
     initialFiltersRef.current = getFilterParams(searchParams, fallbackYear);
   }
 
-  const [filters, setFilters] = useState<FilterParams>(initialFiltersRef.current);
+  const [filters, setFilters] = useState<FilterParams>(
+    initialFiltersRef.current,
+  );
 
   useEffect(() => {
     const nextFilters = getFilterParams(searchParams, fallbackYear);
