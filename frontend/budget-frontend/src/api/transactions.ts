@@ -1,8 +1,8 @@
 import type { Transaction } from "../types";
 import { http } from "./http";
 
-export function getTransactions() {
-  return http.get<Transaction[]>('/transactions');
+export function getTransactions(options?: { signal?: AbortSignal }) {
+  return http.get<Transaction[]>('/transactions', options);
 }
 
 export function getTransaction(id: number) {
