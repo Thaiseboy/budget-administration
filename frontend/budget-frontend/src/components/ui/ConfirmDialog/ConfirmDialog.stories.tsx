@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import ConfirmDialog from "@/components/ui/ConfirmDialog";
-import Button from "@/components/ui/Button";
+import ConfirmDialog from "./ConfirmDialog";
+import Button from "../Button";
 
 const meta = {
   title: "UI/ConfirmDialog",
@@ -36,6 +36,7 @@ export const Playground: Story = {
 
 export const WithTrigger: Story = {
   args: {
+    isOpen: false,
     title: "Archive report?",
     message: "You can restore it later from the archive.",
     confirmText: "Archive",

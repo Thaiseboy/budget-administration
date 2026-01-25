@@ -1,6 +1,6 @@
 import type { ComponentProps } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import Card from "@/components/ui/Card";
+import Card from "./Card";
 
 type CardStoryArgs = ComponentProps<typeof Card> & {
   width: "sm" | "md" | "lg";
