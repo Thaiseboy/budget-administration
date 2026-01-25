@@ -8,9 +8,13 @@ use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $transactions = Transaction::orderBy('date', 'desc')->get();
+        $perPage = min((int) ($request->query('per_page') ?: 1000), 5000);
+
+        $transactions = Transaction::orderBy('date', 'desc')
+            ->limit($perPage)
+            ->get();
 
         return $transactions->map(function ($transaction) {
             return [

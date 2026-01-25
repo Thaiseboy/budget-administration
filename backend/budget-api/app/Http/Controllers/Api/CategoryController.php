@@ -22,6 +22,13 @@ class CategoryController extends Controller
         $toRaw = trim($data['to']);
         $fromNormalized = $this->normalizeCategory($fromRaw);
         $toNormalized = $this->normalizeCategory($toRaw);
+
+        if ($fromNormalized === $toNormalized) {
+            return response()->json([
+                'message' => 'Cannot merge category into itself'
+            ], 422);
+        }
+
         $fromLower = strtolower($fromRaw);
 
         return DB::transaction(function () use ($fromLower, $fromNormalized, $toNormalized) {

@@ -42,8 +42,8 @@ export async function logout(): Promise<void> {
   await http.post('/logout')
 }
 
-export async function getCurrentUser(): Promise<User> {
-  const response = await http.get<{ user: User }>('/user')
+export async function getCurrentUser(options?: { signal?: AbortSignal }): Promise<User> {
+  const response = await http.get<{ user: User }>('/user', options)
   return response.user
 }
 

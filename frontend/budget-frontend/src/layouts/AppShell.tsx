@@ -26,17 +26,24 @@ function ProtectedLayout() {
   const [items, setItems] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [budgetsByYear, setBudgetsByYear] = useState<Record<number, CategoryBudget[]>>({});
-  const budgetsLoadingRef = useRef<Record<number, boolean>>({});
+  const [budgetCache, setBudgetCache] = useState<Record<string, CategoryBudget[]>>({});
+  const budgetsLoadingRef = useRef<Record<string, boolean>>({});
 
   useEffect(() => {
-    getTransactions()
+    const controller = new AbortController();
+
+    getTransactions({ signal: controller.signal })
       .then((data) => setItems(data))
       .catch((e: unknown) => {
+        if (e instanceof Error && e.name === 'AbortError') {
+          return;
+        }
         const message = e instanceof Error ? e.message : t("failedToLoadTransactions");
         setError(message);
       })
       .finally(() => setLoading(false));
+
+    return () => controller.abort();
   }, []);
 
   function handleCreated(newTransaction: Transaction) {
@@ -53,23 +60,30 @@ function ProtectedLayout() {
     setItems((prev) => prev.filter((item) => item.id !== id));
   }
 
-  async function loadBudgets(year: number, month: number) {
-    if (budgetsByYear[year]) return;
+  function getCacheKey(year: number, month: number) {
+    return `${year}-${month}`;
+  }
 
-    if (budgetsLoadingRef.current[year]) return;
-    budgetsLoadingRef.current[year] = true;
+  async function loadBudgets(year: number, month: number) {
+    const cacheKey = getCacheKey(year, month);
+
+    if (budgetCache[cacheKey]) return;
+
+    if (budgetsLoadingRef.current[cacheKey]) return;
+    budgetsLoadingRef.current[cacheKey] = true;
 
     try {
       const data = await getBudgets(year, month);
-      setBudgetsByYear((prev) => ({ ...prev, [year]: data }));
+      setBudgetCache((prev) => ({ ...prev, [cacheKey]: data }));
     } finally {
-      budgetsLoadingRef.current[year] = false;
+      budgetsLoadingRef.current[cacheKey] = false;
     }
   }
 
   function upsertBudgetInCache(budget: CategoryBudget) {
-    setBudgetsByYear((prev) => {
-      const list = prev[budget.year] ?? [];
+    const cacheKey = getCacheKey(budget.year, budget.month);
+    setBudgetCache((prev) => {
+      const list = prev[cacheKey] ?? [];
       const idx = list.findIndex((b) => b.category === budget.category);
 
       const next =
@@ -77,7 +91,7 @@ function ProtectedLayout() {
           ? [...list, budget]
           : list.map((b) => (b.category === budget.category ? budget : b));
 
-      return { ...prev, [budget.year]: next };
+      return { ...prev, [cacheKey]: next };
     });
   }
 
@@ -107,7 +121,8 @@ function ProtectedLayout() {
     onCreated: handleCreated,
     onUpdated: handleUpdated,
     onDeleted: handleDeleted,
-    budgetsByYear,
+    budgetCache,
+    getCacheKey,
     loadBudgets,
     upsertBudgetInCache,
   };

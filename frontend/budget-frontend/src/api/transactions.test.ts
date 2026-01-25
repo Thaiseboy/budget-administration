@@ -39,7 +39,7 @@ describe("transactions", () => {
 
       const result = await getTransactions();
 
-      expect(http.get).toHaveBeenCalledWith("/transactions");
+      expect(http.get).toHaveBeenCalledWith("/transactions", undefined);
       expect(result).toEqual(mockTransactions);
     });
   });
@@ -67,7 +67,7 @@ describe("transactions", () => {
     it("calls http.post with transaction data", async () => {
       const newTransaction = {
         date: "2024-01-01",
-        type: "expense",
+        type: "expense" as const,
         amount: 25,
         category: "Food",
         description: "Lunch",
@@ -86,7 +86,7 @@ describe("transactions", () => {
     it("calls http.put with id and updated data", async () => {
       const updatedData = {
         date: "2024-01-01",
-        type: "expense",
+        type: "expense" as const,
         amount: 30,
         category: "Food",
         description: "Updated lunch",

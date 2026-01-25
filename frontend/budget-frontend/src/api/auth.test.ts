@@ -95,7 +95,7 @@ describe("auth", () => {
 
       const result = await getCurrentUser();
 
-      expect(http.get).toHaveBeenCalledWith("/user");
+      expect(http.get).toHaveBeenCalledWith("/user", undefined);
       expect(result).toEqual(mockUser);
     });
   });
