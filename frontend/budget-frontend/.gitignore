@@ -25,3 +25,14 @@ dist-ssr
 
 *storybook.log
 storybook-static
+
+# Test & Coverage
+coverage/
+*.lcov
+clover.xml
+junit.xml
+test-results/
+
+# Vitest
+.vitest/
+vitest.workspace.ts.timestamp-*
