@@ -6,6 +6,7 @@ import {
   deleteFixedItem,
 } from "./fixedItems";
 import { http } from "./http";
+import type { FixedMonthlyItem } from "@/types";
 
 vi.mock("./http");
 
@@ -16,7 +17,7 @@ describe("fixedItems", () => {
 
   describe("getFixedItems", () => {
     it("calls http.get to fetch all fixed items", async () => {
-      const mockItems = [
+      const mockItems: FixedMonthlyItem[] = [
         {
           id: 1,
           description: "Rent",
@@ -43,7 +44,7 @@ describe("fixedItems", () => {
 
   describe("createFixedItem", () => {
     it("calls http.post with fixed item data", async () => {
-      const newItem = {
+      const newItem: Omit<FixedMonthlyItem, "id"> = {
         description: "Internet",
         amount: 50,
         type: "expense",
@@ -61,7 +62,7 @@ describe("fixedItems", () => {
 
   describe("updateFixedItem", () => {
     it("calls http.put with id and updated data", async () => {
-      const updatedData = {
+      const updatedData: Omit<FixedMonthlyItem, "id"> = {
         description: "Rent Updated",
         amount: 1100,
         type: "expense",
